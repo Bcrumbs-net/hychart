@@ -1,0 +1,71 @@
+import React, { useMemo } from 'react';
+import ModuleInfo from '../moduleBlocks/ModuleInfo';
+import ModuleConnection from './Connection';
+import { BLOCK_HEIGHT, BLOCK_WIDTH } from '../Constants';
+import { CanvasEvents } from '../Constants';
+
+export type ConnectionsCanvasProps = {
+  currentVersion: any;
+  selectedModules: any[];
+  currentEvent: CanvasEvents;
+};
+
+function ConnectionsCanvas({
+  currentVersion,
+  selectedModules,
+}: ConnectionsCanvasProps) {
+  const selectedModule = selectedModules[0];
+
+  const connectionList = useMemo(() => {
+    const connectionList = [];
+    for (const fromID in currentVersion.nodes) {
+      const fromNode = currentVersion.nodes[fromID];
+      if (!fromNode) {
+        continue;
+      }
+      const connections = fromNode.connections;
+      if (!connections) {
+        continue;
+      }
+      const numberOfFromConn = connections.length;
+      for (let i = 0; i < connections.length; i++) {
+        const toID = connections[i].id;
+        const toNode = currentVersion.nodes[toID];
+        if (!toNode) {
+          continue;
+        }
+        connectionList.push({
+          fromID: fromID,
+          toID: toID,
+          fromX: fromNode.x + (i + 1) * (BLOCK_WIDTH / (numberOfFromConn + 1)), // x coordinate of origin of arrow
+          fromY: fromNode.y + BLOCK_HEIGHT, // y coordinate of origin of arrow
+          toX: toNode.x + BLOCK_WIDTH / 2, // x coordinate of target of arrow
+          toY: toNode.y, // y coordinate of target of arrow
+          fromColor: ModuleInfo.getColor(fromNode.type),
+          toColor: ModuleInfo.getColor(toNode.type),
+        });
+      }
+    }
+
+    return connectionList;
+  }, [currentVersion]);
+
+  if (!currentVersion || !currentVersion.nodes) return null;
+
+  return (
+    <svg height="100%" width="100%" className="SVG_SPACE">
+      {connectionList.map((conn) => (
+        <ModuleConnection
+          {...conn}
+          isSelected={
+            selectedModule + '' === conn.fromID ||
+            selectedModule + '' === conn.toID
+          }
+          key={conn.fromID + '-' + conn.toID + '-' + conn.fromX + conn.fromY}
+        />
+      ))}
+    </svg>
+  );
+}
+
+export default ConnectionsCanvas;

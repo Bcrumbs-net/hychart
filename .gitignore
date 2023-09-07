@@ -1,0 +1,4 @@
+node_modules
+.next
+azure-pipelines.yml
+.env.local
