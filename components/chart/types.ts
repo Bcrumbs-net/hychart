@@ -20,6 +20,7 @@ export type NodeType = {
   title: string;
   description: string;
   main: boolean;
+  id: number;
 };
 
 export type ChartType = {

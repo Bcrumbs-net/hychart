@@ -3,7 +3,6 @@ import { ChartType, NodeType, NodeVariant } from './types';
 
 function parseContentsToNodes(contents: GraphContent[]): ChartType {
   const root = contents[0];
-  console.log(root);
   return {
     init: root.id,
     nodes: convertContentsToNodes(root.children, {}),
@@ -25,6 +24,7 @@ function convertContentsToNodes(
     {});
 
     nodes[content.id] = {
+      id: content.id,
       type: contentData.type as NodeVariant,
       x: Number(contentData.x_position),
       y: Number(contentData.y_position),

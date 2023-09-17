@@ -2,12 +2,11 @@ import React, { useMemo } from 'react';
 import ModuleInfo from '../moduleBlocks/ModuleInfo';
 import ModuleConnection from './Connection';
 import { BLOCK_HEIGHT, BLOCK_WIDTH } from '../Constants';
-import { CanvasEvents } from '../Constants';
+import { ChartType } from '../types';
 
 export type ConnectionsCanvasProps = {
-  currentVersion: any;
-  selectedModules: any[];
-  currentEvent: CanvasEvents;
+  currentVersion: ChartType;
+  selectedModules: number[];
 };
 
 function ConnectionsCanvas({
@@ -37,10 +36,10 @@ function ConnectionsCanvas({
         connectionList.push({
           fromID: fromID,
           toID: toID,
-          fromX: fromNode.x + (i + 1) * (BLOCK_WIDTH / (numberOfFromConn + 1)), // x coordinate of origin of arrow
-          fromY: fromNode.y + BLOCK_HEIGHT, // y coordinate of origin of arrow
-          toX: toNode.x + BLOCK_WIDTH / 2, // x coordinate of target of arrow
-          toY: toNode.y, // y coordinate of target of arrow
+          fromX: fromNode.x + BLOCK_WIDTH, // x coordinate of origin of arrow
+          fromY: fromNode.y + (i + 1) * (BLOCK_HEIGHT / (numberOfFromConn + 1)), // y coordinate of origin of arrow
+          toX: toNode.x, // x coordinate of target of arrow
+          toY: toNode.y + BLOCK_HEIGHT / 2, // y coordinate of target of arrow
           fromColor: ModuleInfo.getColor(fromNode.type),
           toColor: ModuleInfo.getColor(toNode.type),
         });

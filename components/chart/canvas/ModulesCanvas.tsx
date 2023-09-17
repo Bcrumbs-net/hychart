@@ -1,12 +1,10 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import Module from './Module';
-import { CanvasEvents } from '../Constants';
-import { SelectModuleFunc } from '../types';
+import { ChartType, SelectModuleFunc } from '../types';
 
 export type ModulesCanvasProps = {
-  currentVersion: any;
+  currentVersion: ChartType;
   selectedModules: any[];
-  currentEvent: CanvasEvents;
   selectModule: SelectModuleFunc;
 };
 

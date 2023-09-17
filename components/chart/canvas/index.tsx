@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 // import { BCTooltip } from '@bcrumbs.net/bc-ui';
-import { CanvasEvents } from '../Constants';
 import ModulesCanvas from './ModulesCanvas';
 import ConnectionsCanvas from './ConnectionsCanvas';
 import { DeselectModuleFunc, SelectModuleFunc } from '../types';
@@ -17,7 +16,6 @@ export type CanvasProps = {
   zoomLevel: number;
   currentVersion: any;
   selectedModules: any[];
-  currentEvent: CanvasEvents;
   selectModule: SelectModuleFunc;
   changeZoomLevel: (value: number) => void;
   organizeModules: () => void;
@@ -28,7 +26,6 @@ function Canvas({
   zoomLevel,
   currentVersion,
   selectedModules,
-  currentEvent,
   selectModule,
   changeZoomLevel,
   organizeModules,
@@ -111,11 +108,11 @@ function Canvas({
     <>
       <div className="designAreadHeader">
         <div className="zoomLevelSelector">
-          <i className="organize-modules" onClick={organizeModules} />
+          <i className="flaticon-atom" onClick={organizeModules} />
           |
-          <i className="zoomout" onClick={() => changeZoomLevel(-10)} />
+          <i className="flaticon-minus-symbol" onClick={() => changeZoomLevel(-10)} />
           {zoomLevel + '%'}
-          <i className="zoomin" onClick={() => changeZoomLevel(10)} />
+          <i className="flaticon-plus-symbol" onClick={() => changeZoomLevel(10)} />
         </div>
       </div>
       <div
@@ -135,17 +132,13 @@ function Canvas({
           onDrop={onDrop}
         >
           <ModulesCanvas
-            key="ModulesCanvas"
             currentVersion={currentVersion}
             selectedModules={selectedModules}
-            currentEvent={currentEvent}
             selectModule={selectModule}
           />
           <ConnectionsCanvas
-            key="ConnectionsCanvas"
             currentVersion={currentVersion}
             selectedModules={selectedModules}
-            currentEvent={currentEvent}
           />
         </div>
       </div>

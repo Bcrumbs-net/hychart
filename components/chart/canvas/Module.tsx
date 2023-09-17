@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react';
 import ModuleInfo from '../moduleBlocks/ModuleInfo';
-import { SelectModuleFunc } from '../types';
+import { NodeType, SelectModuleFunc } from '../types';
 
 export type ModuleProps = {
-  module: any;
+  module: NodeType;
   selectModule: SelectModuleFunc;
   isSelected: boolean;
 };
@@ -13,7 +13,7 @@ const ModuleTypeToClassName = {
 };
 
 function Module({ module, selectModule, isSelected }: ModuleProps) {
-  const moduleName = module.name || ModuleInfo.getModuleName(module.type);
+  const moduleName = module.title || ModuleInfo.getModuleName(module.type);
 
   const onDragStart = useCallback((id, ev) => {
     ev.dataTransfer.setData('dragType', 'moveModule');
@@ -34,8 +34,6 @@ function Module({ module, selectModule, isSelected }: ModuleProps) {
         else selectModule(module.id, false);
       }}
     >
-      <div className="moduleID">{module.id}</div>
-      <div className="moduleType">{ModuleInfo.getName(module.type)}</div>
       <div className="moduleIcon">
         <i className={ModuleInfo.getIcon(module.type) + ' moduleIcon '}></i>
       </div>

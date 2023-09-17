@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import keydown from 'react-keydown';
 import { Config, GraphContent } from '@bcrumbs.net/bc-api';
-import { CanvasEvents, SHORTCUT_KEYS } from './Constants';
+import { SHORTCUT_KEYS } from './Constants';
 
 import organizeModulesProc from './organizeModules';
 import DesignerMenu from './designerMenu/DesignerMenu';
@@ -10,13 +10,8 @@ import ModuleInfo from './moduleBlocks/ModuleInfo';
 import Canvas from './canvas';
 import Header from './header';
 import Search, { SearchType } from './search';
-import 'bootstrap-4-grid/css/grid.min.css';
-//import './styles.scss';
 import { ChartType } from './types';
 import parseContentsToNodes from './parseContentsToNodes';
-
-
-
 
 // class ChatbotDesigner extends PopupsComponent<Props, State> {
 //   renderRightMenu = () => {
@@ -108,11 +103,13 @@ function Chart({
   data: GraphContent[];
   keydown: any;
 }) {
+  const rootContent = data[0];
   const [visible, setVisible] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(100);
-  const [currentEvent, setCurrentEvent] = useState(CanvasEvents.INIT);
   const [selectedModules, setSelectedModules] = useState([]);
-  const [currentVersion, setCurentVersion] = useState<ChartType>(parseContentsToNodes(data));
+  const [currentVersion, setCurentVersion] = useState<ChartType>(
+    parseContentsToNodes(data)
+  );
   const [showSearch, setShowSearch] = useState(false);
   const [search, setSearch] = useState<SearchType>({
     value: null,
@@ -120,7 +117,6 @@ function Chart({
     message: '',
   });
 
-  console.log(currentVersion);
   const selectModule = useCallback(
     (id: number, groupSelect?: boolean) => {
       let newSelectedModules = selectedModules;
@@ -144,10 +140,9 @@ function Chart({
           ? true
           : false
       );
-      setCurrentEvent(CanvasEvents.SELECT_MODULE);
       setSelectedModules(newSelectedModules);
     },
-    [selectedModules, setVisible, setCurrentEvent, setSelectedModules]
+    [selectedModules, setVisible, setSelectedModules]
   );
 
   const focusModule = useCallback(
@@ -185,42 +180,46 @@ function Chart({
   const deselectModule = useCallback(
     (callback: () => void) => {
       setSelectedModules([]);
-      setCurrentEvent(CanvasEvents.SELECT_MODULE);
       setVisible(false);
       callback?.();
     },
-    [setSelectedModules, setCurrentEvent, setVisible]
+    [setSelectedModules, setVisible]
   );
 
   const moveModule = useCallback(
     (id: number, x: number, y: number) => {
+      const newVersion = currentVersion;
       if (
         selectedModules &&
         selectedModules.length > 0 &&
         selectedModules.filter((m) => m === id).length > 0
       ) {
         selectedModules.forEach((selectedModule) => {
-          if (currentVersion.nodes[selectedModule]) {
-            currentVersion.nodes[selectedModule].x += x;
-            currentVersion.nodes[selectedModule].y += y;
+          if (newVersion.nodes[selectedModule]) {
+            newVersion.nodes[selectedModule].x += x;
+            newVersion.nodes[selectedModule].y += y;
           }
         });
-        setCurentVersion(currentVersion);
-        setCurrentEvent(CanvasEvents.MOVE_MODULE);
+        setCurentVersion({
+          ...newVersion,
+        });
       } else {
-        if (currentVersion.nodes[id]) {
-          currentVersion.nodes[id].x += x;
-          currentVersion.nodes[id].y += y;
-          setCurentVersion(currentVersion);
-          setCurrentEvent(CanvasEvents.MOVE_MODULE);
+        const targetNode = currentVersion.nodes[id];
+        if (targetNode) {
+          newVersion.nodes[id].x += x;
+          newVersion.nodes[id].y += y;
+          setCurentVersion({
+            ...newVersion,
+          });
         } else {
           return {};
         }
       }
     },
-    [selectedModules, setCurentVersion, setCurrentEvent, currentVersion]
+    [selectedModules, setCurentVersion, currentVersion]
   );
 
+  //TODO: Not working fine
   const organizeModules = useCallback(() => {
     const newVersion = organizeModulesProc(currentVersion);
     setCurentVersion(newVersion);
@@ -260,33 +259,31 @@ function Chart({
 
   return (
     <div>
-      <div className="row chart" id="chart">
-        <Header showModulesSearch={setShowSearch} />
-        <div
-          className={`designer ${
-            visible ? 'col-lg-8 col-md-6 col-sm-4 col-xs-2' : 'col-md-12'
-          }`}
-        >
+      <div className="chart" id="chart">
+        <Header
+          showModulesSearch={setShowSearch}
+          chartName={rootContent.title}
+        />
+        <div className="designer">
           <Canvas
-            key={'canvas'}
             zoomLevel={zoomLevel}
             moveModule={moveModule}
             selectModule={selectModule}
             currentVersion={currentVersion}
             selectedModules={selectedModules}
-            currentEvent={currentEvent}
             organizeModules={organizeModules}
             changeZoomLevel={changeZoomLevel}
           />
         </div>
         {/* {this.renderRightMenu()} */}
-        {showSearch ? this.renderSearchBox() : null}
-        <Search
-          currentVersion={currentVersion}
-          search={search}
-          focusModule={focusModule}
-          setSearch={setSearch}
-        />
+        {showSearch ? (
+          <Search
+            currentVersion={currentVersion}
+            search={search}
+            focusModule={focusModule}
+            setSearch={setSearch}
+          />
+        ) : null}
       </div>
     </div>
   );

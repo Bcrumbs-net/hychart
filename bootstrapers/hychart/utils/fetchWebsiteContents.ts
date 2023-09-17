@@ -17,6 +17,7 @@ export async function fetchWebsiteContents(config: Config, path: string) {
       deep: config.deep || 3,
       path,
     },
+    fetchPolicy: 'no-cache'
   });
 
   if (dataResponse && dataResponse.data) {

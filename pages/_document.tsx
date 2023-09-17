@@ -33,6 +33,30 @@ export default class CustomDocument extends Document<{
               })(window,document,'script','dataLayer','GTM-NRPT8DK');	`,
             }}
           />
+          <link
+            rel="stylesheet"
+            href="https://cdn.bcrumbs.net/bc-assets/styles/constants.css"
+          />
+          <link
+            href="https://fonts.googleapis.com/css?family=Montserrat:100,300,500,700&display=swap"
+            rel="stylesheet"
+          />
+          <link
+            rel="stylesheet"
+            href="https://cdn.bcrumbs.net/bc-assets/styles/index.css"
+          />
+          <link
+            rel="stylesheet"
+            href="https://cdn.bcrumbs.net/bc-assets/styles/skin.css"
+          />
+          <link
+            rel="stylesheet"
+            href="https://cdn.bcrumbs.net/bc-assets/styles/skeleton.css"
+          />
+          <link
+            rel="stylesheet"
+            href="https://cdn.bcrumbs.net/bc-assets/icons/icons.css"
+          />
           {/*<link rel="shortcut icon" type="image/x-icon" href={FavIcon} />*/}
         </Head>
         <body>
