@@ -24,7 +24,7 @@ function Hychart({
   );
 }
 
-BCShowcase.getInitialProps = async ({ Component, ctx }) => {
+Hychart.getInitialProps = async ({ Component, ctx }) => {
   const pageProps = Component.getInitialProps
     ? await Component.getInitialProps(ctx)
     : {};
@@ -32,4 +32,4 @@ BCShowcase.getInitialProps = async ({ Component, ctx }) => {
 };
 
 // @ts-ignore TypeScript is complaining
-export default withShowcaseClient(BCShowcase);
+export default withShowcaseClient(Hychart);

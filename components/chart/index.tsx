@@ -1,99 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import keydown from 'react-keydown';
+import React, { useCallback, useEffect, useState } from 'react';
+import { HotKeys } from 'react-hotkeys';
 import { Config, GraphContent } from '@bcrumbs.net/bc-api';
 import { SHORTCUT_KEYS } from './Constants';
-
 import organizeModulesProc from './organizeModules';
-import DesignerMenu from './designerMenu/DesignerMenu';
-import TABS, { TABS_TYPES } from './designerMenu/DesignerMenuTabs';
-import ModuleInfo from './moduleBlocks/ModuleInfo';
 import Canvas from './canvas';
 import Header from './header';
 import Search, { SearchType } from './search';
 import { ChartType } from './types';
 import parseContentsToNodes from './parseContentsToNodes';
-
-// class ChatbotDesigner extends PopupsComponent<Props, State> {
-//   renderRightMenu = () => {
-//     const { bot, clientToken, status } = this.props;
-//     const {
-//       currentVersion,
-//       visible,
-//       selectedModules,
-//       tabName,
-//       departments,
-//       conversationTags,
-//     } = this.state;
-//     if (
-//       selectedModules &&
-//       selectedModules.length > 0 &&
-//       currentVersion.nodes[selectedModules[0]]
-//     ) {
-//       const currentModule = currentVersion.nodes[selectedModules[0]];
-//       return ModuleInfo.getMenu({
-//         visible: visible,
-//         key: selectedModules[0],
-//         currentModule: currentModule,
-//         currentVersion: currentVersion,
-//         currentVersionObj: this.props.currentVersion,
-//         selectModule: this.selectModule,
-//         showDesDesignerMenu: this.showDesDesignerMenu,
-//         updateVersion: this.updateVersion,
-//         bot: bot,
-//         history: this.props.history,
-//         status: status,
-//         notifyUser: this.props.notifyUser,
-//         duplicateModule: this.duplicateModule,
-//         showConfirmPopup: this.showConfirmPopup,
-//         registerConfirmPopup: this.registerConfirmPopup,
-//         registerUploadPopup: this.registerUploadPopup,
-//         registerPopup: this.registerPopup,
-//         showPopup: this.showPopup,
-//         showUploadPopup: this.showUploadPopup,
-//         unRegisterPopup: this.unRegisterPopup,
-//         hidePopups: this.hidePopups,
-//         userName: this.props.name,
-//         departments: departments,
-//         conversationTags: conversationTags,
-//       });
-//     } else {
-//       return (
-//         <DesignerMenu
-//           key={'DesignerMenu'}
-//           bot={bot}
-//           clientToken={clientToken}
-//           visible={visible}
-//           currentVersion={currentVersion}
-//           currentVersionObj={this.props.currentVersion}
-//           history={this.props.history}
-//           registerConfirmPopup={this.registerConfirmPopup}
-//           showConfirmPopup={this.showConfirmPopup}
-//           registerPopup={this.registerPopup}
-//           showPopup={this.showPopup}
-//           forceUpdate={this.forceUpdate}
-//           hidePopups={this.hidePopups}
-//           unRegisterPopup={this.unRegisterPopup}
-//           updateVersion={this.updateVersion}
-//           refetchBot={this.props.refetchBot}
-//           versions={this.props.versions}
-//           notifyUser={this.props.notifyUser}
-//           tabName={tabName}
-//           saveVersion={this.saveVersion}
-//           closeDesignerMenu={this.closeDesignerMenu}
-//         />
-//       );
-//     }
-//   };
-
-//   closeDesignerMenu = () => {
-//     this.toggleDesignerMenu(false);
-//   };
-
-//   showDesDesignerMenu = () => {
-//     this.setState({ visible: true });
-//   };
-
-// }
 
 function Chart({
   data,
@@ -104,7 +18,6 @@ function Chart({
   keydown: any;
 }) {
   const rootContent = data[0];
-  const [visible, setVisible] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(100);
   const [selectedModules, setSelectedModules] = useState([]);
   const [currentVersion, setCurentVersion] = useState<ChartType>(
@@ -116,6 +29,31 @@ function Chart({
     isValid: true,
     message: '',
   });
+
+  const shortcutHandlers = {
+    SEARCH: () => {
+      setShowSearch(true);
+      setSearch({ value: '', isValid: true, message: '' });
+    },
+    UP: () => {
+      const canvas = document.getElementById('canvas');
+      canvas.scrollTop = canvas.scrollTop - 30;
+    },
+    DOWN: () => {
+      const canvas = document.getElementById('canvas');
+      canvas.scrollTop = canvas.scrollTop + 30;
+    },
+    RIGHT: () => {
+      const canvas = document.getElementById('canvas');
+      canvas.scrollLeft = canvas.scrollLeft + 30;
+    },
+    LEFT: () => {
+      const canvas = document.getElementById('canvas');
+      canvas.scrollLeft = canvas.scrollLeft - 30;
+    },
+    ZOOM_IN: () => changeZoomLevel(-10),
+    ZOOM_OUT: () => changeZoomLevel(10),
+  };
 
   const selectModule = useCallback(
     (id: number, groupSelect?: boolean) => {
@@ -135,14 +73,9 @@ function Chart({
         newSelectedModules = [];
       else newSelectedModules = [id];
 
-      setVisible(
-        newSelectedModules.length === 1 && newSelectedModules[0] === id
-          ? true
-          : false
-      );
       setSelectedModules(newSelectedModules);
     },
-    [selectedModules, setVisible, setSelectedModules]
+    [selectedModules, setSelectedModules]
   );
 
   const focusModule = useCallback(
@@ -180,10 +113,9 @@ function Chart({
   const deselectModule = useCallback(
     (callback: () => void) => {
       setSelectedModules([]);
-      setVisible(false);
       callback?.();
     },
-    [setSelectedModules, setVisible]
+    [setSelectedModules]
   );
 
   const moveModule = useCallback(
@@ -225,40 +157,9 @@ function Chart({
     setCurentVersion(newVersion);
   }, [currentVersion, setCurentVersion]);
 
-  useEffect(() => {
-    if (keydown && keydown.event && keydown.event.which) {
-      const canvas = document.getElementById('canvas');
-      switch (keydown.event.which) {
-        case 70: // F
-          setShowSearch(true);
-          setSearch({ value: '', isValid: true, message: '' });
-          break;
-        case 88: // X
-          changeZoomLevel(-10);
-          break;
-        case 90: // Z
-          changeZoomLevel(10);
-          break;
-        case 39: // Left
-          canvas.scrollLeft = canvas.scrollLeft + 30;
-          break;
-        case 37: // right
-          canvas.scrollLeft = canvas.scrollLeft - 30;
-          break;
-        case 38: // up
-          canvas.scrollTop = canvas.scrollTop - 30;
-          break;
-        case 40: // down
-          canvas.scrollTop = canvas.scrollTop + 30;
-          break;
-        default:
-          break;
-      }
-    }
-  }, [keydown, changeZoomLevel, setShowSearch, setSearch]);
-
   return (
-    <div>
+    //@ts-ignore
+    <HotKeys keyMap={SHORTCUT_KEYS} handlers={shortcutHandlers}>
       <div className="chart" id="chart">
         <Header
           showModulesSearch={setShowSearch}
@@ -275,18 +176,18 @@ function Chart({
             changeZoomLevel={changeZoomLevel}
           />
         </div>
-        {/* {this.renderRightMenu()} */}
         {showSearch ? (
           <Search
             currentVersion={currentVersion}
             search={search}
             focusModule={focusModule}
             setSearch={setSearch}
+            setShowSearch={setShowSearch}
           />
         ) : null}
       </div>
-    </div>
+    </HotKeys>
   );
 }
 
-export default keydown(SHORTCUT_KEYS)(Chart);
+export default Chart;

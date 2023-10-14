@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-page-custom-font */
 import React from 'react';
 import Head from 'next/head';
-import ErrorSec from '../components/Error';
+import ErrorSec from '../components/error';
 import { ResetCSS } from '../public/assets/css/style';
 
 class Error extends React.Component<{ statusCode: string }> {

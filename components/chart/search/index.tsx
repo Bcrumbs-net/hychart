@@ -1,3 +1,7 @@
+import ModuleInfo from '../moduleBlocks/ModuleInfo';
+import { ChartType } from '../types';
+import Textbox from './textbox';
+
 export type SearchType = {
   value?: string;
   isValid: boolean;
@@ -8,33 +12,35 @@ export default function Search({
   currentVersion,
   search,
   focusModule,
-  setSearch
+  setSearch,
+  setShowSearch,
 }: {
-  currentVersion: any;
+  currentVersion: ChartType;
   search: SearchType;
   focusModule: (name: string) => void;
   setSearch: (search: SearchType) => void;
+  setShowSearch: (value: boolean) => void;
 }) {
   return (
     <>
       <div
         className="floatingModulesSearchBoxCon"
-        onClick={() =>
-          this.setState({
-            showSearch: false,
-            search: { value: '', isValid: true, message: '' },
-          })
-        }
+        onClick={() => {
+          setShowSearch(false);
+          setSearch({ value: '', isValid: true, message: '' });
+        }}
       ></div>
-      {/* <Textbox
+      <Textbox
         containerClassName="floatingModulesSearchBox"
+        type="text"
         autoCompleteList={
           currentVersion &&
           currentVersion.nodes &&
           Object.keys(currentVersion.nodes).map((k) => {
-            let m = currentVersion.nodes[k];
+            const m = currentVersion.nodes[k];
+
             return (
-              'Action ' +
+              'Node ' +
               m.id +
               ' > ' +
               (m.name || ModuleInfo.getModuleName(m.type))
@@ -44,19 +50,12 @@ export default function Search({
         maxLength={50}
         name="search"
         onChange={(targetValue) => {
-          this.setState({
-            search: { value: targetValue, isValid: true, message: '' },
-          });
+          setSearch({ value: targetValue, isValid: true, message: '' });
         }}
         placeholder="Write node name"
-        showFilledEffect={true}
         value={search.value}
-        searchbox={true}
         onListItemClick={focusModule}
-        fullAutocomplete={true}
-        needSpecialCharacter={false}
-        autoFocus
-      /> */}
+      />
     </>
   );
 }

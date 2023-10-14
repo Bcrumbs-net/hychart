@@ -57,7 +57,6 @@ export default class CustomDocument extends Document<{
             rel="stylesheet"
             href="https://cdn.bcrumbs.net/bc-assets/icons/icons.css"
           />
-          {/*<link rel="shortcut icon" type="image/x-icon" href={FavIcon} />*/}
         </Head>
         <body>
           <Main />
