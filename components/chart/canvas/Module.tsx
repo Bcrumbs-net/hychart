@@ -38,8 +38,8 @@ function Module({ module, selectModule, isSelected }: ModuleProps) {
         <i className={ModuleInfo.getIcon(module.type) + ' moduleIcon '}></i>
       </div>
       <div className="moduleNameCon">
-        {moduleName.length >= 18
-          ? moduleName.substring(0, 18) + '...'
+        {moduleName.length >= 34
+          ? moduleName.substring(0, 34) + '...'
           : moduleName}
       </div>
     </div>
