@@ -61,12 +61,31 @@ function ModuleConnection({
         strokeLinejoin="bevel"
         style={{
           fill: 'none',
-          stroke: isSelected ? fromColor : '#AAA',
-          strokeWidth: isSelected ? 2 : 1,
-          zIndex: isSelected ? 9 : 1,
+          stroke: '#AAA',
+          strokeWidth: 1,
+          zIndex: 1,
         }}
         key={`${fromX}-${toX}-polyline`}
       />
+      ,
+      {isSelected ? (
+        <path
+          d={coordinateList.join(' ')}
+          stroke="black"
+          fill="transparent"
+          strokeDasharray="5 5"
+          strokeLinecap="round"
+          strokeLinejoin="bevel"
+          style={{
+            fill: 'none',
+            stroke: fromColor,
+            strokeWidth: 3,
+            zIndex: 9,
+          }}
+          key={`${fromX}-${toX}-polyline`}
+          className={'connection'}
+        />
+      ) : null}
       ,
       <circle
         cx={fromX}
