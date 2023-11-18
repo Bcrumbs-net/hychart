@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import styled from 'styled-components';
+import { useState } from "react";
+import styled from "styled-components";
 
 export interface BCTextboxProps {
   containerClassName?: string;
@@ -28,28 +28,31 @@ const AutoComplete = styled.div`
   z-index: 1000;
   ul {
     border-radius: 10px;
+    margin-top: 55px;
+    border-bottom: 3px solid #8d8d8d;
     li {
-      color: #fff;
+      color: #000;
       font-size: 13px;
-      background-color: #9b9b9b;
-      border-bottom: 1px solid #8d8d8d;
-      width: 233px;
+      background-color: #F3EDED;
+      width: 448px;
       padding: 14px;
       display: block;
       cursor: pointer;
-      height: 40px;
-      font-weight: 300;
+      height: 35px;
+      font-weight: 400;
     }
     li:first-of-type {
+      border-radius: 5px 20px 0 0;
       border-top-right-radius: $radius;
       border-top-left-radius: $radius;
     }
     li:last-child {
+      border-radius: 0 0 5px 20px;
       border-bottom-right-radius: $radius;
       border-bottom-left-radius: $radius;
     }
     li:hover {
-      background-color: #8d8d8d;
+      background-color: #C8C1C1;
     }
   }
 `;
@@ -74,19 +77,19 @@ export const Textbox = ({
   return (
     <div className={containerClassName}>
       <input
-        className={'form-control ' + className}
+        className={"form-control " + className}
         onBlur={onBlur}
         name={name}
         onChange={(e) => {
           e.persist();
           const targetVal = e.target.value;
           let lastWord: string | null = null;
-          if (targetVal && targetVal.length > 1) {
-            const wordArrays = targetVal.split(' ');
+          if (targetVal && targetVal.length > 0) {
+            const wordArrays = targetVal.split(" ");
             lastWord = wordArrays[wordArrays.length - 1];
           }
           let valueExistsInAutoComplete = false;
-          if (targetVal === '#') {
+          if (targetVal === "#") {
             valueExistsInAutoComplete = true;
           }
           if (autoCompleteList && lastWord && lastWord.length >= 1) {
@@ -126,8 +129,8 @@ export const Textbox = ({
                     .toUpperCase()
                     .indexOf(
                       value
-                        .split(' ')
-                        [value.split(' ').length - 1].toUpperCase()
+                        .split(" ")
+                        [value.split(" ").length - 1].toUpperCase()
                     ) >= 0
               )
               .map((val, index) => (
@@ -135,9 +138,9 @@ export const Textbox = ({
                   key={`AutoCompleteItem${index}`}
                   onClick={() => {
                     setShowAutoComplete(false);
-                    const words = value.split(' ');
+                    const words = value.split(" ");
                     words.pop();
-                    const result = words.join(' ') + ' ' + val;
+                    const result = words.join(" ") + " " + val;
                     onChange && onChange(result.substring(1), undefined); // Substring for removing the begining space resulted from join
                   }}
                 >
@@ -152,8 +155,8 @@ export const Textbox = ({
 };
 
 Textbox.defaultProps = {
-  className: '',
-  value: '',
+  className: "",
+  value: "",
   disabled: false,
   placeholder: undefined,
   maxLength: undefined,

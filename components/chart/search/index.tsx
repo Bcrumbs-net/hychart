@@ -38,12 +38,11 @@ export default function Search({
           currentVersion.nodes &&
           Object.keys(currentVersion.nodes).map((k) => {
             const m = currentVersion.nodes[k];
-
             return (
               'Node ' +
               m.id +
               ' > ' +
-              (m.name || ModuleInfo.getModuleName(m.type))
+              (m.title || ModuleInfo.getModuleName(m.type))
             );
           })
         }
