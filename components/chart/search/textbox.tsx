@@ -51,6 +51,9 @@ const AutoComplete = styled.div`
       border-bottom-right-radius: $radius;
       border-bottom-left-radius: $radius;
     }
+    li:first-child:last-child {     
+       border-radius: 5px 15px 5px 15px;
+    }
     li:hover {
       background-color: #C8C1C1;
     }
@@ -131,7 +134,7 @@ export const Textbox = ({
                     .indexOf(
                       value
                         .split(" ")
-                        [value.split(" ").length - 1].toUpperCase()
+                      [value.split(" ").length - 1].toUpperCase()
                     ) >= 0
               )
               .map((val, index) => (
