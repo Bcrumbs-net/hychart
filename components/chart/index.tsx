@@ -81,8 +81,7 @@ function Chart({
   const focusModule = useCallback(
     (name: string) => {
       if (currentVersion && currentVersion.nodes) {
-        const moduleNumberTrimmed = name.substring(0, name.indexOf('>'));
-
+        const moduleNumberTrimmed = name.substring(0, name.indexOf('>')).substring(5);
         const moduleId = parseInt(moduleNumberTrimmed);
 
         Object.keys(currentVersion.nodes).forEach((key) => {

@@ -71,6 +71,7 @@ export const Textbox = ({
   autoCompleteList,
   onBlur,
   containerClassName,
+  onListItemClick
 }: BCTextboxProps) => {
   const [showAutoComplete, setShowAutoComplete] = useState(false);
 
@@ -84,7 +85,7 @@ export const Textbox = ({
           e.persist();
           const targetVal = e.target.value;
           let lastWord: string | null = null;
-          if (targetVal && targetVal.length > 0) {
+          if (targetVal && targetVal.length > 2) {
             const wordArrays = targetVal.split(" ");
             lastWord = wordArrays[wordArrays.length - 1];
           }
@@ -141,6 +142,7 @@ export const Textbox = ({
                     const words = value.split(" ");
                     words.pop();
                     const result = words.join(" ") + " " + val;
+                    onListItemClick(result.substring(1))
                     onChange && onChange(result.substring(1), undefined); // Substring for removing the begining space resulted from join
                   }}
                 >
