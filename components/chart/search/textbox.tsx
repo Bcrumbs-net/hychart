@@ -1,3 +1,4 @@
+import { element } from "prop-types";
 import { useState } from "react";
 import styled from "styled-components";
 
@@ -77,6 +78,9 @@ export const Textbox = ({
   onListItemClick
 }: BCTextboxProps) => {
   const [showAutoComplete, setShowAutoComplete] = useState(false);
+  const autoCompleteListNames = autoCompleteList.map(el => {
+    return {"id":el.split(" ")[1],"name":el.split(" ")[3]}
+  })
 
   return (
     <div className={containerClassName}>
@@ -91,6 +95,7 @@ export const Textbox = ({
           if (targetVal && targetVal.length > 2) {
             const wordArrays = targetVal.split(" ");
             lastWord = wordArrays[wordArrays.length - 1];
+
           }
           let valueExistsInAutoComplete = false;
           if (targetVal === "#") {
@@ -113,6 +118,7 @@ export const Textbox = ({
           } else {
             setShowAutoComplete(false);
             onChange && onChange(targetVal, e);
+
           }
         }}
         onKeyPress={onKeyPress}
@@ -126,10 +132,10 @@ export const Textbox = ({
       {autoCompleteList && autoCompleteList.length && showAutoComplete ? (
         <AutoComplete>
           <ul>
-            {autoCompleteList
+            {autoCompleteListNames
               .filter(
                 (val) =>
-                  val
+                  val.name
                     .toUpperCase()
                     .indexOf(
                       value
@@ -142,14 +148,11 @@ export const Textbox = ({
                   key={`AutoCompleteItem${index}`}
                   onClick={() => {
                     setShowAutoComplete(false);
-                    const words = value.split(" ");
-                    words.pop();
-                    const result = words.join(" ") + " " + val;
-                    onListItemClick(result.substring(1))
-                    onChange && onChange(result.substring(1), undefined); // Substring for removing the begining space resulted from join
+                    onListItemClick(val.id)
+                    onChange && onChange(val.name, undefined); // Substring for removing the begining space resulted from join
                   }}
                 >
-                  <span>{val}</span>
+                  <span>{' > ' + " "+ val.name}</span>
                 </li>
               ))}
           </ul>

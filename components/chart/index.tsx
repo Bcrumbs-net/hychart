@@ -25,7 +25,7 @@ function Chart({
   );
   const [showSearch, setShowSearch] = useState(false);
   const [search, setSearch] = useState<SearchType>({
-    value: null,
+    value: "",
     isValid: true,
     message: '',
   });
@@ -33,7 +33,7 @@ function Chart({
   const shortcutHandlers = {
     SEARCH: () => {
       setShowSearch(true);
-      setSearch({ value: '', isValid: true, message: '' });
+      setSearch({ value: "", isValid: true, message: '' });
     },
     UP: () => {
       const canvas = document.getElementById('canvas');
@@ -79,10 +79,10 @@ function Chart({
   );
 
   const focusModule = useCallback(
-    (name: string) => {
+    (id: string) => {
       if (currentVersion && currentVersion.nodes) {
-        const moduleNumberTrimmed = name.substring(0, name.indexOf('>')).substring(5);
-        const moduleId = parseInt(moduleNumberTrimmed);
+        // const moduleNumberTrimmed = name.substring(0, name.indexOf('>')).substring(5);
+        const moduleId = parseInt(id);
 
         Object.keys(currentVersion.nodes).forEach((key) => {
           const node = currentVersion.nodes[key];
@@ -94,7 +94,7 @@ function Chart({
             canvas.scrollTop = toy - 250 > 0 ? toy - 250 : 0;
             selectModule(moduleId);
             setShowSearch(false);
-            setSearch({ value: '', isValid: true, message: '' });
+            setSearch({ value: "", isValid: true, message: '' });
           }
         });
       }
