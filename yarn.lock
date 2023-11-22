@@ -318,10 +318,10 @@
     "@babel/helper-validator-identifier" "^7.16.7"
     "to-fast-properties" "^2.0.0"
 
-"@bcrumbs.net/bc-api@^0.0.9":
-  "integrity" "sha512-JunSE32cOo9fxfKaM6yG0vZJ1qxoBX798T21J7vZilzpQfYjZiHgYcULHEzPPaVmpypZaaUrWKJ5PZqVWRDDoQ=="
-  "resolved" "https://registry.npmjs.org/@bcrumbs.net/bc-api/-/bc-api-0.0.9.tgz"
-  "version" "0.0.9"
+"@bcrumbs.net/bc-api@^0.0.13":
+  "integrity" "sha512-6Ljg65nHmVq6iKbeW+ia3LpBkuqHuvl0M+N/BjRRIgUq+2NBI1gsQXTam/hTYP1dtPIhDCjug3+YVfAGYBtuAA=="
+  "resolved" "https://registry.npmjs.org/@bcrumbs.net/bc-api/-/bc-api-0.0.13.tgz"
+  "version" "0.0.13"
   dependencies:
     "apollo-link-rest" "^0.9.0-rc.1"
     "i18next-browser-languagedetector" "^6.1.3"
