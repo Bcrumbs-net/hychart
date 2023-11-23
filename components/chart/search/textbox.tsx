@@ -1,4 +1,3 @@
-import { element } from "prop-types";
 import { useState } from "react";
 import styled from "styled-components";
 
@@ -14,7 +13,7 @@ export interface BCTextboxProps {
   disabled?: boolean;
   placeholder?: string;
   maxLength?: number;
-  autoCompleteList?: string[];
+  autoCompleteList?: { name: string, id: string }[];
   onListItemClick?: (value: string) => void;
   onBlur?: () => void;
 }
@@ -25,21 +24,21 @@ export interface BCTextboxState {
 
 const AutoComplete = styled.div`
   position: absolute;
-  top: 30px;
+  top: 17px;
   z-index: 1000;
   ul {
     border-radius: 10px;
-    margin-top: 55px;
+    margin-top: 54px;
     border-bottom: 3px solid #8d8d8d;
     li {
       color: #000;
       font-size: 13px;
       background-color: #F3EDED;
-      width: 448px;
-      padding: 14px;
+      width: 400px;
+      padding: 9px 4px 9px 40px;
       display: block;
       cursor: pointer;
-      height: 35px;
+      height: 45px;
       font-weight: 400;
     }
     li:first-of-type {
@@ -53,13 +52,28 @@ const AutoComplete = styled.div`
       border-bottom-left-radius: $radius;
     }
     li:first-child:last-child {     
-       border-radius: 5px 15px 5px 15px;
+       border-radius: 8px 15px 8px 18px;
     }
     li:hover {
       background-color: #C8C1C1;
     }
   }
+  
+
 `;
+const InputStyle = styled.div`
+input.form-control {
+  width: 400px;
+  border: 1px solid var(--bc-primary-color);
+  border-radius: var(--bc-radius);
+  color: var(--bc-secondary-color);
+  margin: 10px 0;
+  display: block;
+  padding: 9px 4px 9px 40px;
+  background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='17' height='17' class='bi bi-search' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'%3E%3C/path%3E%3C/svg%3E") no-repeat 13px center;
+}
+`
+
 
 export const Textbox = ({
   className,
@@ -78,61 +92,60 @@ export const Textbox = ({
   onListItemClick
 }: BCTextboxProps) => {
   const [showAutoComplete, setShowAutoComplete] = useState(false);
-  const autoCompleteListNames = autoCompleteList.map(el => {
-    return {"id":el.split(" ")[1],"name":el.split(" ")[3]}
-  })
 
   return (
     <div className={containerClassName}>
-      <input
-        className={"form-control " + className}
-        onBlur={onBlur}
-        name={name}
-        onChange={(e) => {
-          e.persist();
-          const targetVal = e.target.value;
-          let lastWord: string | null = null;
-          if (targetVal && targetVal.length > 2) {
-            const wordArrays = targetVal.split(" ");
-            lastWord = wordArrays[wordArrays.length - 1];
+      <InputStyle>
+        <input
+          className={"form-control" + className}
+          onBlur={onBlur}
+          name={name}
+          onChange={(e) => {
+            e.persist();
+            const targetVal = e.target.value;
+            let lastWord: string | null = null;
+            if (targetVal && targetVal.length > 2) {
+              const wordArrays = targetVal.split(" ");
+              lastWord = wordArrays[wordArrays.length - 1];
 
-          }
-          let valueExistsInAutoComplete = false;
-          if (targetVal === "#") {
-            valueExistsInAutoComplete = true;
-          }
-          if (autoCompleteList && lastWord && lastWord.length >= 1) {
-            autoCompleteList.forEach((val) => {
-              if (
-                val &&
-                lastWord &&
-                val.toUpperCase().indexOf(lastWord.toUpperCase()) >= 0
-              ) {
-                valueExistsInAutoComplete = true;
-              }
-            });
-          }
-          if (valueExistsInAutoComplete) {
-            setShowAutoComplete(true);
-            onChange && onChange(targetVal, e);
-          } else {
-            setShowAutoComplete(false);
-            onChange && onChange(targetVal, e);
+            }
+            let valueExistsInAutoComplete = false;
+            if (targetVal === "#") {
+              valueExistsInAutoComplete = true;
+            }
+            if (autoCompleteList && lastWord && lastWord.length >= 1) {
+              autoCompleteList.forEach((val) => {
+                if (
+                  val &&
+                  lastWord &&
+                  val.name.toUpperCase().indexOf(lastWord.toUpperCase()) >= 0
+                ) {
+                  valueExistsInAutoComplete = true;
+                }
+              });
+            }
+            if (valueExistsInAutoComplete) {
+              setShowAutoComplete(true);
+              onChange && onChange(targetVal, e);
+            } else {
+              setShowAutoComplete(false);
+              onChange && onChange(targetVal, e);
 
-          }
-        }}
-        onKeyPress={onKeyPress}
-        onKeyDown={onKeyDown}
-        disabled={disabled}
-        value={value}
-        placeholder={placeholder}
-        maxLength={maxLength}
-        type={type}
-      />
+            }
+          }}
+          onKeyPress={onKeyPress}
+          onKeyDown={onKeyDown}
+          disabled={disabled}
+          value={value}
+          placeholder={placeholder}
+          maxLength={maxLength}
+          type={type}
+        />
+      </InputStyle>
       {autoCompleteList && autoCompleteList.length && showAutoComplete ? (
         <AutoComplete>
           <ul>
-            {autoCompleteListNames
+            {autoCompleteList
               .filter(
                 (val) =>
                   val.name
@@ -149,10 +162,9 @@ export const Textbox = ({
                   onClick={() => {
                     setShowAutoComplete(false);
                     onListItemClick(val.id)
-                    onChange && onChange(val.name, undefined); // Substring for removing the begining space resulted from join
                   }}
                 >
-                  <span>{' > ' + " "+ val.name}</span>
+                  <span>{val.name}</span>
                 </li>
               ))}
           </ul>
