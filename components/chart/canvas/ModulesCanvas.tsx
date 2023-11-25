@@ -1,7 +1,6 @@
 import React from 'react';
 import Module from './Module';
 import { ChartType, SelectModuleFunc } from '../types';
-import { MODULE_X } from '../Constants';
 
 export type ModulesCanvasProps = {
   currentVersion: ChartType;
