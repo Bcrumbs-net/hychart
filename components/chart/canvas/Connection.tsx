@@ -64,7 +64,7 @@ function ModuleConnection({
           strokeWidth: 1,
           zIndex: 1,
         }}
-        key={`${fromY}-${toY}-polyline`}
+        key={`${fromX}-${toX}-${fromY}-${toY}-polyline`}
       />
       ,
 
@@ -82,7 +82,7 @@ function ModuleConnection({
           strokeWidth: 3,
           zIndex: 9,
         }}
-        key={`${fromX}-${toX}-polyline`}
+        key={`${fromX}-${toX}-${fromY}-${toY}-polyline2`}
         className={'connection'}
       />
       ) : null}
