@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import ModuleInfo from '../moduleBlocks/ModuleInfo';
 import { NodeType, SelectModuleFunc } from '../types';
-import { DEFAULT_X_PADDING, DEFAULT_Y_PADDING } from '../Constants';
 
 export type ModuleProps = {
   module: NodeType;

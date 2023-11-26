@@ -24,7 +24,6 @@ function ModulesCanvas({
         useEffect(() => {
           module.x += DEFAULT_X_PADDING;
           module.y += DEFAULT_Y_PADDING;
-          console.log(module.x, module.y);
         }, []);
         const selected =
           selectedModules.filter((m) => m === module.id).length > 0;
