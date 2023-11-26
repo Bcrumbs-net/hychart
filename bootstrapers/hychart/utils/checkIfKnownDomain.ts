@@ -15,7 +15,7 @@ export function checkIfKnownDomain(targetDomain: string) {
     targetDomain.indexOf('test-hychart.bcrumbs.net') >= 0 ||
     targetDomain.indexOf('test-hychart2.bcrumbs.net') >= 0
   ) {
-    return 'hychart-demo.bcrumbs.net';
+    return 'hychart-demo2.bcrumbs.net';
   }
 
   return targetDomain;

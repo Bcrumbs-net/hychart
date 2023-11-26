@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Module from './Module';
 import { ChartType, SelectModuleFunc } from '../types';
-import { DEFAULT_X_PADDING, DEFAULT_Y_PADDING } from '../Constants';
 
 export type ModulesCanvasProps = {
   currentVersion: ChartType;
@@ -21,10 +20,6 @@ function ModulesCanvas({
     <>
       {Object.keys(currentVersion.nodes).map((moduleKey) => {
         const module = currentVersion.nodes[moduleKey];
-        useEffect(() => {
-          module.x += DEFAULT_X_PADDING;
-          module.y += DEFAULT_Y_PADDING;
-        }, []);
         const selected =
           selectedModules.filter((m) => m === module.id).length > 0;
         return (
