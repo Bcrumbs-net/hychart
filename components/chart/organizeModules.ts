@@ -16,7 +16,7 @@ function organizeModules(version: any) {
     let maxPushPerLevel = 0;
     level.forEach((conn) => {
       const node = getNode(conn.nodeID, version.nodes);
-
+      
       node.y = MODULE_HEIGHT * levelID + TOP_OFFSET;
       node.x = conn.offset * MODULE_WIDTH + LEFT_OFFSET;
 

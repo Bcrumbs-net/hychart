@@ -49,7 +49,6 @@ function ModuleConnection({
   //   }
   // }
   coordinateList.push(`${toX} ${toY}`);
-
   return (
     <>
       <path
@@ -65,26 +64,27 @@ function ModuleConnection({
           strokeWidth: 1,
           zIndex: 1,
         }}
-        key={`${fromX}-${toX}-polyline`}
+        key={`${fromX}-${toX}-${fromY}-${toY}-polyline`}
       />
       ,
+
       {isSelected ? (
-        <path
-          d={coordinateList.join(' ')}
-          stroke="black"
-          fill="transparent"
-          strokeDasharray="5 5"
-          strokeLinecap="round"
-          strokeLinejoin="bevel"
-          style={{
-            fill: 'none',
-            stroke: fromColor,
-            strokeWidth: 3,
-            zIndex: 9,
-          }}
-          key={`${fromX}-${toX}-polyline`}
-          className={'connection'}
-        />
+      <path
+        d={coordinateList.join(' ')}
+        stroke="black"
+        fill="transparent"
+        strokeDasharray="5 5"
+        strokeLinecap="round"
+        strokeLinejoin="bevel"
+        style={{
+          fill: 'none',
+          stroke: fromColor,
+          strokeWidth: 3,
+          zIndex: 9,
+        }}
+        key={`${fromX}-${toX}-${fromY}-${toY}-polyline2`}
+        className={'connection'}
+      />
       ) : null}
       ,
       <circle
