@@ -10,7 +10,6 @@ function parseContentsToNodes(contents: GraphContent[]): ChartType {
     nodes: convertContentsToNodes(root.children, {}),
   };
 }
-
 function convertContentsToNodes(
   contents: GraphContent[],
   finalObj: { [key: number]: NodeType }
@@ -30,15 +29,20 @@ function convertContentsToNodes(
       x: Number(contentData.x_position) + DEFAULT_X_PADDING,
       y: Number(contentData.y_position) + DEFAULT_Y_PADDING,
       connections: content.children
-        ? content.children.map((subContent) => ({
-          id: subContent.id,
-        }))
+        ? content.children
+            .sort(
+              (a, b) =>
+                Number(a.data.find((obj) => obj.Key === "y_position")?.Value) -
+                Number(b.data.find((obj) => obj.Key === "y_position")?.Value)
+            )
+            .map((subContent) => ({
+              id: subContent.id,
+            }))
         : [],
       title: contentData.title,
       description: contentData.description,
       main: Boolean(contentData.main),
     };
-
     return content.children
       ? convertContentsToNodes(content.children, nodes)
       : nodes;
