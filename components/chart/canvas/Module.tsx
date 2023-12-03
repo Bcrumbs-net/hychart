@@ -8,24 +8,21 @@ export type ModuleProps = {
   isSelected: boolean;
 };
 
-const ModuleTypeToClassName = {
-  "PERSON": "person"
-};
-
 function Module({ module, selectModule, isSelected }: ModuleProps) {
   const moduleName = module.title || ModuleInfo.getModuleName(module.type);
- 
+
   const onDragStart = useCallback((id, ev) => {
     ev.dataTransfer.setData('dragType', 'moveModule');
     ev.dataTransfer.setData('id', id);
     ev.dataTransfer.setData('clientX', ev.clientX);
     ev.dataTransfer.setData('clientY', ev.clientY);
-
   }, []);
 
   return (
     <div
-      className={`module ${isSelected ? ' active' : ''} ${ModuleTypeToClassName[module.type]}`}
+      className={`module ${
+        isSelected ? 'active' : ''
+      } ${module.type.toLowerCase()}`}
       key={module.id}
       draggable="true"
       style={{ top: module.y, left: module.x, zIndex: module.id }}

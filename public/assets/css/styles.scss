@@ -12,16 +12,17 @@ body {
     height: 50px;
     z-index: 9999;
     position: relative;
+    background-color: #76665b;
     .chartName {
-      font-weight: 500;
+      font-weight: 600;
       width: 260px;
       display: inline-block;
-      margin: 16px;
+      margin: 12px;
       position: relative;
-      font-family: var(--font-stack);
       text-align: left;
-      color: #662d91;
+      color: #fff;
       height: 25px;
+      font-size: 20px;
     }
     .search-btn {
       button {
@@ -168,14 +169,6 @@ body {
   .hideCom {
     display: none;
   }
-  .conversationPage {
-    position: absolute !important;
-    width: 100% !important;
-    left: 0 !important;
-    z-index: 100 !important;
-    height: 95% !important;
-    margin-top: 8%;
-  }
 }
 
 .designAreadHeader {
@@ -217,13 +210,6 @@ body {
     }
   }
 }
-.flow-organize-modules {
-  background-image: url('/assets/icons/organize_module.svg');
-  height: 20px;
-  width: 20px;
-  display: inline-block;
-  margin-bottom: -5px !important;
-}
 
 .designArea {
   position: absolute;
@@ -241,169 +227,64 @@ body {
     height: 10000px;
     width: 10000px;
     position: relative;
-    background-size: 30px 30px;
-    background-image: linear-gradient(90deg, #f0f0f0 1px, transparent 0),
-      linear-gradient(180deg, #f0f0f0 1px, transparent 0);
-    .module.message {
-      background-color: var(--mb-message-color);
+    background-size: 50px 50px;
+    background-color: #f2e4ce;
+    background-image: linear-gradient(90deg, #efdec3 1px, transparent 0),
+      linear-gradient(180deg, #efdec3 1px, transparent 0);
+    .module.person {
+      background-color: #699041;
+      color: #fff;
     }
     .module.selection {
-      background-color: var(--mb-selection-color);
+      background-color: #a06e8c;
     }
     .module.logic {
-      background-color: var(--mb-logic-color);
+      background-color: #6f9bbd;
     }
     .module.ai {
-      background-color: var(--mb-ai-color);
-    }
-    .module.livechat {
-      background-color: var(--mb-livechat-color);
+      background-color: #ebb760;
     }
     .module.integration {
-      background-color: var(--mb-integration-color);
+      background-color: #bd9e70;
     }
     .module.email {
-      background-color: var(--mb-email-color);
+      background-color: #71dba3;
     }
     .module.input {
-      background-color: var(--mb-input-color);
+      background-color: #f0d775;
     }
     .module.handover {
-      background-color: var(--mb-primary-darker);
+      background-color: #ee2a7b;
     }
     .module.switch {
-      background-color: var(--mb-switch-color);
+      background-color: #6f9775;
     }
     .module.end {
-      background-color: var(--mb-end-color);
+      background-color: #c96751;
     }
     .module.start {
-      background-color: var(--mb-start-color);
+      background-color: #3fb98c;
     }
     .module.zapier {
-      background-color: var(--mb-zapier-color);
+      background-color: #ff4a00;
     }
     .module.payment {
-      background-color: var(--mb-payment-color);
-    }
-    .module.wait {
-      background-color: var(--mb-wait-color);
-    }
-    .module.ecommerce {
-      background-color: var(--mb-ecommerce-color);
+      background-color: #2ec6c6;
     }
     .module {
       position: relative;
       border-radius: 5px;
       height: 90px;
       width: 90px;
-      background-color: #f7f7f7;
       position: absolute;
       text-align: center;
       overflow: hidden;
       cursor: move;
-      border: 1px solid #f7f7f7;
       &.active {
-        border-color: var(--mb-danger-color);
-        -webkit-box-shadow: 0px 0px 14px 0px var(--mb-danger-color);
-        -moz-box-shadow: 0px 0px 14px 0px var(--mb-danger-color);
-        box-shadow: 0px 0px 14px 0px var(--mb-danger-color);
-      }
-      &.active.selection {
-        border-color: var(--mb-selection-color);
-        -webkit-box-shadow: 0px 0px 14px 0px var(--mb-selection-color);
-        -moz-box-shadow: 0px 0px 14px 0px var(--mb-selection-color);
-        box-shadow: 0px 0px 14px 0px var(--mb-selection-color);
-      }
-      &.active.input {
-        border-color: var(--mb-input-color);
-        -webkit-box-shadow: 0px 0px 14px 0px var(--mb-input-color);
-        -moz-box-shadow: 0px 0px 14px 0px var(--mb-input-color);
-        box-shadow: 0px 0px 14px 0px var(--mb-input-color);
-      }
-      &.active.message {
-        border-color: var(--mb-message-color);
-        -webkit-box-shadow: 0px 0px 14px 0px var(--mb-message-color);
-        -moz-box-shadow: 0px 0px 14px 0px var(--mb-message-color);
-        box-shadow: 0px 0px 14px 0px var(--mb-message-color);
-      }
-      &.active.ai {
-        border-color: var(--mb-ai-color);
-        -webkit-box-shadow: 0px 0px 14px 0px var(--mb-ai-color);
-        -moz-box-shadow: 0px 0px 14px 0px var(--mb-ai-color);
-        box-shadow: 0px 0px 14px 0px var(--mb-ai-color);
-      }
-      &.active.livechat {
-        border-color: var(--mb-livechat-color);
-        -webkit-box-shadow: 0px 0px 14px 0px var(--mb-livechat-color);
-        -moz-box-shadow: 0px 0px 14px 0px var(--mb-livechat-color);
-        box-shadow: 0px 0px 14px 0px var(--mb-livechat-color);
-      }
-      &.active.handover {
-        border-color: var(--mb-primary-darker);
-        -webkit-box-shadow: 0px 0px 14px 0px var(--mb-primary-darker);
-        -moz-box-shadow: 0px 0px 14px 0px var(--mb-primary-darker);
-        box-shadow: 0px 0px 14px 0px var(--mb-primary-darker);
-      }
-      &.active.switch {
-        border-color: var(--mb-switch-color);
-        -webkit-box-shadow: 0px 0px 14px 0px var(--mb-livechat-color);
-        -moz-box-shadow: 0px 0px 14px 0px var(--mb-livechat-color);
-        box-shadow: 0px 0px 14px 0px var(--mb-livechat-color);
-      }
-      &.active.integration {
-        border-color: var(--mb-integration-color);
-        -webkit-box-shadow: 0px 0px 14px 0px var(--mb-integration-color);
-        -moz-box-shadow: 0px 0px 14px 0px var(--mb-integration-color);
-        box-shadow: 0px 0px 14px 0px var(--mb-integration-color);
-      }
-      &.active.email {
-        border-color: var(--mb-email-color);
-        -webkit-box-shadow: 0px 0px 14px 0px var(--mb-email-color);
-        -moz-box-shadow: 0px 0px 14px 0px var(--mb-email-color);
-        box-shadow: 0px 0px 14px 0px var(--mb-email-color);
-      }
-      &.active.end {
-        border-color: var(--mb-end-color);
-        -webkit-box-shadow: 0px 0px 14px 0px var(--mb-end-color);
-        -moz-box-shadow: 0px 0px 14px 0px var(--mb-end-color);
-        box-shadow: 0px 0px 14px 0px var(--mb-end-color);
-      }
-      &.active.logic {
-        border-color: var(--mb-logic-color);
-        -webkit-box-shadow: 0px 0px 14px 0px var(--mb-logic-color);
-        -moz-box-shadow: 0px 0px 14px 0px var(--mb-logic-color);
-        box-shadow: 0px 0px 14px 0px var(--mb-logic-color);
-      }
-      &.active.start {
-        border-color: var(--mb-start-color);
-        -webkit-box-shadow: 0px 0px 14px 0px var(--mb-start-color);
-        -moz-box-shadow: 0px 0px 14px 0px var(--mb-start-color);
-        box-shadow: 0px 0px 14px 0px var(--mb-start-color);
-      }
-      &.active.zapier {
-        border-color: var(--mb-zapier-color);
-        -webkit-box-shadow: 0px 0px 14px 0px var(--mb-zapier-color);
-        -moz-box-shadow: 0px 0px 14px 0px var(--mb-zapier-color);
-        box-shadow: 0px 0px 14px 0px var(--mb-zapier-color);
-      }
-      &.active.payment {
-        border-color: var(--mb-payment-color);
-        -webkit-box-shadow: 0px 0px 14px 0px var(--mb-payment-color);
-        -moz-box-shadow: 0px 0px 14px 0px var(--mb-payment-color);
-        box-shadow: 0px 0px 14px 0px var(--mb-payment-color);
-      }
-      &.active.wait {
-        border-color: var(--mb-wait-color);
-        -webkit-box-shadow: 0px 0px 14px 0px var(--mb-wait-color);
-        -moz-box-shadow: 0px 0px 14px 0px var(--mb-wait-color);
-        box-shadow: 0px 0px 14px 0px var(--mb-wait-color);
-      }
-      &.active.ecommerce {
-        border-color: var(--mb-ecommerce-color);
-        -webkit-box-shadow: 0px 0px 14px 0px var(--mb-ecommerce-color);
-        -moz-box-shadow: 0px 0px 14px 0px var(--mb-ecommerce-color);
-        box-shadow: 0px 0px 14px 0px var(--mb-ecommerce-color);
+        border: 2px solid #00599f;
+        -webkit-box-shadow: 0px 0px 7px 0px #00599f;
+        -moz-box-shadow: 0px 0px 7px 0px #00599f;
+        box-shadow: 0px 0px 7px 0px #00599f;
       }
       & > div {
         display: flex;
@@ -438,14 +319,16 @@ body {
       }
       .moduleNameCon {
         width: 100%;
-        margin-top: 28px;
+        top: 50%;
+        -ms-transform: translateY(-50%);
+        transform: translateY(-50%);
         padding: 6px;
+        position: relative;
       }
       .moduleNameCon > i {
         margin-top: 5px;
       }
       .moduleName {
-        font-size: var(--mb-fontSize-xs);
         clear: both;
         height: 36px;
         width: 100%;
@@ -456,7 +339,6 @@ body {
         text-align: left;
         font-weight: 700;
         border-radius: 5px;
-        font-family: var(--mb-font-stack);
         color: #fff;
         overflow: hidden;
       }
@@ -476,28 +358,6 @@ body {
         cursor: pointer;
       }
     }
-  }
-}
-
-/* Test Error Page Styles ====================================================*/
-.test-error-page {
-  margin: auto;
-  width: 100%;
-  text-align: center;
-  margin-top: 40%;
-  i {
-    width: 91px;
-    height: 100px;
-  }
-  h1 {
-    font-weight: var(--mb-fontWeight-bold);
-    height: 36px;
-    font-size: var(--mb-fontSize-xxl);
-    margin-bottom: 0px;
-    margin-top: 0px;
-  }
-  .primary-btn {
-    width: 90%;
   }
 }
 

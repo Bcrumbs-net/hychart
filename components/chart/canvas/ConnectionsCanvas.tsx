@@ -40,8 +40,10 @@ function ConnectionsCanvas({
           fromY: fromNode.y + (i + 1) * (BLOCK_HEIGHT / (numberOfFromConn + 1)), // y coordinate of origin of arrow
           toX: toNode.x, // x coordinate of target of arrow
           toY: toNode.y + BLOCK_HEIGHT / 2, // y coordinate of target of arrow
-          fromColor: ModuleInfo.getColor(fromNode.type),
-          toColor: ModuleInfo.getColor(toNode.type),
+          // fromColor: ModuleInfo.getColor(fromNode.type),
+          // toColor: ModuleInfo.getColor(toNode.type),
+          fromColor: '#00589C',
+          toColor: '#00589C',
         });
       }
     }
