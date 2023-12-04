@@ -16,7 +16,7 @@ function organizeModules(version: any) {
     let maxPushPerLevel = 0;
     level.forEach((conn) => {
       const node = getNode(conn.nodeID, version.nodes);
-      
+
       node.y = MODULE_HEIGHT * levelID + TOP_OFFSET;
       node.x = conn.offset * MODULE_WIDTH + LEFT_OFFSET;
 
@@ -51,7 +51,9 @@ function organizeModules(version: any) {
 
 function organizeHelper(version) {
   const levels = [];
-  processNode(version.init, version.nodes, 0, 0, levels, {});
+  Object.entries<Record<string, { id: number }>>(version.nodes).forEach(([key, value]) => {
+    processNode(value.id, version.nodes, 0, 0, levels, {});
+  });
   return levels;
 }
 
