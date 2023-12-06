@@ -4,7 +4,7 @@ import { ApolloClient } from '@apollo/client';
 import { ApolloProvider } from '@apollo/client';
 import { withShowcaseClient } from '@bcrumbs.net/bc-api';
 import '../public/assets/css/flaticon.css';
-import 'bootstrap-4-grid/css/grid.min.css';
+// import 'bootstrap-4-grid/css/grid.min.css';
 import '../public/assets/css/styles.scss';
 
 function Hychart({

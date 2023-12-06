@@ -8,8 +8,10 @@ import Header from './header';
 import Search, { SearchType } from './search';
 import { ChartType } from './types';
 import parseContentsToNodes from './parseContentsToNodes';
+import Scrollbars from 'react-scrollbars-custom';
 
 function Chart({
+  config,
   data,
   keydown,
 }: {
@@ -116,7 +118,6 @@ function Chart({
     },
     [setSelectedModules]
   );
-
   const moveModule = useCallback(
     (id: number, x: number, y: number) => {
       const newVersion = currentVersion;
@@ -155,7 +156,6 @@ function Chart({
     const newVersion = organizeModulesProc(currentVersion);
     setCurentVersion(newVersion);
   }, [currentVersion, setCurentVersion]);
-
   return (
     //@ts-ignore
     <HotKeys keyMap={SHORTCUT_KEYS} handlers={shortcutHandlers}>
@@ -165,15 +165,17 @@ function Chart({
           chartName={rootContent.title}
         />
         <div className="designer">
-          <Canvas
-            zoomLevel={zoomLevel}
-            moveModule={moveModule}
-            selectModule={selectModule}
-            currentVersion={currentVersion}
-            selectedModules={selectedModules}
-            organizeModules={organizeModules}
-            changeZoomLevel={changeZoomLevel}
-          />
+          <Scrollbars style={{ width: '100%', height: '100%' }}>
+            <Canvas
+              zoomLevel={zoomLevel}
+              moveModule={moveModule}
+              selectModule={selectModule}
+              currentVersion={currentVersion}
+              selectedModules={selectedModules}
+              organizeModules={organizeModules}
+              changeZoomLevel={changeZoomLevel}
+            />
+          </Scrollbars>
         </div>
         {showSearch ? (
           <Search
