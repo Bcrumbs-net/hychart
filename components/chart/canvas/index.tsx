@@ -4,6 +4,7 @@ import ModulesCanvas from './ModulesCanvas';
 import ConnectionsCanvas from './ConnectionsCanvas';
 import { DeselectModuleFunc, SelectModuleFunc } from '../types';
 //import './styles.scss';
+import Scrollbars from 'react-scrollbars-custom';
 
 export type ScrollPositionType = {
   scrollLeft?: number;
@@ -115,16 +116,17 @@ function Canvas({
           <i className="flaticon-plus-symbol" onClick={() => changeZoomLevel(10)} />
         </div>
       </div>
-      <div
-        id="canvas"
+      <Scrollbars
+        style={{ width: '100%', height: '100%' }}
         className="designArea"
+        id="canvas"
         ref={canvasRef}
-        style={{ zoom: zoomLevel + '%' }}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
       >
         <div
           id="designAreaInner"
+          style={{ zoom: zoomLevel + '%' }}
           className="designAreaInner"
           onDragOver={(ev) => {
             ev.preventDefault();
@@ -141,7 +143,7 @@ function Canvas({
             selectedModules={selectedModules}
           />
         </div>
-      </div>
+      </Scrollbars>
     </>
   );
 }

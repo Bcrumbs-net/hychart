@@ -8,7 +8,6 @@ import Header from './header';
 import Search, { SearchType } from './search';
 import { ChartType } from './types';
 import parseContentsToNodes from './parseContentsToNodes';
-import Scrollbars from 'react-scrollbars-custom';
 
 function Chart({
   config,
@@ -165,17 +164,15 @@ function Chart({
           chartName={rootContent.title}
         />
         <div className="designer">
-          <Scrollbars style={{ width: '100%', height: '100%' }}>
-            <Canvas
-              zoomLevel={zoomLevel}
-              moveModule={moveModule}
-              selectModule={selectModule}
-              currentVersion={currentVersion}
-              selectedModules={selectedModules}
-              organizeModules={organizeModules}
-              changeZoomLevel={changeZoomLevel}
-            />
-          </Scrollbars>
+          <Canvas
+            zoomLevel={zoomLevel}
+            moveModule={moveModule}
+            selectModule={selectModule}
+            currentVersion={currentVersion}
+            selectedModules={selectedModules}
+            organizeModules={organizeModules}
+            changeZoomLevel={changeZoomLevel}
+          />
         </div>
         {showSearch ? (
           <Search
