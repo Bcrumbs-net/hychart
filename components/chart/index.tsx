@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { HotKeys } from 'react-hotkeys';
 import { Config, GraphContent } from '@bcrumbs.net/bc-api';
 import { SHORTCUT_KEYS } from './Constants';
-import organizeModulesProc from './organizeModules';
 import Canvas from './canvas';
 import Header from './header';
 import Search, { SearchType } from './search';
@@ -149,11 +148,10 @@ function Chart({
     },
     [selectedModules, setCurentVersion, currentVersion]
   );
-
   //TODO: Not working fine
   const organizeModules = useCallback(() => {
-    const newVersion = organizeModulesProc(currentVersion);
-    setCurentVersion(newVersion);
+    const originVersion = parseContentsToNodes(data);
+    setCurentVersion(originVersion);
   }, [currentVersion, setCurentVersion]);
 
   return (
