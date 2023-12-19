@@ -7,12 +7,14 @@ body {
   position: relative;
   width: 100%;
   height: 100%;
+
   .header {
     width: 100%;
     height: 50px;
     z-index: 9999;
     position: relative;
     background-color: #76665b;
+
     .chartName {
       font-weight: 600;
       width: 260px;
@@ -24,6 +26,7 @@ body {
       height: 25px;
       font-size: 20px;
     }
+
     .search-btn {
       button {
         background-color: #fff;
@@ -34,6 +37,7 @@ body {
         color: var(--bc-secondary-light-hover);
         padding-left: 30px;
         cursor: pointer;
+
         i {
           color: var(--bc-secondary-light-hover);
           position: absolute;
@@ -41,6 +45,7 @@ body {
           top: 5px;
         }
       }
+
       position: absolute;
       top: 0px;
       left: 50%;
@@ -48,22 +53,27 @@ body {
       width: 120px;
       height: 25px;
     }
+
     .leftSide {
       position: absolute;
       right: 10px;
       top: 6px;
+
       button {
         width: 100px;
         border-radius: 10px;
         height: 25px;
       }
+
       .profile-nav {
         border-bottom: none;
         display: inline-block;
+
         li {
           margin-left: 20px;
           text-align: center;
           color: var(--mb-primary-darker);
+
           a {
             color: var(--mb-primary-darker);
             padding: 0 4px 6px;
@@ -74,11 +84,13 @@ body {
       }
     }
   }
+
   .designer {
     height: calc(100vh - 50px);
     position: relative;
     z-index: 5;
   }
+
   .floatingModulesSearchBoxCon {
     width: 100%;
     height: 100%;
@@ -89,6 +101,7 @@ body {
     opacity: 0.5;
     z-index: 9999;
   }
+
   .floatingModulesSearchBox {
     position: absolute;
     top: 200px;
@@ -96,6 +109,7 @@ body {
     width: 400px;
     margin-left: -200px;
     z-index: 10000;
+
     input {
       height: 60px;
       width: 100%;
@@ -105,37 +119,44 @@ body {
       padding-left: 60px;
       font-size: 13px;
     }
+
     input.autoCompleteShown {
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
       border-bottom: none;
     }
+
     i {
       width: 40px;
       height: 40px;
     }
+
     .autoComplete {
       top: 70px;
       border: solid 1px var(--mb-primary-color);
       border-top: none;
       border-bottom-left-radius: 10px;
       border-bottom-right-radius: 10px;
+
       li {
         width: 398px;
         background-color: #fff;
         color: var(--mb-secondary-color);
         border: none;
       }
+
       li:hover {
         background-color: var(--mb-primary-darkest);
         color: #fff;
       }
+
       li:first-child {
         border-top-left-radius: 0;
         border-top-right-radius: 0;
       }
     }
   }
+
   .publish-btn {
     width: 98%;
     margin-left: 4px;
@@ -158,6 +179,7 @@ body {
     cursor: pointer;
     z-index: 9999;
   }
+
   .designerMenuHiding {
     position: absolute;
     top: 50%;
@@ -166,6 +188,7 @@ body {
     z-index: 9999;
     margin-top: -30px;
   }
+
   .hideCom {
     display: none;
   }
@@ -178,18 +201,21 @@ body {
   top: 0;
   left: 0;
   width: 97%;
+
   .zoomLevelSelector2 {
     z-index: 10000;
     position: absolute;
     right: 10px;
     bottom: 80px;
     font-weight: 500;
+
     i {
       margin: 0 5px;
       cursor: pointer;
       margin-bottom: -11px;
     }
   }
+
   .zoomLevelSelector {
     z-index: 10000;
     border-radius: 10px;
@@ -202,6 +228,7 @@ body {
     font-weight: 500;
     line-height: 10px;
     font-size: 14px;
+
     i {
       margin: 0 5px;
       cursor: pointer;
@@ -211,18 +238,28 @@ body {
   }
 }
 
+.ScrollbarsCustom-Scroller {
+  margin-bottom: -20px !important;
+}
+
+// .ScrollbarsCustom-Wrapper {
+//   inset: 0px 0px -10px 0px !important;
+// }
+
 .designArea {
-  position: absolute;
+  position: absolute !important;
   top: 0;
-  left: -25px;
+  left: 0;
   right: 0;
   bottom: 0;
   border-top: 1px solid var(--mb-controls-color);
   overflow: overlay;
   cursor: -webkit-grab;
+
   &:active {
     cursor: -webkit-grabbing;
   }
+
   .designAreaInner {
     height: 10000px;
     width: 10000px;
@@ -231,46 +268,60 @@ body {
     background-color: #f2e4ce;
     background-image: linear-gradient(90deg, #efdec3 1px, transparent 0),
       linear-gradient(180deg, #efdec3 1px, transparent 0);
+
     .module.person {
       background-color: #699041;
       color: #fff;
     }
+
     .module.selection {
       background-color: #a06e8c;
     }
+
     .module.logic {
       background-color: #6f9bbd;
     }
+
     .module.ai {
       background-color: #ebb760;
     }
+
     .module.integration {
       background-color: #bd9e70;
     }
+
     .module.email {
       background-color: #71dba3;
     }
+
     .module.input {
       background-color: #f0d775;
     }
+
     .module.handover {
       background-color: #ee2a7b;
     }
+
     .module.switch {
       background-color: #6f9775;
     }
+
     .module.end {
       background-color: #c96751;
     }
+
     .module.start {
       background-color: #3fb98c;
     }
+
     .module.zapier {
       background-color: #ff4a00;
     }
+
     .module.payment {
       background-color: #2ec6c6;
     }
+
     .module {
       position: relative;
       border-radius: 5px;
@@ -280,18 +331,21 @@ body {
       text-align: center;
       overflow: hidden;
       cursor: move;
+
       &.active {
         border: 2px solid #00599f;
         -webkit-box-shadow: 0px 0px 7px 0px #00599f;
         -moz-box-shadow: 0px 0px 7px 0px #00599f;
         box-shadow: 0px 0px 7px 0px #00599f;
       }
-      & > div {
+
+      &>div {
         display: flex;
         align-items: center;
         justify-content: center;
         flex-direction: column;
       }
+
       .moduleID {
         position: absolute;
         top: 4px;
@@ -303,6 +357,7 @@ body {
         color: #fff;
         margin: 7px 0px 2px 0px;
       }
+
       .moduleIcon {
         position: absolute;
         top: 3px;
@@ -310,6 +365,7 @@ body {
         background-repeat: no-repeat;
         background-position: center;
       }
+
       .moduleType {
         font-size: 10px;
         width: 50%;
@@ -317,6 +373,7 @@ body {
         float: left;
         display: none;
       }
+
       .moduleNameCon {
         width: 100%;
         top: 50%;
@@ -325,9 +382,11 @@ body {
         padding: 6px;
         position: relative;
       }
-      .moduleNameCon > i {
+
+      .moduleNameCon>i {
         margin-top: 5px;
       }
+
       .moduleName {
         clear: both;
         height: 36px;
@@ -342,14 +401,17 @@ body {
         color: #fff;
         overflow: hidden;
       }
+
       .moduleName:hover {
         color: #fff;
       }
+
       .moduleName:focus {
         background-color: #e3e3e3;
         color: #4d4d4d;
         width: 100%;
       }
+
       .moduleAction {
         font-size: 12px;
         height: 23px;
@@ -372,6 +434,7 @@ svg {
     from {
       stroke-dashoffset: 1000;
     }
+
     to {
       stroke-dashoffset: 0;
     }
