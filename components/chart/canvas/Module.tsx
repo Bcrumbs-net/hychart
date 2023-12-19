@@ -19,28 +19,48 @@ function Module({ module, selectModule, isSelected }: ModuleProps) {
   }, []);
 
   return (
-    <div
-      className={`module ${
-        isSelected ? 'active' : ''
-      } ${module.type.toLowerCase()}`}
-      key={module.id}
-      draggable="true"
-      style={{ top: module.y, left: module.x, zIndex: module.id }}
-      onDragStart={(ev) => onDragStart(module.id, ev)}
-      onClick={(e) => {
-        if (e.shiftKey) selectModule(module.id, true);
-        else selectModule(module.id, false);
-      }}
-    >
-      <div className="moduleIcon">
-        <i className={ModuleInfo.getIcon(module.type) + ' moduleIcon '}></i>
-      </div>
-      <div className="moduleNameCon">
-        {moduleName.length >= 34
-          ? moduleName.substring(0, 34) + '...'
-          : moduleName}
-      </div>
-    </div>
+    <>
+      {module.icon ? (
+        <div className={`moduleIconImg ${isSelected ? 'active' : ''
+          } ${module.type.toLowerCase()}`}
+          key={module.id}
+          draggable="true"
+          style={{ top: module.y, left: module.x, zIndex: module.id }}
+          onDragStart={(ev) => onDragStart(module.id, ev)}
+          onClick={(e) => {
+            if (e.shiftKey) selectModule(module.id, true);
+            else selectModule(module.id, false);
+          }}>
+          {module.icon && (
+            <img src={module.icon} alt="Module Icon" className="moduleIconImg" />
+          )}
+        </div>
+      ) : (
+        <div
+          className={`module ${isSelected ? 'active' : ''
+            } ${module.type.toLowerCase()}`}
+          key={module.id}
+          draggable="true"
+          style={{ top: module.y, left: module.x, zIndex: module.id }}
+          onDragStart={(ev) => onDragStart(module.id, ev)}
+          onClick={(e) => {
+            if (e.shiftKey) selectModule(module.id, true);
+            else selectModule(module.id, false);
+          }}
+        >
+          <div className="moduleIcon">
+            <i className={ModuleInfo.getIcon(module.type) + ' moduleIcon '}></i>
+          </div>
+          <div className="moduleNameCon">
+            {moduleName.length >= 34
+              ? moduleName.substring(0, 34) + '...'
+              : moduleName}
+          </div>
+        </div>
+
+      )}
+    </>
+
   );
 }
 

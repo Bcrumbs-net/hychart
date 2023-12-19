@@ -41,6 +41,7 @@ function convertContentsToNodes(
         : [],
       title: contentData.title,
       description: contentData.description,
+      icon: contentData.icon,
       main: Boolean(contentData.main),
     };
     return content.children
