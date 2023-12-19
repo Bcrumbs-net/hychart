@@ -9,6 +9,7 @@ import { ChartType } from './types';
 import parseContentsToNodes from './parseContentsToNodes';
 
 function Chart({
+  config,
   data,
   keydown,
 }: {
@@ -115,7 +116,6 @@ function Chart({
     },
     [setSelectedModules]
   );
-
   const moveModule = useCallback(
     (id: number, x: number, y: number) => {
       const newVersion = currentVersion;
@@ -153,7 +153,6 @@ function Chart({
     const originVersion = parseContentsToNodes(data);
     setCurentVersion(originVersion);
   }, [currentVersion, setCurentVersion]);
-
   return (
     //@ts-ignore
     <HotKeys keyMap={SHORTCUT_KEYS} handlers={shortcutHandlers}>
