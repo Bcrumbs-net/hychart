@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { HotKeys } from 'react-hotkeys';
 import { Config, GraphContent } from '@bcrumbs.net/bc-api';
 import { SHORTCUT_KEYS } from './Constants';
@@ -7,6 +7,7 @@ import Header from './header';
 import Search, { SearchType } from './search';
 import { ChartType } from './types';
 import parseContentsToNodes from './parseContentsToNodes';
+import Drawer from './description';
 
 function Chart({
   config,
@@ -20,6 +21,8 @@ function Chart({
   const rootContent = data[0];
   const [zoomLevel, setZoomLevel] = useState(100);
   const [selectedModules, setSelectedModules] = useState([]);
+  const [Description, setDescription] = useState([]);
+  const [name, setName] = useState([]);
   const [currentVersion, setCurentVersion] = useState<ChartType>(
     parseContentsToNodes(data)
   );
@@ -55,8 +58,24 @@ function Chart({
     ZOOM_OUT: () => changeZoomLevel(10),
   };
 
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const toggleDrawer = () => {
+    setDrawerOpen((prev) => !prev);
+  };
+  const findModuleById = (id: number): string | undefined => {
+    const arrayOfNodes = Object.keys(currentVersion.nodes).map((key) => currentVersion.nodes[key]);
+    const module = arrayOfNodes.find((module) => module.id === id);
+    const indexOfOpeningParentheses = module.title.indexOf('(');
+    const cutName = module.title.substring(0, indexOfOpeningParentheses).trim();
+    setName(cutName);
+    setDescription(module.description);
+    return module ? module.description : undefined;
+  };
+
   const selectModule = useCallback(
     (id: number, groupSelect?: boolean) => {
+      setDrawerOpen(true);
+      findModuleById(id);
       let newSelectedModules = selectedModules;
       if (groupSelect) {
         if (
@@ -172,6 +191,9 @@ function Chart({
             changeZoomLevel={changeZoomLevel}
           />
         </div>
+        <Drawer title={name} open={drawerOpen} onClose={toggleDrawer}>
+          <div dangerouslySetInnerHTML={{ __html: Description }} />
+        </Drawer>
         {showSearch ? (
           <Search
             currentVersion={currentVersion}
