@@ -23,6 +23,7 @@ function Chart({
   const [selectedModules, setSelectedModules] = useState([]);
   const [Description, setDescription] = useState([]);
   const [name, setName] = useState([]);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [currentVersion, setCurentVersion] = useState<ChartType>(
     parseContentsToNodes(data)
   );
@@ -58,10 +59,21 @@ function Chart({
     ZOOM_OUT: () => changeZoomLevel(10),
   };
 
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const toggleDrawer = () => {
     setDrawerOpen((prev) => !prev);
   };
+  const drawerRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (drawerRef.current && !drawerRef.current.contains(event.target) && drawerOpen) {
+        toggleDrawer();
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  });
   const findModuleById = (id: number): string | undefined => {
     const arrayOfNodes = Object.keys(currentVersion.nodes).map((key) => currentVersion.nodes[key]);
     const module = arrayOfNodes.find((module) => module.id === id);
@@ -191,9 +203,11 @@ function Chart({
             changeZoomLevel={changeZoomLevel}
           />
         </div>
-        <Drawer title={name} open={drawerOpen} onClose={toggleDrawer}>
-          <div dangerouslySetInnerHTML={{ __html: Description }} />
-        </Drawer>
+        <div ref={drawerRef}>
+          <Drawer title={name} open={drawerOpen} onClose={toggleDrawer} >
+            <div dangerouslySetInnerHTML={{ __html: Description }} />
+          </Drawer>
+        </div>
         {showSearch ? (
           <Search
             currentVersion={currentVersion}
