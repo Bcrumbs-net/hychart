@@ -10,19 +10,25 @@ export type ModuleProps = {
 };
 
 const ModuleIconImg = styled.div`
-  position: relative;
-  height: 85px;
-  width: 85px;
   border-radius: 100%;
   position: absolute;
   overflow: hidden;
   cursor: move;
-
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background-size: contain;
   &.active {
     border: 2px solid #00599f;
     -webkit-box-shadow: 0px 0px 7px 0px #00599f;
     -moz-box-shadow: 0px 0px 7px 0px #00599f;
     box-shadow: 0px 0px 7px 0px #00599f;
+  }
+  .IconImg{
+    position: relative;
+    height: 85px;
+    width: 85px;
   }
 `;
 function Module({ module, selectModule, isSelected }: ModuleProps) {
@@ -39,7 +45,7 @@ function Module({ module, selectModule, isSelected }: ModuleProps) {
     <>
       {module.icon ? (
         <ModuleIconImg
-          className={`moduleIconImg ${isSelected ? 'active' : ''} ${module.type.toLowerCase()}`}
+          className={`${isSelected ? 'active' : ''} ${module.type.toLowerCase()}`}
           key={module.id}
           draggable="true"
           style={{ top: module.y, left: module.x, zIndex: module.id }}
@@ -50,7 +56,7 @@ function Module({ module, selectModule, isSelected }: ModuleProps) {
           }}
         >
           {module.icon && (
-            <img src={module.icon} alt="Module Icon" className="moduleIconImg" />
+            <img src={module.icon} alt="Module Icon" className="IconImg" />
           )}
         </ModuleIconImg>
       ) : (
