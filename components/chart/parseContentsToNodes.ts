@@ -49,19 +49,6 @@ function compareNodesOnY(a, b) {
 }
 
 function getNodeConnectionList(content, contentData) {
-  console.log([
-    ...(contentData.indirect_connections
-      ? contentData.indirect_connections
-          .split(',')
-          .filter((id) => id)
-          .map((id) => ({ id: +id }))
-      : []),
-    ...(content.children
-      ? content.children.sort(compareNodesOnY).map((subContent) => ({
-          id: subContent.id,
-        }))
-      : []),
-  ]);
   return [
     ...(contentData.indirect_connections
       ? contentData.indirect_connections

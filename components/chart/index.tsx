@@ -5,7 +5,7 @@ import { SHORTCUT_KEYS } from './Constants';
 import Canvas from './canvas';
 import Header from './header';
 import Search, { SearchType } from './search';
-import { ChartType } from './types';
+import { ChartType, NodeType } from './types';
 import parseContentsToNodes from './parseContentsToNodes';
 import Drawer from './description';
 
@@ -21,9 +21,8 @@ function Chart({
   const rootContent = data[0];
   const [zoomLevel, setZoomLevel] = useState(100);
   const [selectedModules, setSelectedModules] = useState([]);
-  const [Description, setDescription] = useState([]);
-  const [name, setName] = useState([]);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [description, setDescription] = useState('');
+  const [name, setName] = useState('');
   const [currentVersion, setCurentVersion] = useState<ChartType>(
     parseContentsToNodes(data)
   );
@@ -60,50 +59,35 @@ function Chart({
   };
 
   const toggleDrawer = () => {
-    setDrawerOpen((prev) => !prev);
+    if (description !== '') {
+      setDescription('');
+    }
   };
-  const drawerRef = useRef(null);
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (drawerRef.current && !drawerRef.current.contains(event.target) && drawerOpen) {
-        toggleDrawer();
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  });
-  const findModuleById = (id: number): string | undefined => {
+  const findModuleById = (id: number): Record<string, string> | undefined => {
     const arrayOfNodes = Object.keys(currentVersion.nodes).map((key) => currentVersion.nodes[key]);
-    const module = arrayOfNodes.find((module) => module.id === id);
-    const indexOfOpeningParentheses = module.title.indexOf('(');
-    const cutName = module.title.substring(0, indexOfOpeningParentheses).trim();
-    setName(cutName);
-    setDescription(module.description);
-    return module ? module.description : undefined;
+    const module: Record<string, string> = arrayOfNodes.find((module) => module.id === id);
+    return module ? module : undefined;
   };
 
   const selectModule = useCallback(
-    (id: number, groupSelect?: boolean) => {
-      setDrawerOpen(true);
-      findModuleById(id);
+    (module: NodeType, groupSelect?: boolean) => {
+      setName(module.title);
+      setDescription(module.description);
       let newSelectedModules = selectedModules;
       if (groupSelect) {
         if (
           newSelectedModules &&
-          newSelectedModules.filter((m) => m === id).length <= 0
+          newSelectedModules.filter((m) => m === module).length <= 0
         )
-          newSelectedModules.push(id);
-        else newSelectedModules = selectedModules.filter((m) => m !== id);
+          newSelectedModules.push(module);
+        else newSelectedModules = selectedModules.filter((m) => m !== module);
       } else if (
         newSelectedModules &&
         newSelectedModules.length === 1 &&
-        newSelectedModules[0] === id
+        newSelectedModules[0] === module
       )
         newSelectedModules = [];
-      else newSelectedModules = [id];
-
+      else newSelectedModules = [module.id];
       setSelectedModules(newSelectedModules);
     },
     [selectedModules, setSelectedModules]
@@ -123,7 +107,7 @@ function Chart({
             const canvas = document.getElementById('canvas');
             canvas.scrollLeft = toX - 500 > 0 ? toX - 500 : 0;
             canvas.scrollTop = toy - 250 > 0 ? toy - 250 : 0;
-            selectModule(moduleId);
+            selectModule(node);
             setShowSearch(false);
             setSearch({ value: "", isValid: true, message: '' });
           }
@@ -203,11 +187,9 @@ function Chart({
             changeZoomLevel={changeZoomLevel}
           />
         </div>
-        <div ref={drawerRef}>
-          <Drawer title={name} open={drawerOpen} onClose={toggleDrawer} >
-            <div dangerouslySetInnerHTML={{ __html: Description }} />
-          </Drawer>
-        </div>
+        <Drawer title={name} open={description != ''} onClose={toggleDrawer}>
+          <div dangerouslySetInnerHTML={{ __html: description }} />
+        </Drawer>
         {showSearch ? (
           <Search
             currentVersion={currentVersion}
