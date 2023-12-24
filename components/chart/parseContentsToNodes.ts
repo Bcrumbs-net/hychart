@@ -32,6 +32,7 @@ function convertContentsToNodes(
       connections: getNodeConnectionList(content, contentData),
       title: contentData.title,
       description: contentData.description,
+      icon: contentData.icon,
       main: Boolean(contentData.main),
     };
 

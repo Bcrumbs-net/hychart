@@ -259,6 +259,7 @@ body {
   &:active {
     cursor: -webkit-grabbing;
   }
+  
 
   .designAreaInner {
     height: 10000px;
@@ -321,7 +322,6 @@ body {
     .module.payment {
       background-color: #2ec6c6;
     }
-
     .module {
       position: relative;
       border-radius: 5px;
