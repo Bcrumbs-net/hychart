@@ -7,7 +7,7 @@ import Header from './header';
 import Search, { SearchType } from './search';
 import { ChartType, NodeType } from './types';
 import parseContentsToNodes from './parseContentsToNodes';
-import Drawer from './description';
+import  DescriptionDrawer from './description';
 
 function Chart({
   config,
@@ -22,7 +22,7 @@ function Chart({
   const [zoomLevel, setZoomLevel] = useState(100);
   const [selectedModules, setSelectedModules] = useState([]);
   const [description, setDescription] = useState('');
-  const [name, setName] = useState('');
+  const [selectedModule, setSelectedModule] = useState<NodeType>();
   const [currentVersion, setCurentVersion] = useState<ChartType>(
     parseContentsToNodes(data)
   );
@@ -71,7 +71,7 @@ function Chart({
 
   const selectModule = useCallback(
     (module: NodeType, groupSelect?: boolean) => {
-      setName(module.title);
+      setSelectedModule(module);
       setDescription(module.description);
       let newSelectedModules = selectedModules;
       if (groupSelect) {
@@ -187,9 +187,9 @@ function Chart({
             changeZoomLevel={changeZoomLevel}
           />
         </div>
-        <Drawer title={name} open={description != ''} onClose={toggleDrawer}>
+        < DescriptionDrawer title={selectedModule?.title} open={description != ''} onClose={toggleDrawer}>
           <div dangerouslySetInnerHTML={{ __html: description }} />
-        </Drawer>
+        </ DescriptionDrawer>
         {showSearch ? (
           <Search
             currentVersion={currentVersion}
