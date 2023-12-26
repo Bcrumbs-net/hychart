@@ -19,6 +19,7 @@ export type NodeType = {
   connections: ConnectionType[];
   title: string;
   description: string;
+  icon: string;
   main: boolean;
   id: number;
 };
