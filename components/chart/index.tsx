@@ -72,12 +72,12 @@ function Chart({
           newSelectedModules &&
           newSelectedModules.filter((m) => m === module.id).length <= 0
         )
-          newSelectedModules.push(module);
-        else newSelectedModules = selectedModules.filter((m) => m !== module);
+          newSelectedModules.push(module.id);
+        else newSelectedModules = selectedModules.filter((m) => m !== module.id);
       } else if (
         newSelectedModules &&
         newSelectedModules.length === 1 &&
-        newSelectedModules[0] === module
+        newSelectedModules[0] === module.id
       )
         newSelectedModules = [];
       else newSelectedModules = [module.id];
