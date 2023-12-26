@@ -1,4 +1,4 @@
-export type SelectModuleFunc = (id: number, groupSelect?: boolean) => void;
+export type SelectModuleFunc = (module: NodeType, groupSelect?: boolean) => void;
 
 export type DeselectModuleFunc = (callback: () => void) => void;
 

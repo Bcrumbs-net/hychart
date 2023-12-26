@@ -1,12 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { HotKeys } from 'react-hotkeys';
 import { Config, GraphContent } from '@bcrumbs.net/bc-api';
 import { SHORTCUT_KEYS } from './Constants';
 import Canvas from './canvas';
 import Header from './header';
 import Search, { SearchType } from './search';
-import { ChartType } from './types';
+import { ChartType, NodeType } from './types';
 import parseContentsToNodes from './parseContentsToNodes';
+import  DescriptionDrawer from './description';
 
 function Chart({
   config,
@@ -20,6 +21,7 @@ function Chart({
   const rootContent = data[0];
   const [zoomLevel, setZoomLevel] = useState(100);
   const [selectedModules, setSelectedModules] = useState([]);
+  const [selectedModule, setSelectedModule] = useState<NodeType>();
   const [currentVersion, setCurentVersion] = useState<ChartType>(
     parseContentsToNodes(data)
   );
@@ -55,24 +57,30 @@ function Chart({
     ZOOM_OUT: () => changeZoomLevel(10),
   };
 
+  const findModuleById = (id: number): Record<string, string> | undefined => {
+    const arrayOfNodes = Object.keys(currentVersion.nodes).map((key) => currentVersion.nodes[key]);
+    const module: Record<string, string> = arrayOfNodes.find((module) => module.id === id);
+    return module ? module : undefined;
+  };
+
   const selectModule = useCallback(
-    (id: number, groupSelect?: boolean) => {
+    (module: NodeType, groupSelect?: boolean) => {
+      setSelectedModule(module);
       let newSelectedModules = selectedModules;
       if (groupSelect) {
         if (
           newSelectedModules &&
-          newSelectedModules.filter((m) => m === id).length <= 0
+          newSelectedModules.filter((m) => m === module.id).length <= 0
         )
-          newSelectedModules.push(id);
-        else newSelectedModules = selectedModules.filter((m) => m !== id);
+          newSelectedModules.push(module.id);
+        else newSelectedModules = selectedModules.filter((m) => m !== module.id);
       } else if (
         newSelectedModules &&
         newSelectedModules.length === 1 &&
-        newSelectedModules[0] === id
+        newSelectedModules[0] === module.id
       )
         newSelectedModules = [];
-      else newSelectedModules = [id];
-
+      else newSelectedModules = [module.id];
       setSelectedModules(newSelectedModules);
     },
     [selectedModules, setSelectedModules]
@@ -92,7 +100,7 @@ function Chart({
             const canvas = document.getElementById('canvas');
             canvas.scrollLeft = toX - 500 > 0 ? toX - 500 : 0;
             canvas.scrollTop = toy - 250 > 0 ? toy - 250 : 0;
-            selectModule(moduleId);
+            selectModule(node);
             setShowSearch(false);
             setSearch({ value: "", isValid: true, message: '' });
           }
@@ -172,6 +180,9 @@ function Chart({
             changeZoomLevel={changeZoomLevel}
           />
         </div>
+        < DescriptionDrawer module={selectedModule} open={!!selectedModule} onClose={() => setSelectedModule(undefined)}>
+          <div dangerouslySetInnerHTML={{ __html: selectedModule?.description }} />
+        </ DescriptionDrawer>
         {showSearch ? (
           <Search
             currentVersion={currentVersion}
