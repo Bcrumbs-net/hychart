@@ -23,7 +23,6 @@ function convertContentsToNodes(
       return map;
     },
     {});
-
     nodes[content.id] = {
       id: content.id,
       type: contentData.type as NodeVariant,
@@ -31,6 +30,7 @@ function convertContentsToNodes(
       y: Number(contentData.y_position) + DEFAULT_Y_PADDING,
       connections: getNodeConnectionList(content, contentData),
       title: contentData.title,
+      sub_title: contentData.sub_title,
       description: contentData.description,
       icon: contentData.icon,
       main: Boolean(contentData.main),
