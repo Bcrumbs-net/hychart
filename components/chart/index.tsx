@@ -21,7 +21,6 @@ function Chart({
   const rootContent = data[0];
   const [zoomLevel, setZoomLevel] = useState(100);
   const [selectedModules, setSelectedModules] = useState([]);
-  const [description, setDescription] = useState('');
   const [selectedModule, setSelectedModule] = useState<NodeType>();
   const [currentVersion, setCurentVersion] = useState<ChartType>(
     parseContentsToNodes(data)
@@ -58,11 +57,6 @@ function Chart({
     ZOOM_OUT: () => changeZoomLevel(10),
   };
 
-  const toggleDrawer = () => {
-    if (description !== '') {
-      setDescription('');
-    }
-  };
   const findModuleById = (id: number): Record<string, string> | undefined => {
     const arrayOfNodes = Object.keys(currentVersion.nodes).map((key) => currentVersion.nodes[key]);
     const module: Record<string, string> = arrayOfNodes.find((module) => module.id === id);
@@ -72,12 +66,11 @@ function Chart({
   const selectModule = useCallback(
     (module: NodeType, groupSelect?: boolean) => {
       setSelectedModule(module);
-      setDescription(module.description);
       let newSelectedModules = selectedModules;
       if (groupSelect) {
         if (
           newSelectedModules &&
-          newSelectedModules.filter((m) => m === module).length <= 0
+          newSelectedModules.filter((m) => m === module.id).length <= 0
         )
           newSelectedModules.push(module);
         else newSelectedModules = selectedModules.filter((m) => m !== module);
@@ -187,8 +180,8 @@ function Chart({
             changeZoomLevel={changeZoomLevel}
           />
         </div>
-        < DescriptionDrawer title={selectedModule?.title} open={description != ''} onClose={toggleDrawer}>
-          <div dangerouslySetInnerHTML={{ __html: description }} />
+        < DescriptionDrawer module={selectedModule} open={!!selectedModule} onClose={() => setSelectedModule(undefined)}>
+          <div dangerouslySetInnerHTML={{ __html: selectedModule?.description }} />
         </ DescriptionDrawer>
         {showSearch ? (
           <Search

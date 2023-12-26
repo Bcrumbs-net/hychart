@@ -2,9 +2,10 @@ import { Offcanvas } from 'react-bootstrap';
 import { BsX } from "react-icons/bs";
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
+import { NodeType } from '../types';
 
 type DrawerProps = {
-    title: React.ReactNode;
+    module: NodeType;
     open: boolean;
     onClose: () => void
 };
@@ -50,7 +51,7 @@ const StyledDrawer = styled.div`
   }
 `;
 
-const Drawer: React.FC<DrawerProps> = ({ open, onClose, title, children }) => {
+const Drawer: React.FC<DrawerProps> = ({ open, onClose, module, children }) => {
     const drawerRef = useRef(null);
     const descriptionPanelRef = useRef(null);
 
@@ -79,7 +80,7 @@ const Drawer: React.FC<DrawerProps> = ({ open, onClose, title, children }) => {
                     <StyledDrawer className={open ? 'show' : ''}>
                         <div className='header'>
                             <BsX onClick={onClose} className='closeIcon' />
-                            <h2 className='title'>{title}</h2>
+                            <h2 className='title'>{module?.title}</h2>
                         </div>
                         <Offcanvas.Body ref={descriptionPanelRef}>{children}</Offcanvas.Body>
                     </StyledDrawer>
