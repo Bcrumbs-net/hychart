@@ -51,8 +51,8 @@ function Module({ module, selectModule, isSelected }: ModuleProps) {
           style={{ top: module.y, left: module.x, zIndex: module.id }}
           onDragStart={(ev) => onDragStart(module.id, ev)}
           onClick={(e) => {
-            if (e.shiftKey) selectModule(module.id, true);
-            else selectModule(module.id, false);
+            if (e.shiftKey) selectModule(module, true);
+            else selectModule(module, false);
           }}
         >
           {module.icon && (
@@ -68,8 +68,8 @@ function Module({ module, selectModule, isSelected }: ModuleProps) {
           style={{ top: module.y, left: module.x, zIndex: module.id }}
           onDragStart={(ev) => onDragStart(module.id, ev)}
           onClick={(e) => {
-            if (e.shiftKey) selectModule(module.id, true);
-            else selectModule(module.id, false);
+            if (e.shiftKey) selectModule(module, true);
+            else selectModule(module, false);
           }}
         >
           <div className="moduleIcon">
