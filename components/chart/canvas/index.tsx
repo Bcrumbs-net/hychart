@@ -102,9 +102,9 @@ function Canvas({
   
   const handleClick = useCallback(
     (event) => {
-      // if (!event.target.closest('.module')) {
+      if (event.target.closest('.designArea')) {
         deselectModule();
-      // }
+      }
     },
     [deselectModule]
   );
