@@ -7,7 +7,8 @@ import Header from './header';
 import Search, { SearchType } from './search';
 import { ChartType, NodeType } from './types';
 import parseContentsToNodes from './parseContentsToNodes';
-import  DescriptionDrawer from './description';
+import DescriptionDrawer from './description';
+import { stringify, parse } from 'query-string';
 
 function Chart({
   config,
@@ -31,7 +32,7 @@ function Chart({
     isValid: true,
     message: '',
   });
-
+  const [selectedNodeID, setSelectedNodeID] = useState<number | null>(null);
   const shortcutHandlers = {
     SEARCH: () => {
       setShowSearch(true);
@@ -56,10 +57,35 @@ function Chart({
     ZOOM_IN: () => changeZoomLevel(-10),
     ZOOM_OUT: () => changeZoomLevel(10),
   };
+  useEffect(() => {
+    const queryParams = parse(window.location.search);
+    const nValue = queryParams['n'];
+    if (nValue) {
+      const nodeId = parseInt(nValue as string);
+      setSelectedNodeID(nodeId);
+    } else {
+      setSelectedNodeID(null);
+    }
+  }, []);
+  useEffect(() => {
+    if (selectedNodeID !== null) {
+      const node = findModuleById(selectedNodeID);
+      selectModule(node);
+    }
+  }, [selectedNodeID]);
 
-  const findModuleById = (id: number): Record<string, string> | undefined => {
+  const updateURLWithNodeID = (nodeID: number | null) => {
+    const queryParams = parse(window.location.search);
+    queryParams['n'] = nodeID !== null ? String(nodeID) : '';
+    const newQueryString = stringify(queryParams);
+    const newURL = `${window.location.pathname}?${newQueryString}`;
+    window.history.replaceState({}, '', newURL);
+    localStorage.setItem('selectedNodeID', nodeID !== null ? String(nodeID) : '');
+  };
+
+  const findModuleById = (id: number): NodeType | undefined => {
     const arrayOfNodes = Object.keys(currentVersion.nodes).map((key) => currentVersion.nodes[key]);
-    const module: Record<string, string> = arrayOfNodes.find((module) => module.id === id);
+    const module: NodeType = arrayOfNodes.find((module) => module.id === id);
     return module ? module : undefined;
   };
 
@@ -82,10 +108,10 @@ function Chart({
         newSelectedModules = [];
       else newSelectedModules = [module.id];
       setSelectedModules(newSelectedModules);
+      updateURLWithNodeID(module.id);
     },
     [selectedModules, setSelectedModules]
   );
-
   const focusModule = useCallback(
     (id: string) => {
       if (currentVersion && currentVersion.nodes) {
