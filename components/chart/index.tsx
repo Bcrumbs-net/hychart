@@ -57,10 +57,10 @@ function Chart({
     ZOOM_OUT: () => changeZoomLevel(10),
   };
 
-  const findModuleById = (id: number): Record<string, string> | undefined => {
-    const arrayOfNodes = Object.keys(currentVersion.nodes).map((key) => currentVersion.nodes[key]);
-    const module: Record<string, string> = arrayOfNodes.find((module) => module.id === id);
-    return module ? module : undefined;
+  const findModuleById = (id: number): NodeType | undefined => {
+    const arrayOfNodes: NodeType[] = Object.keys(currentVersion.nodes).map((key) => currentVersion.nodes[key]);
+    const node = arrayOfNodes.find((module) => module.id === id);
+    return node ? node : undefined;
   };
 
   const selectModule = useCallback(

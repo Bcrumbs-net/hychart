@@ -1,9 +1,9 @@
-FROM node:14-alpine
+FROM node:20.9-alpine
 # Setting working directory. All the path will be relative to WORKDIR
 WORKDIR /usr/src/app
 # Installing dependencies
 COPY package*.json ./
-RUN npm install
+RUN npm install --legacy-peer-deps
 # Copying source files
 COPY . .
 # Building app
