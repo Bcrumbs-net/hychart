@@ -20,6 +20,7 @@ export type CanvasProps = {
   selectModule: SelectModuleFunc;
   changeZoomLevel: (value: number) => void;
   organizeModules: () => void;
+  deselectModule:() => void;
   moveModule: (id: number, x: number, y: number) => void;
 };
 
@@ -28,11 +29,13 @@ function Canvas({
   currentVersion,
   selectedModules,
   selectModule,
+  deselectModule,
   changeZoomLevel,
   organizeModules,
   moveModule,
 }: CanvasProps) {
   const canvasRef = useRef<HTMLDivElement>();
+  const wrapperRef = useRef(null);
   const [isScrolling, setIsScrolling] = useState(false);
   const [scrollState, setScrollState] = useState<ScrollPositionType>();
 
@@ -96,6 +99,27 @@ function Canvas({
     },
     [onMouseMove]
   );
+  
+  const handleClick = useCallback(
+    (event) => {
+      if (event.target.closest('.designArea')) {
+        deselectModule();
+      }
+    },
+    [deselectModule]
+  );
+  useEffect(() => {
+    const canvasElement = wrapperRef.current;
+    if (canvasElement) {
+      canvasElement?.addEventListener('click', handleClick);
+    }
+
+    return () => {
+      if (canvasElement) {
+        canvasElement.removeEventListener('click', handleClick);
+      }
+    };
+  }, [handleClick]);
 
   useEffect(() => {
     toggleScrolling(isScrolling);
@@ -107,7 +131,7 @@ function Canvas({
 
   return (
     <>
-      <div className="designAreadHeader">
+      <div className="designAreadHeader" >
         <div className="zoomLevelSelector">
           <i className="flaticon-atom" onClick={organizeModules} />
           |
@@ -124,7 +148,7 @@ function Canvas({
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
       >
-        <div
+        <div ref={wrapperRef}
           id="designAreaInner"
           style={{ zoom: zoomLevel + '%' }}
           className="designAreaInner"
