@@ -32,7 +32,6 @@ function Chart({
     isValid: true,
     message: '',
   });
-  const [selectedNodeID, setSelectedNodeID] = useState<number | null>(null);
   const shortcutHandlers = {
     SEARCH: () => {
       setShowSearch(true);
@@ -62,25 +61,26 @@ function Chart({
     const nValue = queryParams['n'];
     if (nValue) {
       const nodeId = parseInt(nValue as string);
-      setSelectedNodeID(nodeId);
+      const node = findModuleById(nodeId);
+      // I put selectModule fuction to do the foucus show around the node not just open the description
+      selectModule(node);
     } else {
-      setSelectedNodeID(null);
+      setSelectedModule(null);
     }
   }, []);
-  useEffect(() => {
-    if (selectedNodeID !== null) {
-      const node = findModuleById(selectedNodeID);
-      selectModule(node);
-    }
-  }, [selectedNodeID]);
 
   const updateURLWithNodeID = (nodeID: number | null) => {
     const queryParams = parse(window.location.search);
     queryParams['n'] = nodeID !== null ? String(nodeID) : '';
     const newQueryString = stringify(queryParams);
-    const newURL = `${window.location.pathname}?${newQueryString}`;
-    window.history.replaceState({}, '', newURL);
-    localStorage.setItem('selectedNodeID', nodeID !== null ? String(nodeID) : '');
+    const newURL = `${window.location.origin}${window.location.pathname}?${newQueryString}`;
+    navigator.clipboard.writeText(newURL)
+      .then(() => {
+        window.history.replaceState({}, '', newURL);
+      })
+      .catch((error) => {
+        console.error('Failed to copy URL to clipboard:', error);
+      });
   };
 
   const findModuleById = (id: number): NodeType | undefined => {
@@ -143,9 +143,9 @@ function Chart({
     [zoomLevel, setZoomLevel]
   );
   const deselectModule = useCallback(() => {
-    setSelectedModules([]); 
+    setSelectedModules([]);
   }, [setSelectedModules]);
-  
+
   const moveModule = useCallback(
     (id: number, x: number, y: number) => {
       const newVersion = currentVersion;
