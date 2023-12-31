@@ -62,25 +62,35 @@ function Chart({
     if (nValue) {
       const nodeId = parseInt(nValue as string);
       const node = findModuleById(nodeId);
-      // I put selectModule fuction to do the foucus show around the node not just open the description
-      selectModule(node);
+      setSelectedModule(node);
     } else {
       setSelectedModule(null);
     }
   }, []);
-
   const updateURLWithNodeID = (nodeID: number | null) => {
     const queryParams = parse(window.location.search);
     queryParams['n'] = nodeID !== null ? String(nodeID) : '';
-    const newQueryString = stringify(queryParams);
-    const newURL = `${window.location.origin}${window.location.pathname}?${newQueryString}`;
-    navigator.clipboard.writeText(newURL)
-      .then(() => {
-        window.history.replaceState({}, '', newURL);
-      })
-      .catch((error) => {
-        console.error('Failed to copy URL to clipboard:', error);
-      });
+    if (nodeID == null) {
+      const originURL = window.location.origin;
+      navigator.clipboard.writeText(originURL)
+        .then(() => {
+          window.history.replaceState({}, '', originURL);
+        })
+        .catch((error) => {
+          console.error('Failed to copy URL to clipboard:', error);
+        });
+    } else {
+      const newQueryString = stringify(queryParams);
+      const newURL = `${window.location.origin}${window.location.pathname}?${newQueryString}`;
+      navigator.clipboard.writeText(newURL)
+        .then(() => {
+          window.history.replaceState({}, '', newURL);
+        })
+        .catch((error) => {
+          console.error('Failed to copy URL to clipboard:', error);
+        });
+
+    }
   };
 
   const findModuleById = (id: number): NodeType | undefined => {
@@ -93,22 +103,30 @@ function Chart({
     (module: NodeType, groupSelect?: boolean) => {
       setSelectedModule(module);
       let newSelectedModules = selectedModules;
-      if (groupSelect) {
-        if (
+      const queryParams = parse(window.location.search);
+      const nValue = queryParams['n'];
+      const nodeId = parseInt(nValue as string);
+      if (nodeId === module?.id) {
+        setSelectedModule(null);
+      }
+      else {
+        if (groupSelect) {
+          if (
+            newSelectedModules &&
+            newSelectedModules.filter((m) => m === module.id).length <= 0
+          )
+            newSelectedModules.push(module.id);
+          else newSelectedModules = selectedModules.filter((m) => m !== module.id);
+        } else if (
           newSelectedModules &&
-          newSelectedModules.filter((m) => m === module.id).length <= 0
+          newSelectedModules.length === 1 &&
+          newSelectedModules[0] === module.id
         )
-          newSelectedModules.push(module.id);
-        else newSelectedModules = selectedModules.filter((m) => m !== module.id);
-      } else if (
-        newSelectedModules &&
-        newSelectedModules.length === 1 &&
-        newSelectedModules[0] === module.id
-      )
-        newSelectedModules = [];
-      else newSelectedModules = [module.id];
-      setSelectedModules(newSelectedModules);
-      updateURLWithNodeID(module.id);
+          newSelectedModules = [];
+        else newSelectedModules = [module.id];
+        setSelectedModules(newSelectedModules);
+        updateURLWithNodeID(module.id);
+      }
     },
     [selectedModules, setSelectedModules]
   );
@@ -144,6 +162,7 @@ function Chart({
   );
   const deselectModule = useCallback(() => {
     setSelectedModules([]);
+    updateURLWithNodeID(null);
   }, [setSelectedModules]);
 
   const moveModule = useCallback(

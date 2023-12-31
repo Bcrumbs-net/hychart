@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 // import { BCTooltip } from '@bcrumbs.net/bc-ui';
 import ModulesCanvas from './ModulesCanvas';
 import ConnectionsCanvas from './ConnectionsCanvas';
-import { DeselectModuleFunc, SelectModuleFunc } from '../types';
+import { SelectModuleFunc } from '../types';
 //import './styles.scss';
 import Scrollbars from 'react-scrollbars-custom';
 
@@ -20,7 +20,7 @@ export type CanvasProps = {
   selectModule: SelectModuleFunc;
   changeZoomLevel: (value: number) => void;
   organizeModules: () => void;
-  deselectModule:() => void;
+  deselectModule: () => void;
   moveModule: (id: number, x: number, y: number) => void;
 };
 
@@ -99,7 +99,7 @@ function Canvas({
     },
     [onMouseMove]
   );
-  
+
   const handleClick = useCallback(
     (event) => {
       if (event.target.closest('.designArea')) {
