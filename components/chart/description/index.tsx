@@ -41,7 +41,10 @@ const StyledDrawer = styled.div`
       cursor: pointer;
     }
   }
-
+  .sub_title {
+    font-size: 18px;
+    font-weight: bold;
+  }
   &.show {
     direction: rtl;
     transform: translateX(0);
@@ -82,6 +85,8 @@ const Drawer: React.FC<DrawerProps> = ({ open, onClose, module, children }) => {
                             <BsX onClick={onClose} className='closeIcon' />
                             <h2 className='title'>{module?.title}</h2>
                         </div>
+                        <h5 className='sub_title'>{module?.sub_title}</h5>
+
                         <Offcanvas.Body ref={descriptionPanelRef}>{children}</Offcanvas.Body>
                     </StyledDrawer>
                 </div>

@@ -18,6 +18,7 @@ export type NodeType = {
   y: number;
   connections: ConnectionType[];
   title: string;
+  sub_title:string;
   description: string;
   icon: string;
   main: boolean;
