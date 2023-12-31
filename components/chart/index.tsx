@@ -142,14 +142,10 @@ function Chart({
     },
     [zoomLevel, setZoomLevel]
   );
-
-  const deselectModule = useCallback(
-    (callback: () => void) => {
-      setSelectedModules([]);
-      callback?.();
-    },
-    [setSelectedModules]
-  );
+  const deselectModule = useCallback(() => {
+    setSelectedModules([]); 
+  }, [setSelectedModules]);
+  
   const moveModule = useCallback(
     (id: number, x: number, y: number) => {
       const newVersion = currentVersion;
@@ -202,6 +198,7 @@ function Chart({
             selectModule={selectModule}
             currentVersion={currentVersion}
             selectedModules={selectedModules}
+            deselectModule={deselectModule}
             organizeModules={organizeModules}
             changeZoomLevel={changeZoomLevel}
           />
