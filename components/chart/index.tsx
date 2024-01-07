@@ -12,11 +12,9 @@ import  DescriptionDrawer from './description';
 function Chart({
   config,
   data,
-  keydown,
 }: {
   config: Config;
   data: GraphContent[];
-  keydown: any;
 }) {
   const rootContent = data[0];
   const [zoomLevel, setZoomLevel] = useState(100);

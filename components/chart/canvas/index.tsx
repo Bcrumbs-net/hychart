@@ -32,7 +32,7 @@ function Canvas({
   organizeModules,
   moveModule,
 }: CanvasProps) {
-  const canvasRef = useRef<HTMLDivElement>();
+  const canvasRef = useRef();
   const [isScrolling, setIsScrolling] = useState(false);
   const [scrollState, setScrollState] = useState<ScrollPositionType>();
 
@@ -79,8 +79,9 @@ function Canvas({
     (event) => {
       const { clientX, scrollLeft, scrollTop, clientY } = scrollState;
       if (canvasRef && canvasRef.current) {
-        canvasRef.current.scrollLeft = scrollLeft + clientX - event.clientX;
-        canvasRef.current.scrollTop = scrollTop + clientY - event.clientY;
+        const canvas =  canvasRef.current as HTMLDivElement;
+        canvas.scrollLeft = scrollLeft + clientX - event.clientX;
+        canvas.scrollTop = scrollTop + clientY - event.clientY;
       }
     },
     [scrollState, canvasRef]
