@@ -17,7 +17,7 @@ stages:
     steps:
     - task: Docker@2
       inputs:
-        containerRegistry: 'ACR_Connection'
+        containerRegistry: 'ACR Connection'
         repository: 'hychart'
         command: 'buildAndPush'
         Dockerfile: '**/Dockerfile'
