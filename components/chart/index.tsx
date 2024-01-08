@@ -9,6 +9,39 @@ import { ChartType, NodeType } from './types';
 import parseContentsToNodes from './parseContentsToNodes';
 import DescriptionDrawer from './description';
 import { stringify, parse } from 'query-string';
+import styled from 'styled-components';
+
+const SuccessToast = styled.div`
+  position: fixed;
+  bottom: 20px;
+  left: 64%;
+  transform: translateX(-50%);
+  background-color: #4caf50; 
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+`;
+
+const ErrorToast = styled.div`
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ff6347;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+`;
+
+const ToastMessage = styled.span`
+  font-size: 14px;
+  font-weight: bold;
+`;
+
 
 function Chart({
   config,
@@ -27,6 +60,8 @@ function Chart({
     parseContentsToNodes(data)
   );
   const [showSearch, setShowSearch] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const [search, setSearch] = useState<SearchType>({
     value: "",
     isValid: true,
@@ -68,21 +103,28 @@ function Chart({
       setSelectedModule(null);
     }
   }, []);
-
   const updateURLWithNodeID = (nodeID: number | null) => {
     const queryParams = parse(window.location.search);
     queryParams['n'] = nodeID !== null ? String(nodeID) : '';
     const newQueryString = stringify(queryParams);
     const newURL = `${window.location.origin}${window.location.pathname}?${newQueryString}`;
+
     navigator.clipboard.writeText(newURL)
       .then(() => {
         window.history.replaceState({}, '', newURL);
+        setSuccessMessage('URL copied successfully!');
+        setTimeout(() => {
+          setSuccessMessage('');
+        }, 3000);
       })
       .catch((error) => {
-        console.error('Failed to copy URL to clipboard:', error);
+        // console.error('Fai,errorled to save the share URL in clipboard:', error);
+        setErrorMessage('Failed to save the share URL in clipboard:' + '<' + error + '>');
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 3000);
       });
   };
-
   const findModuleById = (id: number): NodeType | undefined => {
     const arrayOfNodes = Object.keys(currentVersion.nodes).map((key) => currentVersion.nodes[key]);
     const module: NodeType = arrayOfNodes.find((module) => module.id === id);
@@ -215,6 +257,17 @@ function Chart({
             setShowSearch={setShowSearch}
           />
         ) : null}
+        {successMessage && (
+          <SuccessToast>
+            <ToastMessage>{successMessage}</ToastMessage>
+          </SuccessToast>
+        )}
+        {errorMessage && (
+          <ErrorToast>
+            <ToastMessage>{errorMessage}</ToastMessage>
+          </ErrorToast>
+        )}
+
       </div>
     </HotKeys>
   );
