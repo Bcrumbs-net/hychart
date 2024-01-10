@@ -1,13 +1,16 @@
 import { Offcanvas } from 'react-bootstrap';
 import { BsX } from "react-icons/bs";
+import { FaLink } from "react-icons/fa";
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { NodeType } from '../types';
+import { NodeType, UpdateURLWithNodeIDFunc } from '../types';
 
 type DrawerProps = {
     module: NodeType;
     open: boolean;
-    onClose: () => void
+    onClose: () => void;
+    children: any;
+    updateURLWithNodeID: UpdateURLWithNodeIDFunc;
 };
 const StyledDrawer = styled.div`
   position: fixed;
@@ -29,21 +32,30 @@ const StyledDrawer = styled.div`
     direction: ltr;
     justify-content: space-between;
     align-items: center;
-
+    
     .title {
+      display: flex; 
       font-size: 30px;
       font-weight: bold;
+      align-items: center;
+      .linkIcon{
+          width: 20px;
+          height: 20px;
+          cursor: pointer;
+          margin-right:10px;
+      }
     }
-
     .closeIcon {
       width: 40px;
       height: 40px;
       cursor: pointer;
     }
   }
+  
+ 
   .sub_title {
     font-size: 18px;
-    font-weight: bold;
+    font-weight: bold; 
   }
   &.show {
     direction: rtl;
@@ -54,7 +66,7 @@ const StyledDrawer = styled.div`
   }
 `;
 
-const Drawer: React.FC<DrawerProps> = ({ open, onClose, module, children }) => {
+const Drawer: React.FC<DrawerProps> = ({ open, onClose, module, children, updateURLWithNodeID }: DrawerProps) => {
     const drawerRef = useRef(null);
     const descriptionPanelRef = useRef(null);
 
@@ -69,13 +81,13 @@ const Drawer: React.FC<DrawerProps> = ({ open, onClose, module, children }) => {
                 onClose();
             }
         };
-
         document.addEventListener('mousedown', handleClickOutside);
 
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [onClose, open]);
+
     return (
         <>
             <Offcanvas show={open} placement="end">
@@ -83,10 +95,14 @@ const Drawer: React.FC<DrawerProps> = ({ open, onClose, module, children }) => {
                     <StyledDrawer className={open ? 'show' : ''}>
                         <div className='header'>
                             <BsX onClick={onClose} className='closeIcon' />
-                            <h2 className='title'>{module?.title}</h2>
+                            <div className='title'>
+                                <FaLink className="linkIcon" onClick={(e) => {
+                                    updateURLWithNodeID(module?.id);
+                                }} />
+                                <h2 >{module?.title}</h2>
+                            </div>
                         </div>
                         <h5 className='sub_title'>{module?.sub_title}</h5>
-
                         <Offcanvas.Body ref={descriptionPanelRef}>{children}</Offcanvas.Body>
                     </StyledDrawer>
                 </div>

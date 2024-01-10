@@ -108,17 +108,15 @@ function Chart({
     queryParams['n'] = nodeID !== null ? String(nodeID) : '';
     const newQueryString = stringify(queryParams);
     const newURL = `${window.location.origin}${window.location.pathname}?${newQueryString}`;
-
     navigator.clipboard.writeText(newURL)
       .then(() => {
-        window.history.replaceState({}, '', newURL);
         setSuccessMessage('URL copied successfully!');
         setTimeout(() => {
           setSuccessMessage('');
         }, 3000);
       })
       .catch((error) => {
-        // console.error('Fai,errorled to save the share URL in clipboard:', error);
+        console.error('Fai,errorled to save the share URL in clipboard:', error);
         setErrorMessage('Failed to save the share URL in clipboard:' + '<' + error + '>');
         setTimeout(() => {
           setErrorMessage('');
@@ -150,7 +148,6 @@ function Chart({
         newSelectedModules = [];
       else newSelectedModules = [module.id];
       setSelectedModules(newSelectedModules);
-      updateURLWithNodeID(module.id);
     },
     [selectedModules, setSelectedModules]
   );
@@ -245,7 +242,7 @@ function Chart({
             changeZoomLevel={changeZoomLevel}
           />
         </div>
-        < DescriptionDrawer module={selectedModule} open={!!selectedModule} onClose={() => setSelectedModule(undefined)}>
+        < DescriptionDrawer updateURLWithNodeID={updateURLWithNodeID} module={selectedModule} open={!!selectedModule} onClose={() => setSelectedModule(undefined)}>
           <div dangerouslySetInnerHTML={{ __html: selectedModule?.description }} />
         </ DescriptionDrawer>
         {showSearch ? (
