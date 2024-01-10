@@ -12,6 +12,7 @@ type DrawerProps = {
     children: any;
     updateURLWithNodeID: UpdateURLWithNodeIDFunc;
 };
+
 const StyledDrawer = styled.div`
   position: fixed;
   padding-left: 20px;
@@ -24,7 +25,8 @@ const StyledDrawer = styled.div`
   background-color: #eee6dbf7;
   border-left: 1px solid rgb(100, 57, 0);
   box-shadow: 0px 0px 25px 0px rgb(100, 57, 0);
-  transition: transform 0.3s ease-in-out, overflow-y 0.3s ease-in-out, max-height 0.3s ease-in-out, padding-bottom 0.3s ease-in-out;
+  transition: transform 0.3s ease-in-out, overflow-y 0.3s ease-in-out,
+    max-height 0.3s ease-in-out, padding-bottom 0.3s ease-in-out;
   z-index: 1050;
 
   .header {
@@ -65,7 +67,6 @@ const StyledDrawer = styled.div`
     padding-bottom: 10px;
   }
 `;
-
 const Drawer: React.FC<DrawerProps> = ({ open, onClose, module, children, updateURLWithNodeID }: DrawerProps) => {
     const drawerRef = useRef(null);
     const descriptionPanelRef = useRef(null);

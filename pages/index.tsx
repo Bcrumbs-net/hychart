@@ -6,17 +6,39 @@ import {
   fetchWebsiteContents,
 } from '../bootstrapers/hychart/utils';
 import Chart from '../components/chart';
+import Error from './_error';
 
 export async function getServerSideProps({ req, query }) {
   // Fetching configuration
-  const domain = req.headers['host'];
+  const domain = query.host || req.headers['host'];
   const targetDomain = checkIfKnownDomain(domain);
   const path = query.path;
-  // Logging the visit
-  logWebsiteVisit(domain);
-  // Getting needed data
-  const config = await fetchWebsiteConfig(targetDomain);
-  const contents = await fetchWebsiteContents(config, path);
+
+  let config = undefined;
+  let contents = undefined;
+  try {
+    // Getting needed data
+    config = await fetchWebsiteConfig(targetDomain);
+    contents = await fetchWebsiteContents(config, path);
+    // Logging the visit
+    logWebsiteVisit(domain);
+  } catch (ex) {
+    return {
+      props: {
+        invalid: true,
+        errorCode: ex.statusCode || null,
+        error: ex.message || null,
+      },
+    };
+  }
+
+  if (!config) {
+    return {
+      props: {
+        invalid: true,
+      },
+    };
+  }
 
   return {
     props: {
@@ -30,14 +52,24 @@ export const TemplateRouter = ({
   config,
   data,
   query,
+  errorCode,
+  error,
+  invalid,
 }: {
-  config: Config;
-  query: {
+  errorCode?: number;
+  error?: string;
+  config?: Config;
+  query?: {
     path: string;
     path2: string;
   };
-  data: GraphContent[];
+  data?: GraphContent[];
+  invalid?: boolean;
 }) => {
+  if (invalid) {
+    return <Error />;
+  }
+
   return <Chart config={config} data={data} />;
 };
 

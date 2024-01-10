@@ -24,11 +24,7 @@ class Error extends React.Component<{ statusCode: string }> {
         {/*@ts-ignore: Unreachable code error */}
         <ResetCSS />
         <div>
-          {this.props.statusCode ? (
-            `An error ${this.props.statusCode} occurred on server`
-          ) : (
-            <ErrorSec></ErrorSec>
-          )}
+          <ErrorSec ></ErrorSec>
         </div>
       </>
     );

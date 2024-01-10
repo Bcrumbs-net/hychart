@@ -46,11 +46,9 @@ const ToastMessage = styled.span`
 function Chart({
   config,
   data,
-  keydown,
 }: {
   config: Config;
   data: GraphContent[];
-  keydown: any;
 }) {
   const rootContent = data[0];
   const [zoomLevel, setZoomLevel] = useState(100);

@@ -11,5 +11,9 @@ export async function fetchWebsiteConfig(targetDomain: string) {
     variables: { domain: ';' + targetDomain + ';' },
   });
   
+  if(!configResponse.data){
+    return;
+  }
+  
   return JSON.parse(configResponse.data.configuration) as Config;
 }
