@@ -8,40 +8,6 @@ import Search, { SearchType } from './search';
 import { ChartType, NodeType } from './types';
 import parseContentsToNodes from './parseContentsToNodes';
 import DescriptionDrawer from './description';
-import { stringify, parse } from 'query-string';
-import styled from 'styled-components';
-
-const SuccessToast = styled.div`
-  position: fixed;
-  bottom: 20px;
-  left: 64%;
-  transform: translateX(-50%);
-  background-color: #4caf50; 
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-  z-index: 9999;
-`;
-
-const ErrorToast = styled.div`
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #ff6347;
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  z-index: 9999;
-`;
-
-const ToastMessage = styled.span`
-  font-size: 14px;
-  font-weight: bold;
-`;
-
 
 function Chart({
   config,
@@ -58,8 +24,6 @@ function Chart({
     parseContentsToNodes(data)
   );
   const [showSearch, setShowSearch] = useState(false);
-  const [successMessage, setSuccessMessage] = useState<string>('');
-  const [errorMessage, setErrorMessage] = useState<string>('');
   const [search, setSearch] = useState<SearchType>({
     value: "",
     isValid: true,
@@ -88,38 +52,6 @@ function Chart({
     },
     ZOOM_IN: () => changeZoomLevel(-10),
     ZOOM_OUT: () => changeZoomLevel(10),
-  };
-  useEffect(() => {
-    const queryParams = parse(window.location.search);
-    const nValue = queryParams['n'];
-    if (nValue) {
-      const nodeId = parseInt(nValue as string);
-      const node = findModuleById(nodeId);
-      // I put selectModule fuction to do the foucus show around the node not just open the description
-      selectModule(node);
-    } else {
-      setSelectedModule(null);
-    }
-  }, []);
-  const updateURLWithNodeID = (nodeID: number | null) => {
-    const queryParams = parse(window.location.search);
-    queryParams['n'] = nodeID !== null ? String(nodeID) : '';
-    const newQueryString = stringify(queryParams);
-    const newURL = `${window.location.origin}${window.location.pathname}?${newQueryString}`;
-    navigator.clipboard.writeText(newURL)
-      .then(() => {
-        setSuccessMessage('URL copied successfully!');
-        setTimeout(() => {
-          setSuccessMessage('');
-        }, 3000);
-      })
-      .catch((error) => {
-        console.error('Fai,errorled to save the share URL in clipboard:', error);
-        setErrorMessage('Failed to save the share URL in clipboard:' + '<' + error + '>');
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
-      });
   };
   const findModuleById = (id: number): NodeType | undefined => {
     const arrayOfNodes = Object.keys(currentVersion.nodes).map((key) => currentVersion.nodes[key]);
@@ -240,9 +172,9 @@ function Chart({
             changeZoomLevel={changeZoomLevel}
           />
         </div>
-        < DescriptionDrawer updateURLWithNodeID={updateURLWithNodeID} module={selectedModule} open={!!selectedModule} onClose={() => setSelectedModule(undefined)}>
+        <DescriptionDrawer module={selectedModule} open={!!selectedModule} onClose={() => setSelectedModule(undefined)}>
           <div dangerouslySetInnerHTML={{ __html: selectedModule?.description }} />
-        </ DescriptionDrawer>
+        </DescriptionDrawer>
         {showSearch ? (
           <Search
             currentVersion={currentVersion}
@@ -252,16 +184,6 @@ function Chart({
             setShowSearch={setShowSearch}
           />
         ) : null}
-        {successMessage && (
-          <SuccessToast>
-            <ToastMessage>{successMessage}</ToastMessage>
-          </SuccessToast>
-        )}
-        {errorMessage && (
-          <ErrorToast>
-            <ToastMessage>{errorMessage}</ToastMessage>
-          </ErrorToast>
-        )}
 
       </div>
     </HotKeys>
