@@ -7,7 +7,7 @@ import Header from './header';
 import Search, { SearchType } from './search';
 import { ChartType, NodeType } from './types';
 import parseContentsToNodes from './parseContentsToNodes';
-import  DescriptionDrawer from './description';
+import DescriptionDrawer from './description';
 
 function Chart({
   config,
@@ -29,7 +29,6 @@ function Chart({
     isValid: true,
     message: '',
   });
-
   const shortcutHandlers = {
     SEARCH: () => {
       setShowSearch(true);
@@ -54,11 +53,10 @@ function Chart({
     ZOOM_IN: () => changeZoomLevel(-10),
     ZOOM_OUT: () => changeZoomLevel(10),
   };
-
   const findModuleById = (id: number): NodeType | undefined => {
-    const arrayOfNodes: NodeType[] = Object.keys(currentVersion.nodes).map((key) => currentVersion.nodes[key]);
-    const node = arrayOfNodes.find((module) => module.id === id);
-    return node ? node : undefined;
+    const arrayOfNodes = Object.keys(currentVersion.nodes).map((key) => currentVersion.nodes[key]);
+    const module: NodeType = arrayOfNodes.find((module) => module.id === id);
+    return module ? module : undefined;
   };
 
   const selectModule = useCallback(
@@ -83,7 +81,6 @@ function Chart({
     },
     [selectedModules, setSelectedModules]
   );
-
   const focusModule = useCallback(
     (id: string) => {
       if (currentVersion && currentVersion.nodes) {
@@ -115,9 +112,9 @@ function Chart({
     [zoomLevel, setZoomLevel]
   );
   const deselectModule = useCallback(() => {
-    setSelectedModules([]); 
+    setSelectedModules([]);
   }, [setSelectedModules]);
-  
+
   const moveModule = useCallback(
     (id: number, x: number, y: number) => {
       const newVersion = currentVersion;
@@ -175,9 +172,9 @@ function Chart({
             changeZoomLevel={changeZoomLevel}
           />
         </div>
-        < DescriptionDrawer module={selectedModule} open={!!selectedModule} onClose={() => setSelectedModule(undefined)}>
+        <DescriptionDrawer module={selectedModule} open={!!selectedModule} onClose={() => setSelectedModule(undefined)}>
           <div dangerouslySetInnerHTML={{ __html: selectedModule?.description }} />
-        </ DescriptionDrawer>
+        </DescriptionDrawer>
         {showSearch ? (
           <Search
             currentVersion={currentVersion}
@@ -187,6 +184,7 @@ function Chart({
             setShowSearch={setShowSearch}
           />
         ) : null}
+
       </div>
     </HotKeys>
   );
