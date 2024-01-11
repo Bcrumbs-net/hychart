@@ -10,7 +10,6 @@ type DrawerProps = {
     module: NodeType;
     open: boolean;
     onClose: () => void;
-    children: any;
 };
 
 const StyledDrawer = styled.div`
@@ -98,7 +97,7 @@ const ToastMessage = styled.span`
   font-weight: bold;
 `;
 
-const Drawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, onClose, module, children }: DrawerProps) => {
+const Drawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, onClose, module, children }) => {
     const drawerRef = useRef(null);
     const descriptionPanelRef = useRef(null);
     const [successMessage, setSuccessMessage] = useState<string>('');

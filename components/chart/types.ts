@@ -2,8 +2,6 @@ export type SelectModuleFunc = (module: NodeType, groupSelect?: boolean) => void
 
 export type DeselectModuleFunc = (callback: () => void) => void;
 
-export type UpdateURLWithNodeIDFunc = (nodeID: number | null) => void;
-
 export enum NodeVariant {
   Person = 'Person',
   Book = 'Book',
