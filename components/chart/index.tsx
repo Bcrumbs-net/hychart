@@ -8,6 +8,7 @@ import Search, { SearchType } from './search';
 import { ChartType, NodeType } from './types';
 import parseContentsToNodes from './parseContentsToNodes';
 import DescriptionDrawer from './description';
+import { number } from 'prop-types';
 
 function Chart({
   config,
@@ -20,6 +21,7 @@ function Chart({
   const [zoomLevel, setZoomLevel] = useState(100);
   const [selectedModules, setSelectedModules] = useState([]);
   const [selectedModule, setSelectedModule] = useState<NodeType>();
+  const [selectedModuleID,setSelectedModuleID] = useState(null);
   const [currentVersion, setCurentVersion] = useState<ChartType>(
     parseContentsToNodes(data)
   );
@@ -58,10 +60,14 @@ function Chart({
     const module: NodeType = arrayOfNodes.find((module) => module.id === id);
     return module ? module : undefined;
   };
-
   const selectModule = useCallback(
     (module: NodeType, groupSelect?: boolean) => {
-      setSelectedModule(module);
+      if (selectedModuleID ===  module.id) {
+        deselectModule();
+      } else {
+        setSelectedModule(module);
+        setSelectedModuleID (()=> module.id);
+      }
       let newSelectedModules = selectedModules;
       if (groupSelect) {
         if (
@@ -113,6 +119,7 @@ function Chart({
   );
   const deselectModule = useCallback(() => {
     setSelectedModules([]);
+    setSelectedModuleID (()=> null);
   }, [setSelectedModules]);
 
   const moveModule = useCallback(
