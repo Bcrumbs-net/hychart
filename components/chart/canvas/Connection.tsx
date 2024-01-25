@@ -1,3 +1,5 @@
+import { DEFAULT_X_PADDING } from "../Constants";
+
 const DISTINCEOFSTART = 15;
 
 export type ModuleConnectionProps = {
@@ -23,8 +25,29 @@ function ModuleConnection({
 }: ModuleConnectionProps) {
   const coordinateList = [`M ${fromX} ${fromY}`];
   const middleX = (fromX + toX) / 2;
-  coordinateList.push(`L ${middleX} ${fromY},`);
-  coordinateList.push(`L ${middleX} ${toY},`);
+  const middleY = (fromY + toY) / 2;
+  const spaceFromX = 20;
+  const spaceToX = 110;
+
+  if (fromX >= toX) {
+    coordinateList.push(`L ${fromX + spaceFromX} ${fromY},`);
+    coordinateList.push(`L ${fromX + spaceFromX} ${middleY},`);
+    coordinateList.push(`L ${fromX - spaceToX} ${middleY},`);
+    coordinateList.push(`L ${fromX - spaceToX} ${toY},`);
+  }
+  else if (toX - fromX <= 50 && toY / fromY >= 1) {
+    coordinateList.push(`L ${fromX + spaceFromX} ${fromY},`);
+    coordinateList.push(`L ${fromX + spaceFromX} ${middleY},`);
+    coordinateList.push(`L ${fromX - spaceToX / 3} ${middleY},`);
+    coordinateList.push(`L ${fromX - spaceToX / 3} ${toY},`);
+  }
+  else {
+    coordinateList.push(`L ${middleX} ${fromY},`);
+    coordinateList.push(`L ${middleX} ${toY},`);
+  }
+
+
+
   //TODO: Allow to point parent node to child on the left side
   // if (toX - fromY > DISTINCEOFSTART * 2) {
   //   // if from is above to
@@ -69,22 +92,22 @@ function ModuleConnection({
       ,
 
       {isSelected ? (
-      <path
-        d={coordinateList.join(' ')}
-        stroke="black"
-        fill="transparent"
-        strokeDasharray="5 5"
-        strokeLinecap="round"
-        strokeLinejoin="bevel"
-        style={{
-          fill: 'none',
-          stroke: fromColor,
-          strokeWidth: 3,
-          zIndex: 9,
-        }}
-        key={`${fromX}-${toX}-${fromY}-${toY}-polyline2`}
-        className={'connection'}
-      />
+        <path
+          d={coordinateList.join(' ')}
+          stroke="black"
+          fill="transparent"
+          strokeDasharray="5 5"
+          strokeLinecap="round"
+          strokeLinejoin="bevel"
+          style={{
+            fill: 'none',
+            stroke: fromColor,
+            strokeWidth: 3,
+            zIndex: 9,
+          }}
+          key={`${fromX}-${toX}-${fromY}-${toY}-polyline2`}
+          className={'connection'}
+        />
       ) : null}
       ,
       <circle

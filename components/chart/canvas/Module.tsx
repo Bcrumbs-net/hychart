@@ -117,7 +117,7 @@ function Module({ module, selectModule, isSelected }: ModuleProps) {
           className={`${module.type.toLowerCase()}`}
           key={module.id}
           draggable="true"
-          style={{ top: module.y, left: module.x, zIndex: module.id }}
+          style={{ top: module.y, left: module.x - 7, zIndex: module.id }}
           onDragStart={(ev) => onDragStart(module.id, ev)}
           onClick={(e) => {
             if (e.shiftKey) selectModule(module, true);
