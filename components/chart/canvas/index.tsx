@@ -20,7 +20,7 @@ export type CanvasProps = {
   selectModule: SelectModuleFunc;
   changeZoomLevel: (value: number) => void;
   organizeModules: () => void;
-  deselectModule:() => void;
+  deselectModules:() => void;
   moveModule: (id: number, x: number, y: number) => void;
 };
 
@@ -29,7 +29,7 @@ function Canvas({
   currentVersion,
   selectedModules,
   selectModule,
-  deselectModule,
+  deselectModules,
   changeZoomLevel,
   organizeModules,
   moveModule,
@@ -104,23 +104,11 @@ function Canvas({
   const handleClick = useCallback(
     (event) => {
       if (event.target.closest('.designArea')) {
-        deselectModule();
+        deselectModules();
       }
     },
-    [deselectModule]
+    [deselectModules]
   );
-  useEffect(() => {
-    const canvasElement = wrapperRef.current;
-    if (canvasElement) {
-      canvasElement?.addEventListener('click', handleClick);
-    }
-
-    return () => {
-      if (canvasElement) {
-        canvasElement.removeEventListener('click', handleClick);
-      }
-    };
-  }, [handleClick]);
 
   useEffect(() => {
     toggleScrolling(isScrolling);
@@ -148,6 +136,7 @@ function Canvas({
         ref={canvasRef}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
+        onClick={handleClick}
       >
         <div ref={wrapperRef}
           id="designAreaInner"

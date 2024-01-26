@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { HotKeys } from 'react-hotkeys';
 import { Config, GraphContent } from '@bcrumbs.net/bc-api';
 import { SHORTCUT_KEYS } from './Constants';
@@ -9,13 +9,7 @@ import { ChartType, NodeType } from './types';
 import parseContentsToNodes from './parseContentsToNodes';
 import DescriptionDrawer from './description';
 
-function Chart({
-  config,
-  data,
-}: {
-  config: Config;
-  data: GraphContent[];
-}) {
+function Chart({ data }: { config: Config; data: GraphContent[] }) {
   const rootContent = data[0];
   const [zoomLevel, setZoomLevel] = useState(100);
   const [selectedModules, setSelectedModules] = useState([]);
@@ -25,14 +19,15 @@ function Chart({
   );
   const [showSearch, setShowSearch] = useState(false);
   const [search, setSearch] = useState<SearchType>({
-    value: "",
+    value: '',
     isValid: true,
     message: '',
   });
+
   const shortcutHandlers = {
     SEARCH: () => {
       setShowSearch(true);
-      setSearch({ value: "", isValid: true, message: '' });
+      setSearch({ value: '', isValid: true, message: '' });
     },
     UP: () => {
       const canvas = document.getElementById('canvas');
@@ -53,34 +48,49 @@ function Chart({
     ZOOM_IN: () => changeZoomLevel(-10),
     ZOOM_OUT: () => changeZoomLevel(10),
   };
+
   const findModuleById = (id: number): NodeType | undefined => {
-    const arrayOfNodes = Object.keys(currentVersion.nodes).map((key) => currentVersion.nodes[key]);
-    const module: NodeType = arrayOfNodes.find((module) => module.id === id);
-    return module ? module : undefined;
+    const arrayOfNodes = Object.keys(currentVersion.nodes).map(
+      (key) => currentVersion.nodes[key]
+    );
+    const m: NodeType = arrayOfNodes.find((module) => module.id === id);
+    return m ? m : undefined;
   };
+
+  const deselectModules = useCallback(() => {
+    setSelectedModules([]);
+    setSelectedModule(undefined);
+  }, [setSelectedModules]);
 
   const selectModule = useCallback(
     (module: NodeType, groupSelect?: boolean) => {
-      setSelectedModule(module);
-      let newSelectedModules = selectedModules;
-      if (groupSelect) {
-        if (
+      if (selectedModule && selectedModule.id === module.id && selectedModules.length == 1) {
+        deselectModules();
+      } else {
+        setSelectedModule(module);
+
+        let newSelectedModules = selectedModules;
+        if (groupSelect) {
+          if (
+            newSelectedModules &&
+            newSelectedModules.filter((m) => m === module.id).length <= 0
+          )
+            newSelectedModules.push(module.id);
+          else
+            newSelectedModules = selectedModules.filter((m) => m !== module.id);
+        } else if (
           newSelectedModules &&
-          newSelectedModules.filter((m) => m === module.id).length <= 0
+          newSelectedModules.length === 1 &&
+          newSelectedModules[0] === module.id
         )
-          newSelectedModules.push(module.id);
-        else newSelectedModules = selectedModules.filter((m) => m !== module.id);
-      } else if (
-        newSelectedModules &&
-        newSelectedModules.length === 1 &&
-        newSelectedModules[0] === module.id
-      )
-        newSelectedModules = [];
-      else newSelectedModules = [module.id];
-      setSelectedModules(newSelectedModules);
+          newSelectedModules = [];
+        else newSelectedModules = [module.id];
+        setSelectedModules(newSelectedModules);
+      }
     },
-    [selectedModules, setSelectedModules]
+    [selectedModules, setSelectedModules, selectedModule, deselectModules]
   );
+
   const focusModule = useCallback(
     (id: string) => {
       if (currentVersion && currentVersion.nodes) {
@@ -97,7 +107,7 @@ function Chart({
             canvas.scrollTop = toy - 250 > 0 ? toy - 250 : 0;
             selectModule(node);
             setShowSearch(false);
-            setSearch({ value: "", isValid: true, message: '' });
+            setSearch({ value: '', isValid: true, message: '' });
           }
         });
       }
@@ -111,9 +121,6 @@ function Chart({
     },
     [zoomLevel, setZoomLevel]
   );
-  const deselectModule = useCallback(() => {
-    setSelectedModules([]);
-  }, [setSelectedModules]);
 
   const moveModule = useCallback(
     (id: number, x: number, y: number) => {
@@ -147,11 +154,12 @@ function Chart({
     },
     [selectedModules, setCurentVersion, currentVersion]
   );
-  //TODO: Not working fine
+
   const organizeModules = useCallback(() => {
     const originVersion = parseContentsToNodes(data);
     setCurentVersion(originVersion);
-  }, [currentVersion, setCurentVersion]);
+  }, [data, setCurentVersion]);
+
   return (
     //@ts-ignore
     <HotKeys keyMap={SHORTCUT_KEYS} handlers={shortcutHandlers}>
@@ -167,13 +175,19 @@ function Chart({
             selectModule={selectModule}
             currentVersion={currentVersion}
             selectedModules={selectedModules}
-            deselectModule={deselectModule}
+            deselectModules={deselectModules}
             organizeModules={organizeModules}
             changeZoomLevel={changeZoomLevel}
           />
         </div>
-        <DescriptionDrawer module={selectedModule} open={!!selectedModule} onClose={() => setSelectedModule(undefined)}>
-          <div dangerouslySetInnerHTML={{ __html: selectedModule?.description }} />
+        <DescriptionDrawer
+          module={selectedModule}
+          open={!!selectedModule && selectedModules.length === 1}
+          onClose={() => setSelectedModule(undefined)}
+        >
+          <div
+            dangerouslySetInnerHTML={{ __html: selectedModule?.description }}
+          />
         </DescriptionDrawer>
         {showSearch ? (
           <Search
@@ -184,7 +198,6 @@ function Chart({
             setShowSearch={setShowSearch}
           />
         ) : null}
-
       </div>
     </HotKeys>
   );
