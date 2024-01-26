@@ -58,7 +58,6 @@ function Chart({ data }: { config: Config; data: GraphContent[] }) {
   };
 
   const deselectModules = useCallback(() => {
-    console.log('calling here');
     setSelectedModules([]);
     setSelectedModule(undefined);
   }, [setSelectedModules]);
