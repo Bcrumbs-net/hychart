@@ -20,6 +20,7 @@ export type NodeType = {
   title: string;
   sub_title: string;
   description: string;
+  city: string;
   icon: string;
   main: boolean;
   id: number;

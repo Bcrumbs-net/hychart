@@ -32,6 +32,7 @@ function convertContentsToNodes(
       title: contentData.title,
       sub_title: contentData.sub_title,
       description: contentData.description,
+      city: contentData.city,
       icon: contentData.icon,
       main: Boolean(contentData.main),
     };
