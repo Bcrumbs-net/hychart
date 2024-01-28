@@ -428,14 +428,14 @@ body {
 
 svg {
   .connection {
-    stroke-dasharray: 500;
+    stroke-dasharray: 10;
     stroke-dashoffset: 0;
-    animation: dash 10s linear infinite;
+    animation: dash 4s linear infinite;
   }
 
   @keyframes dash {
     from {
-      stroke-dashoffset: 1000;
+      stroke-dashoffset: 100;
     }
 
     to {

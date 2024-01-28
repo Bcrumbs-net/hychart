@@ -155,7 +155,7 @@ const Drawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, onClose, modul
                                 <h2 >{module?.title}</h2>
                             </div>
                         </div>
-                        <h5 className='sub_title'>{module?.sub_title}</h5>
+                        <h5 className='sub_title'>{module?.city} {module?.sub_title}</h5>
                         <Offcanvas.Body ref={descriptionPanelRef}>{children}</Offcanvas.Body>
                     </StyledDrawer>
                 </div>

@@ -11,5 +11,5 @@ export const SHORTCUT_KEYS = {
 export const BLOCK_HEIGHT = 90;
 export const BLOCK_WIDTH = 95;
 
-export const DEFAULT_X_PADDING = 50;
-export const DEFAULT_Y_PADDING = 50;
+export const DEFAULT_X_PADDING = 150;
+export const DEFAULT_Y_PADDING = 70;

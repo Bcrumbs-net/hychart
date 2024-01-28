@@ -38,7 +38,14 @@ const ModuleIconImg = styled.div`
     margin-top: -3px;
     font-weight: 700;
   }
+  .city {
+    margin-bottom:-4px;
+    margin-top:0px;
+    font-size: 12px;
+    font-weight: 700;
+  }
 `;
+
 const ModuleStyle = styled.div`
   border-radius: 40%;
   padding:7px;
@@ -50,6 +57,13 @@ const ModuleStyle = styled.div`
   justify-content: center;
   flex-direction: column;
   background-size: contain;
+  .city {
+    margin-bottom:-4px;
+    margin-top:0px;
+    font-size: 12px;
+    font-weight: 700;
+
+  }
   .moduleIcon {
     text-align: center;
     position: absolute;
@@ -65,8 +79,8 @@ const ModuleStyle = styled.div`
     font-size: 15px;
     font-weight: 700;
     background-color: #699041;
-    height: 85px;
-    width: 85px;
+    height: 80px;
+    width: 80px;
     display: flex;
     text-align: center;
     align-items: center;
@@ -85,6 +99,7 @@ const ModuleStyle = styled.div`
     margin-top:-3px;
   }
 `;
+
 function Module({ module, selectModule, isSelected }: ModuleProps) {
   const moduleName = module.title || ModuleInfo.getModuleName(module.type);
   const onDragStart = useCallback((id, ev) => {
@@ -93,7 +108,7 @@ function Module({ module, selectModule, isSelected }: ModuleProps) {
     ev.dataTransfer.setData('clientX', ev.clientX);
     ev.dataTransfer.setData('clientY', ev.clientY);
   }, []);
-
+  
   return (
     <>
       {module.icon ? (
@@ -108,6 +123,7 @@ function Module({ module, selectModule, isSelected }: ModuleProps) {
         >
           {module.icon && (
             <>
+              <p className='city'>{module.city}</p>
               <img src={module.icon} alt="Module Icon" className={`IconImg ${isSelected ? 'active' : ''} `} />
               <p className='subTitle'>{module.sub_title}</p>
             </>
@@ -126,6 +142,7 @@ function Module({ module, selectModule, isSelected }: ModuleProps) {
             else selectModule(module, false);
           }}
         >
+          <p className='city'>{module.city}</p>
           <div className="moduleIcon">
             <i className={ModuleInfo.getIcon(module.type) + ' moduleIcon '}></i>
           </div>
