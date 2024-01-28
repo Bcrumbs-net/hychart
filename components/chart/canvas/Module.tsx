@@ -45,6 +45,7 @@ const ModuleIconImg = styled.div`
     font-weight: 700;
   }
 `;
+
 const ModuleStyle = styled.div`
   border-radius: 40%;
   padding:7px;
@@ -78,8 +79,8 @@ const ModuleStyle = styled.div`
     font-size: 15px;
     font-weight: 700;
     background-color: #699041;
-    height: 85px;
-    width: 85px;
+    height: 80px;
+    width: 80px;
     display: flex;
     text-align: center;
     align-items: center;
@@ -98,6 +99,7 @@ const ModuleStyle = styled.div`
     margin-top:-3px;
   }
 `;
+
 function Module({ module, selectModule, isSelected }: ModuleProps) {
   const moduleName = module.title || ModuleInfo.getModuleName(module.type);
   const onDragStart = useCallback((id, ev) => {

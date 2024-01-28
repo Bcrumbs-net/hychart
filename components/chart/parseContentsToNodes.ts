@@ -23,12 +23,15 @@ function convertContentsToNodes(
       return map;
     },
     {});
+
+    const connectionList = getNodeConnectionList(content, contentData);
+
     nodes[content.id] = {
       id: content.id,
       type: contentData.type as NodeVariant,
       x: Number(contentData.x_position) + DEFAULT_X_PADDING,
       y: Number(contentData.y_position) + DEFAULT_Y_PADDING,
-      connections: getNodeConnectionList(content, contentData),
+      connections: connectionList,
       title: contentData.title,
       sub_title: contentData.sub_title,
       description: contentData.description,
@@ -55,7 +58,7 @@ function getNodeConnectionList(content, contentData) {
     ...(contentData.indirect_connections
       ? contentData.indirect_connections
           .split(',')
-          .filter((id) => id)
+          .filter((id) => id && id !== ' ')
           .map((id) => ({ id: +id }))
       : []),
     ...(content.children
