@@ -63,10 +63,13 @@ function Chart({ data }: { config: Config; data: GraphContent[] }) {
     setSelectedModule(undefined);
   }, [setSelectedModules]);
 
-
   const selectModule = useCallback(
     (module: NodeType, groupSelect?: boolean) => {
-      if (selectedModule && selectedModule.id === module.id && selectedModules.length == 1) {
+      if (
+        selectedModule &&
+        selectedModule.id === module.id &&
+        selectedModules.length == 1
+      ) {
         deselectModules();
       } else {
         setSelectedModule(module);
@@ -95,19 +98,24 @@ function Chart({ data }: { config: Config; data: GraphContent[] }) {
 
   const focusModule = useCallback(
     (id: string) => {
-        if (currentVersion && currentVersion.nodes) {
-            const moduleId = parseInt(id);
-            const node = findModuleById(moduleId);
-            if (node) {
-                setSelectedModule(node);
-                setSelectedModules([moduleId]);
-                setShowSearch(false);
-                setSearch({ value: '', isValid: true, message: '' });
-            }
+      if (currentVersion && currentVersion.nodes) {
+        const moduleId = parseInt(id);
+        const node = findModuleById(moduleId);
+        if (node) {
+          selectModule(node);
+          setShowSearch(false);
+          setSearch({ value: '', isValid: true, message: '' });
         }
+      }
     },
-    [currentVersion, setSelectedModule, setSelectedModules, setShowSearch, setSearch]
-);
+    [
+      currentVersion,
+      setSelectedModule,
+      setSelectedModules,
+      setShowSearch,
+      setSearch,
+    ]
+  );
 
   const changeZoomLevel = useCallback(
     (delta: number) => {
@@ -156,11 +164,13 @@ function Chart({ data }: { config: Config; data: GraphContent[] }) {
 
   useEffect(() => {
     const queryParams = parse(window.location.search);
-    const nodeIdFromUrl = queryParams['?n'] ? parseInt(queryParams['?n'] as string) : null;
+    const nodeIdFromUrl = queryParams['?n']
+      ? parseInt(queryParams['?n'] as string)
+      : null;
     if (nodeIdFromUrl !== null) {
       focusModule(nodeIdFromUrl.toString());
     }
-  }, [ focusModule]);
+  }, [focusModule]);
 
   return (
     //@ts-ignore
