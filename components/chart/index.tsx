@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { HotKeys } from 'react-hotkeys';
 import { Config, GraphContent } from '@bcrumbs.net/bc-api';
 import { SHORTCUT_KEYS } from './Constants';
@@ -8,6 +8,7 @@ import Search, { SearchType } from './search';
 import { ChartType, NodeType } from './types';
 import parseContentsToNodes from './parseContentsToNodes';
 import DescriptionDrawer from './description';
+import { parse } from 'querystring';
 
 function Chart({ data }: { config: Config; data: GraphContent[] }) {
   const rootContent = data[0];
@@ -64,7 +65,11 @@ function Chart({ data }: { config: Config; data: GraphContent[] }) {
 
   const selectModule = useCallback(
     (module: NodeType, groupSelect?: boolean) => {
-      if (selectedModule && selectedModule.id === module.id && selectedModules.length == 1) {
+      if (
+        selectedModule &&
+        selectedModule.id === module.id &&
+        selectedModules.length == 1
+      ) {
         deselectModules();
       } else {
         setSelectedModule(module);
@@ -94,25 +99,22 @@ function Chart({ data }: { config: Config; data: GraphContent[] }) {
   const focusModule = useCallback(
     (id: string) => {
       if (currentVersion && currentVersion.nodes) {
-        // const moduleNumberTrimmed = name.substring(0, name.indexOf('>')).substring(5);
         const moduleId = parseInt(id);
-
-        Object.keys(currentVersion.nodes).forEach((key) => {
-          const node = currentVersion.nodes[key];
-          if (node.id === moduleId) {
-            const toX = node.x;
-            const toy = node.y;
-            const canvas = document.getElementById('canvas');
-            canvas.scrollLeft = toX - 500 > 0 ? toX - 500 : 0;
-            canvas.scrollTop = toy - 250 > 0 ? toy - 250 : 0;
-            selectModule(node);
-            setShowSearch(false);
-            setSearch({ value: '', isValid: true, message: '' });
-          }
-        });
+        const node = findModuleById(moduleId);
+        if (node) {
+          selectModule(node);
+          setShowSearch(false);
+          setSearch({ value: '', isValid: true, message: '' });
+        }
       }
     },
-    [currentVersion, selectModule, setShowSearch, setSearch]
+    [
+      currentVersion,
+      setSelectedModule,
+      setSelectedModules,
+      setShowSearch,
+      setSearch,
+    ]
   );
 
   const changeZoomLevel = useCallback(
@@ -159,6 +161,16 @@ function Chart({ data }: { config: Config; data: GraphContent[] }) {
     const originVersion = parseContentsToNodes(data);
     setCurentVersion(originVersion);
   }, [data, setCurentVersion]);
+
+  useEffect(() => {
+    const queryParams = parse(window.location.search);
+    const nodeIdFromUrl = queryParams['?n']
+      ? parseInt(queryParams['?n'] as string)
+      : null;
+    if (nodeIdFromUrl !== null) {
+      focusModule(nodeIdFromUrl.toString());
+    }
+  }, [focusModule]);
 
   return (
     //@ts-ignore
