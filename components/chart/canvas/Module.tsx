@@ -11,7 +11,7 @@ export type ModuleProps = {
 
 const ModuleIconImg = styled.div`
   border-radius: 100%;
-  padding:7px;
+  padding: 12px 10px;
   position: absolute;
   overflow: hidden;
   cursor: move;
@@ -34,13 +34,16 @@ const ModuleIconImg = styled.div`
     }
   }
   .subTitle {
-    font-size: 12px;
-    margin-top: -3px;
+    position: absolute;
+    bottom: -8px; 
+    font-size: 11px;
     font-weight: 700;
+    -ms-transform: translateX(7%);
+    transform: translateX(7%);
   }
   .city {
-    margin-bottom:-4px;
-    margin-top:0px;
+    position: absolute;
+    top: -16px; 
     font-size: 12px;
     font-weight: 700;
   }
@@ -48,7 +51,7 @@ const ModuleIconImg = styled.div`
 
 const ModuleStyle = styled.div`
   border-radius: 40%;
-  padding:7px;
+  padding:12px 10px 20px 10px;
   position: absolute;
   overflow: hidden;
   cursor: move;
@@ -58,11 +61,10 @@ const ModuleStyle = styled.div`
   flex-direction: column;
   background-size: contain;
   .city {
-    margin-bottom:-4px;
-    margin-top:0px;
+    position: absolute;
+    top: -18px; /* Adjust as needed */
     font-size: 12px;
     font-weight: 700;
-
   }
   .moduleIcon {
     text-align: center;
@@ -94,9 +96,12 @@ const ModuleStyle = styled.div`
     }
   }
   .subTitle {
-    font-size: 12px;
+    position: absolute;
+    bottom: -8px; 
+    font-size: 11px;
     font-weight: 700;
-    margin-top:-3px;
+    -ms-transform: translateX(7%);
+    transform: translateX(7%);
   }
 `;
 
