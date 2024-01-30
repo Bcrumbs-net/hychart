@@ -11,7 +11,7 @@ export type ModuleProps = {
 
 const ModuleIconImg = styled.div`
   border-radius: 100%;
-  padding:12px 10px 20px 4px;
+  padding: 12px 10px;
   position: absolute;
   overflow: hidden;
   cursor: move;

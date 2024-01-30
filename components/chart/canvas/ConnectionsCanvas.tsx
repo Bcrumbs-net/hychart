@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import ModuleInfo from '../moduleBlocks/ModuleInfo';
 import ModuleConnection from './Connection';
 import { BLOCK_HEIGHT, BLOCK_WIDTH } from '../Constants';
 import { ChartType } from '../types';
@@ -36,7 +35,7 @@ function ConnectionsCanvas({
         connectionList.push({
           fromID: fromID,
           toID: toID,
-          fromX: fromNode.x + BLOCK_WIDTH, // x coordinate of origin of arrow
+          fromX: fromNode.x + BLOCK_WIDTH - 8, // x coordinate of origin of arrow
           fromY: fromNode.y + (i + 1) * (BLOCK_HEIGHT / (numberOfFromConn + 1)), // y coordinate of origin of arrow
           toX: toNode.x, // x coordinate of target of arrow
           toY: toNode.y + BLOCK_HEIGHT / 2, // y coordinate of target of arrow
