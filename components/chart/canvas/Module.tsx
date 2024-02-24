@@ -11,7 +11,7 @@ export type ModuleProps = {
 
 const ModuleIconImg = styled.div`
   border-radius: 100%;
-  padding: 12px 10px;
+  padding: 13px 10px;
   position: absolute;
   overflow: hidden;
   cursor: move;
@@ -35,8 +35,8 @@ const ModuleIconImg = styled.div`
   }
   .subTitle {
     position: absolute;
-    bottom: -8px; 
-    font-size: 11px;
+    bottom: -13px; 
+    font-size: 10px;
     font-weight: 700;
     -ms-transform: translateX(7%);
     transform: translateX(7%);
