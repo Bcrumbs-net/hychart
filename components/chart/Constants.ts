@@ -8,8 +8,8 @@ export const SHORTCUT_KEYS = {
   ZOOM_OUT: 'ctrl+alt+x',
 };
 
-export const BLOCK_HEIGHT = 109;
-export const BLOCK_WIDTH = 105;
+export const BLOCK_HEIGHT = 100;
+export const BLOCK_WIDTH = 96;
 
 export const DEFAULT_X_PADDING = 150;
 export const DEFAULT_Y_PADDING = 70;

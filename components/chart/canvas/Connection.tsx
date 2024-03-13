@@ -23,23 +23,17 @@ function ModuleConnection({
   const middleX = (fromX + toX) / 2;
   const middleY = (fromY + toY) / 2;
   const spaceFromX = 20;
-  const returnBackX = 110;
 
-  if (fromX >= toX + 50) {
+  if (fromX >= toX) {
     coordinateList.push(`L ${fromX + spaceFromX} ${fromY},`);
     coordinateList.push(`L ${fromX + spaceFromX} ${middleY},`);
-    coordinateList.push(`L ${fromX - returnBackX} ${middleY},`);
-    coordinateList.push(`L ${fromX - returnBackX} ${toY},`);
-  } else if (fromX >= toX) {
+    coordinateList.push(`L ${fromX - (fromX - toX + 20)} ${middleY},`);
+    coordinateList.push(`L ${fromX - (fromX - toX + 20)} ${toY},`);
+  } else if (toX - fromX <= 25) {
     coordinateList.push(`L ${fromX + spaceFromX} ${fromY},`);
     coordinateList.push(`L ${fromX + spaceFromX} ${middleY},`);
-    coordinateList.push(`L ${fromX - returnBackX / 2} ${middleY},`);
-    coordinateList.push(`L ${fromX - returnBackX / 2} ${toY},`);
-  } else if (toX - fromX <= 50) {
-    coordinateList.push(`L ${fromX + spaceFromX} ${fromY},`);
-    coordinateList.push(`L ${fromX + spaceFromX} ${middleY},`);
-    coordinateList.push(`L ${fromX - returnBackX / 3} ${middleY},`);
-    coordinateList.push(`L ${fromX - returnBackX / 3} ${toY},`);
+    coordinateList.push(`L ${fromX - 20} ${middleY},`);
+    coordinateList.push(`L ${fromX - 20} ${toY},`);
   } else {
     coordinateList.push(`L ${middleX} ${fromY},`);
     coordinateList.push(`L ${middleX} ${toY},`);

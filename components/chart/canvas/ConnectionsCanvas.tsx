@@ -36,7 +36,7 @@ function ConnectionsCanvas({
           fromID: fromID,
           toID: toID,
           fromX: fromNode.x + BLOCK_WIDTH - 8, // x coordinate of origin of arrow
-          fromY: fromNode.y + (i + 1) * (BLOCK_HEIGHT / (numberOfFromConn + 1)), // y coordinate of origin of arrow
+          fromY: fromNode.y + (i + 1) * (BLOCK_HEIGHT * 0.6 / (numberOfFromConn + 1)) + 20, // y coordinate of origin of arrow
           toX: toNode.x, // x coordinate of target of arrow
           toY: toNode.y + BLOCK_HEIGHT / 2, // y coordinate of target of arrow
           // fromColor: ModuleInfo.getColor(fromNode.type),

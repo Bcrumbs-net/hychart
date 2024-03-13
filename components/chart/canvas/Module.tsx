@@ -10,8 +10,8 @@ export type ModuleProps = {
 };
 
 const ModuleIconImg = styled.div`
-  border-radius: 100%;
-  padding: 13px 10px;
+  border-radius: 50%;
+  padding: 10px;
   position: absolute;
   overflow: hidden;
   cursor: move;
@@ -22,10 +22,11 @@ const ModuleIconImg = styled.div`
   background-size: contain;
 
   .IconImg {
-    width: 85px; 
+    width: 76px; 
     height: auto; 
     display: block; 
     border-radius: 100%;
+    box-sizing: border-box;
     &.active {
       border: 2px solid #00599f;
       -webkit-box-shadow: 0px 0px 7px 0px #00599f;
@@ -50,8 +51,8 @@ const ModuleIconImg = styled.div`
 `;
 
 const ModuleStyle = styled.div`
-  border-radius: 40%;
-  padding:12px 10px 20px 10px;
+  border-radius: 50%;
+  padding: 12px 10px 20px 10px;
   position: absolute;
   overflow: hidden;
   cursor: move;
@@ -75,19 +76,20 @@ const ModuleStyle = styled.div`
     background-position: center;
   }
   .moduleNameCon{
-    padding: 3px;
+    padding: 4px;
     color: #fff;
     position: relative;
     font-size: 15px;
     font-weight: 700;
     background-color: #699041;
-    height: 80px;
-    width: 80px;
+    height: 76px;
+    width: 76px;
     display: flex;
     text-align: center;
     align-items: center;
     justify-content: center;
     border-radius: 50px;
+    box-sizing: border-box;
     &.active {
       border: 2px solid #00599f;
       -webkit-box-shadow: 0px 0px 7px 0px #00599f;

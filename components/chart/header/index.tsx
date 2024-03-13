@@ -11,7 +11,7 @@ export default function Header({
       <div className="search-btn">
         <button type="button" onClick={() => showModulesSearch(true)}>
           <i className="flaticon-magnifying-glass"></i>{' '}
-          <span className="translate">Search Node</span>
+          <span className="translate">Search Nodes</span>
         </button>
       </div>
     </div>
