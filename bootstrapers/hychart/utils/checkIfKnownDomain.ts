@@ -7,6 +7,10 @@
  * - hychart-demo2.bcrumbs.net
  */
 export function checkIfKnownDomain(targetDomain: string) {
+  if (targetDomain === 'islamic-scholars.hy') {
+    return targetDomain;
+  }
+
   if (
     !targetDomain ||
     targetDomain.indexOf('localhost') >= 0 ||
@@ -20,3 +24,4 @@ export function checkIfKnownDomain(targetDomain: string) {
 
   return targetDomain;
 }
+
