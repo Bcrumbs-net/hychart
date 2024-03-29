@@ -5,12 +5,9 @@
  * Supported templates domains as next:
  * - hychart-demo.bcrumbs.net
  * - hychart-demo2.bcrumbs.net
+ * - islamic-scholars.hy
  */
 export function checkIfKnownDomain(targetDomain: string) {
-  if (targetDomain === 'islamic-scholars.hy') {
-    return targetDomain;
-  }
-
   if (
     !targetDomain ||
     targetDomain.indexOf('localhost') >= 0 ||
@@ -21,7 +18,6 @@ export function checkIfKnownDomain(targetDomain: string) {
   ) {
     return 'hychart-demo2.bcrumbs.net';
   }
-
   return targetDomain;
 }
 
