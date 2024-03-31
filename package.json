@@ -47,7 +47,9 @@
     "react-icons": "^4.2.0",
     "react-icons-kit": "^1.2.1",
     "react-scrollbars-custom": "^4.1.1",
+    "react-select": "^5.8.0",
     "react-spinner-loader": "^1.1.1",
+    "react-tagsinput": "^3.19.0",
     "request": "^2.88.2",
     "sass": "^1.69.4",
     "styled-components": "^4.3.2"

@@ -58,6 +58,10 @@ const StyledDrawer = styled.div`
     font-size: 18px;
     font-weight: bold; 
   }
+  .tags {
+    font-size: 17px;
+    font-weight: bold; 
+  }
   &.show {
     direction: rtl;
     transform: translateX(0);
@@ -98,6 +102,8 @@ const ToastMessage = styled.span`
 `;
 
 const Drawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, onClose, module, children }) => {
+    console.log(module);
+
     const drawerRef = useRef(null);
     const descriptionPanelRef = useRef(null);
     const [successMessage, setSuccessMessage] = useState<string>('');
@@ -156,6 +162,7 @@ const Drawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, onClose, modul
                             </div>
                         </div>
                         <h5 className='sub_title'>{module?.city} {module?.sub_title}</h5>
+                        <h3 className='tags'>{module?.tags}</h3>
                         <Offcanvas.Body ref={descriptionPanelRef}>{children}</Offcanvas.Body>
                     </StyledDrawer>
                 </div>

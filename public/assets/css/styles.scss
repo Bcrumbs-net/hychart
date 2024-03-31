@@ -54,15 +54,24 @@ body {
       height: 25px;
     }
 
+
     .leftSide {
       position: absolute;
-      right: 10px;
-      top: 6px;
+      right: 0px;
+      top: 0px;
+      width: 500px;
+      max-height: 300px;
+      overflow: auto;
+      padding: 2px;
+      background-color: rgb(222, 239, 206);
 
       button {
-        width: 100px;
-        border-radius: 10px;
-        height: 25px;
+        background-color: gray;
+        color: white;
+        border: 1px solid white;
+        border-radius: 20px;
+        padding: 5px;
+        margin-left: 10px;
       }
 
       .profile-nav {
@@ -375,6 +384,7 @@ body {
         float: left;
         display: none;
       }
+
       .moduleNameCon {
         width: calc(100% - 12px);
         top: 50%;
