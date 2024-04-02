@@ -1,13 +1,23 @@
 import 'react-tagsinput/react-tagsinput.css';
 import React, { useState } from 'react';
+import TagsInput from 'react-tagsinput'
 import BCTagsInput from './bctags-input';
-import Select from 'react-select';
-import styled from 'styled-components';
+import Textbox from '../search/textbox';
+import Inputtext from './inputText';
 
 export default function Header({
   showModulesSearch,
   chartName,
-  predefinedTags = ['العقيدة',
+  predefinedTags,
+}: {
+  showModulesSearch: (state: boolean) => void;
+  chartName: string;
+  predefinedTags: string[];
+}) {
+  const [tags, setTags] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(null);
+  predefinedTags = [
+    'العقيدة',
     'الفقه',
     'التفسير',
     'الحديث',
@@ -21,27 +31,19 @@ export default function Header({
     'القواعد الفقهية',
     'التاريخ',
     'التراجم',
-    'أصول الدين',],
-}: {
-  showModulesSearch: (state: boolean) => void;
-  chartName: string;
-  predefinedTags: string[];
-}) {
-  const [tags, setTags] = useState([]);
-  const [selectedOption, setSelectedOption] = useState(null);
-
+    'أصول الدين'
+  ];
   const handleTagsChange = (newTags: string[]) => {
     setTags(newTags);
   };
 
   const handleSelectorChange = (selectedOption) => {
-    setSelectedOption(selectedOption);
-  };
-
-  const handleAddTag = () => {
-    if (selectedOption && !tags.includes(selectedOption.value)) {
-      setTags([...tags, selectedOption.value]);
+    if (selectedOption && !tags.includes(selectedOption)) {
+      setTags([selectedOption,...tags]);
+      handleCopyURL();
     }
+    setSelectedOption(null);
+    console.log(selectedOption);
   };
 
   const handleCopyURL = () => {
@@ -49,7 +51,6 @@ export default function Header({
     queryParams.set('tags', tags.join(', '));
     const currentURL = window.location.href;
     const updatedURL = `${currentURL.split('?')[0]}?${queryParams.toString()}`;
-    console.log(updatedURL);
     const decodedURL = decodeURIComponent(updatedURL);
     navigator.clipboard
       .writeText(decodedURL)
@@ -61,23 +62,22 @@ export default function Header({
       });
   };
 
-  const tagOptions = predefinedTags.map((tag) => ({ value: tag, label: tag }));
 
   const renderCustomInput = () => {
     return (
-      <>
-        <Select
-          options={tagOptions}
-          value={selectedOption}
-          onChange={handleSelectorChange}
-          isClearable
-        />
-        <button onClick={handleAddTag}>Add Tag</button>
-        <button onClick={handleCopyURL}>Copy URL with Tags</button>
-      </>
+      <Inputtext
+        type="text"
+        autoCompleteList={predefinedTags}
+        maxLength={20}
+        onChange={(val, event) => {
+          setSelectedOption(val);
+        }}
+        placeholder="Write tags name"
+        value={selectedOption}
+        onListItemClick={(value) => handleSelectorChange(value)}
+      />
     );
   };
-
   return (
     <div className="header">
       <div className="chartName">{chartName}</div>
@@ -87,13 +87,13 @@ export default function Header({
           <span className="translate">Search Nodes</span>
         </button>
       </div>
-      {/* <div className="leftSide">
+      <div className="leftSide">
         <BCTagsInput
           value={tags}
           onChange={handleTagsChange}
           renderInput={renderCustomInput}
         />
-      </div> */}
+      </div>
     </div>
   );
 }

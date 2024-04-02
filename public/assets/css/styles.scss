@@ -57,13 +57,14 @@ body {
 
     .leftSide {
       position: absolute;
-      right: 0px;
+      right: 10px;
       top: 0px;
-      width: 500px;
+      max-width: 1000px;
+      height: 50px;
       max-height: 300px;
       overflow: auto;
-      padding: 2px;
-      background-color: rgb(222, 239, 206);
+      background-color:#827065;
+      ;
 
       button {
         background-color: gray;

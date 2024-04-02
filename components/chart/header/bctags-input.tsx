@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import RTagsInput from 'react-tagsinput';
+import styled from 'styled-components';
 
 export interface BCTagsInputProps {
   className?: string,
@@ -9,10 +10,27 @@ export interface BCTagsInputProps {
   renderInput: () => ReactNode,
 }
 
+const BCTagsInputWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  height:50px;
+`;
+
+const StyledTagsInput = styled(RTagsInput)`
+  margin-left: 8px;
+`;
+
 export const BCTagsInput = (props: BCTagsInputProps) => {
   return (
-    <RTagsInput value={props.value || []} className={"react-tagsinput-ta33 " + props.className} onChange={props.onChange} renderInput={props.renderInput}
-      inputProps={{ placeholder: props.placeholder }} />
+    <BCTagsInputWrapper className={props.className}>
+      <StyledTagsInput
+        value={props.value || []}
+        onChange={props.onChange}
+        inputProps={{ placeholder: props.placeholder }}
+      />
+      {props.renderInput()}
+
+    </BCTagsInputWrapper>
   );
 };
 
