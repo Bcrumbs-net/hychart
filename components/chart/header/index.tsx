@@ -1,8 +1,6 @@
 import 'react-tagsinput/react-tagsinput.css';
 import React, { useState } from 'react';
-import TagsInput from 'react-tagsinput'
 import BCTagsInput from './bctags-input';
-import Textbox from '../search/textbox';
 import Inputtext from './inputText';
 
 export default function Header({
@@ -43,7 +41,6 @@ export default function Header({
       handleCopyURL();
     }
     setSelectedOption(null);
-    console.log(selectedOption);
   };
 
   const handleCopyURL = () => {
