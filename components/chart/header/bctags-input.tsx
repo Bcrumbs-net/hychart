@@ -14,10 +14,14 @@ const BCTagsInputWrapper = styled.div`
   display: flex;
   align-items: center;
   height:50px;
+  
 `;
 
 const StyledTagsInput = styled(RTagsInput)`
   margin-left: 8px;
+  margin-top: 70px;
+  max-width: 200px;
+
 `;
 
 export const BCTagsInput = (props: BCTagsInputProps) => {

@@ -44,22 +44,6 @@ const AutoComplete = styled.div`
       font-weight: 400;
     }
 
-    li:first-of-type {
-      border-radius: 5px 20px 0 0;
-      border-top-right-radius: var(--radius);
-      border-top-left-radius: var(--radius);
-    }
-
-    li:last-child {
-      border-radius: 0 0 5px 20px;
-      border-bottom-right-radius: var(--radius);
-      border-bottom-left-radius: var(--radius);
-    }
-
-    li:first-child:last-child {
-      border-radius: 8px 15px 8px 18px;
-    }
-
     li:hover {
       background-color: #c8c1c1;
     }
@@ -111,11 +95,11 @@ export const Inputtext = ({
 
         onChange && onChange(targetValue, e);
     };
-
     const handleAutocompleteSelect = (value: string) => {
         setCurrentInput(value);
         setShowAutoComplete(false);
         onListItemClick && onListItemClick(value);
+        setCurrentInput('');
     };
 
     return (
