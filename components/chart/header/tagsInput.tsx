@@ -54,8 +54,8 @@ const BCTagsInputWrapper = styled.div`
     ul {
       border-radius: 10px;
       margin-top: -10px;
-      height: 500px; /* Set the desired height */
-      width: 220px; /* Set the desired width */
+      height: 500px; 
+      width: 160px; 
       overflow-y: auto; /* Add vertical scrollbar when content overflows */
       overflow-x: hidden; /* Hide horizontal scrollbar if any */
       scrollbar-width: thin;
