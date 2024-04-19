@@ -171,7 +171,6 @@ function Chart({ data }: { config: Config; data: GraphContent[] }) {
       focusModule(nodeIdFromUrl.toString());
     }
   }, [focusModule]);
-  console.log(selectedModule);
   return (
     //@ts-ignore
     <HotKeys keyMap={SHORTCUT_KEYS} handlers={shortcutHandlers}>

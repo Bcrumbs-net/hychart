@@ -9,7 +9,6 @@ import Chart from '../components/chart';
 import Error from './_error';
 
 export async function getServerSideProps({ req, query }) {
-  query.host = 'islamic-scholars.hy';
   // Fetching configuration
   const domain = query.host || req.headers['host'];
   const targetDomain = checkIfKnownDomain(domain);

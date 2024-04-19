@@ -35,8 +35,8 @@ const StyledDrawer = styled.div`
     align-items: center;
     
     .title {
+      margin-top:10px;
       display: flex; 
-      font-size: 30px;
       font-weight: bold;
       align-items: center;
       .linkIcon{
@@ -55,12 +55,24 @@ const StyledDrawer = styled.div`
   
  
   .sub_title {
+    margin-top:-5px;
     font-size: 18px;
     font-weight: bold; 
   }
-  .tags {
-    font-size: 17px;
+  .tags{
+    display: flex; 
+
+  }
+  .tagsItem {
+    padding-left:10px;
+    padding-right:10px;
+    margin-left:10px;
+    margin-top:-5px;
+    font-size: 15px;
     font-weight: bold; 
+    border: 1px solid var(--bc-primary-color);
+    box-shadow: 0px 0px 2px 0px rgb(100, 57, 0);
+    border-radius: 20px;
   }
   &.show {
     direction: rtl;
@@ -100,10 +112,8 @@ const ToastMessage = styled.span`
   font-size: 14px;
   font-weight: bold;
 `;
-
 const Drawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, onClose, module, children }) => {
-    console.log(module);
-
+    const tags = module?.tags?.split(",");
     const drawerRef = useRef(null);
     const descriptionPanelRef = useRef(null);
     const [successMessage, setSuccessMessage] = useState<string>('');
@@ -158,11 +168,17 @@ const Drawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, onClose, modul
                                 <FaLink className="linkIcon" onClick={(e) => {
                                     copyURLWithNodeID(module?.id);
                                 }} />
-                                <h2 >{module?.title}</h2>
+                                <h1 >{module?.title}</h1>
                             </div>
                         </div>
-                        <h5 className='sub_title'>{module?.city} {module?.sub_title}</h5>
-                        <h3 className='tags'>{module?.tags}</h3>
+                        <h2 className='sub_title'>{module?.city} {module?.sub_title}</h2>
+                        <div className='tags'>
+                            {tags?.map((item) => {
+                                return (
+                                    <h3 className='tagsItem' key={item}>{item}</h3>
+                                )
+                            })}
+                        </div>
                         <Offcanvas.Body ref={descriptionPanelRef}>{children}</Offcanvas.Body>
                     </StyledDrawer>
                 </div>
