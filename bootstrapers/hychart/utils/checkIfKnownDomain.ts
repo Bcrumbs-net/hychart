@@ -8,6 +8,7 @@
  * - islamic-scholars.hy
  */
 export function checkIfKnownDomain(targetDomain: string) {
+ 
   if (
     !targetDomain ||
     targetDomain.indexOf('localhost') >= 0 ||
@@ -16,7 +17,7 @@ export function checkIfKnownDomain(targetDomain: string) {
     targetDomain.indexOf('test-hychart.bcrumbs.net') >= 0 ||
     targetDomain.indexOf('test-hychart2.bcrumbs.net') >= 0
   ) {
-    return 'hychart-demo2.bcrumbs.net';
+    return 'islamic-scholars.hy';
   }
   return targetDomain;
 }

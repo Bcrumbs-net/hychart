@@ -23,6 +23,7 @@ export type NodeType = {
   city: string;
   icon: string;
   main: boolean;
+  tags: string;
   id: number;
 };
 
