@@ -124,7 +124,7 @@ const Drawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, onClose, modul
             if (
                 open &&
                 drawerRef.current &&
-                duration < 120 &&
+                duration < 10 &&
                 !drawerRef.current.contains(event.target) &&
                 !descriptionPanelRef.current.contains(event.target)
             ) {
