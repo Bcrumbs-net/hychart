@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
 // import { BCTooltip } from '@bcrumbs.net/bc-ui';
 import ModulesCanvas from './ModulesCanvas';
 import ConnectionsCanvas from './ConnectionsCanvas';
-import { DeselectModuleFunc, SelectModuleFunc } from '../types';
+import { SelectModuleFunc } from '../types';
 //import './styles.scss';
 import Scrollbars from 'react-scrollbars-custom';
 
@@ -20,8 +20,9 @@ export type CanvasProps = {
   selectModule: SelectModuleFunc;
   changeZoomLevel: (value: number) => void;
   organizeModules: () => void;
-  deselectModules:() => void;
+  deselectModules: () => void;
   moveModule: (id: number, x: number, y: number) => void;
+  setDuration: Dispatch<SetStateAction<number>>;
 };
 
 function Canvas({
@@ -33,11 +34,13 @@ function Canvas({
   changeZoomLevel,
   organizeModules,
   moveModule,
+  setDuration
 }: CanvasProps) {
   const canvasRef = useRef();
   const wrapperRef = useRef(null);
   const [isScrolling, setIsScrolling] = useState(false);
   const [scrollState, setScrollState] = useState<ScrollPositionType>();
+  const startTimeRef = useRef(0);
 
   const onMouseUp = useCallback(() => {
     setIsScrolling(false);
@@ -82,7 +85,7 @@ function Canvas({
     (event) => {
       const { clientX, scrollLeft, scrollTop, clientY } = scrollState;
       if (canvasRef && canvasRef.current) {
-        const canvas =  canvasRef.current as HTMLDivElement;
+        const canvas = canvasRef.current as HTMLDivElement;
         canvas.scrollLeft = scrollLeft + clientX - event.clientX;
         canvas.scrollTop = scrollTop + clientY - event.clientY;
       }
@@ -90,9 +93,12 @@ function Canvas({
     [scrollState, canvasRef]
   );
 
+
   const toggleScrolling = useCallback(
     (isEnable) => {
       if (isEnable) {
+        const newStartTime = Date.now();
+        startTimeRef.current = newStartTime;
         window.addEventListener('mousemove', onMouseMove);
       } else {
         window.removeEventListener('mousemove', onMouseMove);
@@ -100,10 +106,13 @@ function Canvas({
     },
     [onMouseMove]
   );
-  
+
   const handleClick = useCallback(
     (event) => {
-      if (event.target.closest('.designArea')) {
+      const endTime = Date.now();
+      const duration = endTime - startTimeRef.current;
+      setDuration(duration);
+      if (event.target.closest('.designArea') && duration < 120) {
         deselectModules();
       }
     },

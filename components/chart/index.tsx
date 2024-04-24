@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { HotKeys } from 'react-hotkeys';
 import { Config, GraphContent } from '@bcrumbs.net/bc-api';
 import { SHORTCUT_KEYS } from './Constants';
@@ -14,6 +14,7 @@ function Chart({ data }: { config: Config; data: GraphContent[] }) {
   const rootContent = data[0];
   const [zoomLevel, setZoomLevel] = useState(100);
   const [selectedModules, setSelectedModules] = useState([]);
+  const [duration, setDuration] = useState(0);
   const [selectedModule, setSelectedModule] = useState<NodeType>();
   const [currentVersion, setCurentVersion] = useState<ChartType>(
     parseContentsToNodes(data)
@@ -190,12 +191,14 @@ function Chart({ data }: { config: Config; data: GraphContent[] }) {
             deselectModules={deselectModules}
             organizeModules={organizeModules}
             changeZoomLevel={changeZoomLevel}
+            setDuration={setDuration}
           />
         </div>
         <DescriptionDrawer
           module={selectedModule}
           open={!!selectedModule && selectedModules.length === 1}
           onClose={() => setSelectedModule(undefined)}
+          duration={duration}
         >
           <div
             dangerouslySetInnerHTML={{ __html: selectedModule?.description }}

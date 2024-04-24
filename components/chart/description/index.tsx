@@ -9,6 +9,7 @@ import { NodeType } from '../types';
 type DrawerProps = {
     module: NodeType;
     open: boolean;
+    duration: number;
     onClose: () => void;
 };
 
@@ -112,7 +113,7 @@ const ToastMessage = styled.span`
   font-size: 14px;
   font-weight: bold;
 `;
-const Drawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, onClose, module, children }) => {
+const Drawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, onClose, module, duration, children }) => {
     const tags = module?.tags?.split(",");
     const drawerRef = useRef(null);
     const descriptionPanelRef = useRef(null);
@@ -123,6 +124,7 @@ const Drawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, onClose, modul
             if (
                 open &&
                 drawerRef.current &&
+                duration < 120 &&
                 !drawerRef.current.contains(event.target) &&
                 !descriptionPanelRef.current.contains(event.target)
             ) {
