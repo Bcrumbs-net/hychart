@@ -37,6 +37,7 @@ function convertContentsToNodes(
       sub_title: contentData.sub_title,
       description: contentData.description,
       city: contentData.city,
+      tags: contentData.tags,
       icon: contentData.icon,
       main: Boolean(contentData.main),
       parentIds: [parentId, ...(childToParentMap.get(content.id) || [])],
@@ -62,14 +63,15 @@ function getNodeConnectionList(content, contentData) {
   return [
     ...(contentData.indirect_connections
       ? contentData.indirect_connections
-          .split(",")
-          .filter((id) => id && id !== " ")
-          .map((id) => ({ id: +id }))
+
+        .split(',')
+        .filter((id) => id && id !== ' ')
+        .map((id) => ({ id: +id }))
       : []),
     ...(content.children
       ? content.children.sort(compareNodesOnY).map((subContent) => ({
-          id: subContent.id,
-        }))
+        id: subContent.id,
+      }))
       : []),
   ];
 }

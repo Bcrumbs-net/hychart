@@ -27,6 +27,7 @@ export type NodeType = {
   icon: string;
   main: boolean;
   parentIds: number[];
+  tags: string;
   id: number;
 };
 
