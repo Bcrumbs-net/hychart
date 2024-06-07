@@ -8,7 +8,7 @@
  * - islamic-scholars.hy
  */
 export function checkIfKnownDomain(targetDomain: string) {
- 
+
   if (
     !targetDomain ||
     targetDomain.indexOf('localhost') >= 0 ||
