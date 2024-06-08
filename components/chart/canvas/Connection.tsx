@@ -7,7 +7,9 @@ export type ModuleConnectionProps = {
   toY: number;
   fromColor: string;
   toColor: string;
+  parentColor: string;
   isSelected: boolean;
+  hasChildrenSelected: boolean;
 };
 
 function ModuleConnection({
@@ -17,13 +19,14 @@ function ModuleConnection({
   toY,
   fromColor,
   toColor,
+  parentColor,
   isSelected,
+  hasChildrenSelected,
 }: ModuleConnectionProps) {
   const coordinateList = [`M ${fromX} ${fromY}`];
   const middleX = (fromX + toX) / 2;
   const middleY = (fromY + toY) / 2;
   const spaceFromX = 20;
-
   if (fromX >= toX) {
     coordinateList.push(`L ${fromX + spaceFromX} ${fromY},`);
     coordinateList.push(`L ${fromX + spaceFromX} ${middleY},`);
@@ -38,8 +41,8 @@ function ModuleConnection({
     coordinateList.push(`L ${middleX} ${fromY},`);
     coordinateList.push(`L ${middleX} ${toY},`);
   }
-
   coordinateList.push(`${toX} ${toY}`);
+
   return (
     <>
       <path
@@ -57,7 +60,6 @@ function ModuleConnection({
         }}
         key={`${fromX}-${toX}-${fromY}-${toY}-polyline`}
       />
-      ,
       {isSelected ? (
         <path
           d={coordinateList.join(' ')}
@@ -73,10 +75,28 @@ function ModuleConnection({
             zIndex: 9,
           }}
           key={`${fromX}-${toX}-${fromY}-${toY}-polyline2`}
-          className={'connection'}
+          className="connection"
         />
       ) : null}
-      ,
+
+      {hasChildrenSelected ? (
+        <path
+          d={coordinateList.join(' ')}
+          stroke="black"
+          fill="transparent"
+          strokeDasharray="5 5"
+          strokeLinecap="round"
+          strokeLinejoin="bevel"
+          style={{
+            fill: 'none',
+            stroke: parentColor,
+            strokeWidth: 3,
+            zIndex: 9,
+          }}
+          key={`${fromX}-${toX}-${fromY}-${toY}-polyline3`}
+          className="connection"
+        />
+      ) : null}
       <circle
         cx={fromX}
         cy={fromY}
@@ -86,14 +106,12 @@ function ModuleConnection({
         fill={fromColor}
         key={`${fromX}-${toX}-circle`}
       />
-      ,
       <polygon
         points={`${toX - 6},${toY - 4} ${toX - 6},${toY + 4} ${toX},${toY} `}
         stroke={toColor}
         fill={toColor}
         key={`${fromX}-${toX}-polygon`}
       />
-      ,
     </>
   );
 }
