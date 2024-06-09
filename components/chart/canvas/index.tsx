@@ -52,7 +52,7 @@ function Canvas({
       clientX: 0,
       clientY: 0,
     });
-  }, []);
+  }, [setIsScrolling, setScrollState]);
 
   const onMouseDown = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
@@ -69,7 +69,7 @@ function Canvas({
         }
       }
     },
-    []
+    [setIsScrolling, setScrollState]
   );
 
   const onDrop = useCallback(
@@ -92,7 +92,7 @@ function Canvas({
         canvas.scrollTop = scrollTop + clientY - event.clientY;
       }
     },
-    [scrollState]
+    [scrollState, canvasRef]
   );
 
   const toggleScrolling = useCallback(
