@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import Multiselect from 'multiselect-react-dropdown';
 import styled from 'styled-components';
+import useTagsEnumValuesQuery from '../../../bootstrapers/hychart/utils/useTagsEnumValuesQuery';
 
 const BCTagsInputWrapper = styled.div`
   display: flex;
@@ -11,7 +12,7 @@ const BCTagsInputWrapper = styled.div`
   input {
     height: 20px;
     width: auto;
-    padding: 0;
+    padding: 2px;
     margin: 0;
     ::placeholder {
       color: #000;
@@ -20,77 +21,106 @@ const BCTagsInputWrapper = styled.div`
   }
   .searchWrapper {
     background-color: #fff;
-    border: 1px solid #000;
+    border: solid 1px var(--bc-secondary-light-hover);
     border-radius: 20px;
     min-height: auto;
     padding: 4px;
-    chip {
+    width: auto; 
+    color: var(--bc-secondary-light-hover);
+    .chip {
       margin-bottom: 0;
       padding: 2px 8px;
+      background-color: #699041;
     }
   }
-`;
-
-const SystemTags = [
-  'العقيدة',
-  'الفقه',
-  'التفسير',
-  'الحديث',
-  'القراءات',
-  'أصول التفسير',
-  'أصول الفقه',
-  'النحو والصرف',
-  'البلاغة',
-  'المنطق',
-  'مصطلح الحديث',
-  'القواعد الفقهية',
-  'التاريخ',
-  'التراجم',
-  'أصول الدين',
-];
-
-const removeTagsFromURL = () => {
-  const queryParams = new URLSearchParams(window.location.search);
-  queryParams.delete('tags');
-  const currentURL = window.location.href;
-  let updatedURL = currentURL.split('?')[0];
-
-  if (queryParams.toString()) {
-    updatedURL += `?${queryParams.toString()}`;
+  .optionListContainer {
+    position: fixed;
+    z-index: 1000;
+    width: auto; 
+    ul {
+      border-radius: 10px;
+      margin-top: -2px;
+      height: 500px;  
+      max-width:auto;
+      overflow-y: auto; /* Add vertical scrollbar when content overflows */
+      overflow-x: hidden; /* Hide horizontal scrollbar if any */
+      scrollbar-width: thin;
+      scrollbar-color: #c8c1c1 transparent;
+      li {
+        color: #000;
+        font-size: 13px;
+        background-color: #f3eded;
+        width: 400px;
+        padding: 9px 4px 9px 40px;
+        display: block;
+        cursor: pointer;
+        height: 45px;
+        font-weight: 400;
+      }
+      li:first-of-type {
+        border-radius: 5px 20px 0 0;
+      }
+      li:last-child {
+        border-radius: 0 0 5px 20px;
+      }
+      li:first-child:last-child {
+        border-radius: 8px 15px 8px 18px;
+      }
+      li:hover {
+        background-color: #c8c1c1;
+      }
+    min-height: auto;
   }
+`;
+// Moved the URL management functions to a separate module
+const URLManager = {
+  removeTagsFromURL: () => {
+    const queryParams = new URLSearchParams(window.location.search);
+    queryParams.delete('tags');
+    const currentURL = window.location.href;
+    let updatedURL = currentURL.split('?')[0];
 
-  window.history.pushState({ path: updatedURL }, '', updatedURL);
+    if (queryParams.toString()) {
+      updatedURL += `?${queryParams.toString()}`;
+    }
+
+    window.history.pushState({ path: updatedURL }, '', updatedURL);
+  },
+  handleUpdateURL: (tags) => {
+    const tagNames = tags.map((tag) => tag.name);
+    const queryParams = new URLSearchParams(window.location.search);
+    queryParams.set('tags', tagNames.join(', '));
+    const currentURL = window.location.href;
+    const updatedURL = `${currentURL.split('?')[0]}?${queryParams.toString()}`;
+    window.history.pushState({ path: updatedURL }, '', updatedURL);
+  },
 };
 
-const handleUpdateURL = (tags) => {
-  const tagNames = tags.map((tag) => tag.name);
-  const queryParams = new URLSearchParams(window.location.search);
-  queryParams.set('tags', tagNames.join(', '));
-  const currentURL = window.location.href;
-  const updatedURL = `${currentURL.split('?')[0]}?${queryParams.toString()}`;
-  window.history.pushState({ path: updatedURL }, '', updatedURL);
-};
-
-const TagsInput = ({ predefinedTags }) => {
+const TagsInput = () => {
   const [tags, setTags] = useState([]);
+  const { enumValues } = useTagsEnumValuesQuery(403027);
 
   const onAdd = useCallback(
-    (selectedList: any, selectedItem: any) => {
-      const newTags = [...tags, selectedItem];
-      setTags(newTags);
-      handleUpdateURL(newTags);
+    (selectedList, selectedItem) => {
+      if (selectedList.length <= 3) {
+        const newTags = [...tags, selectedItem];
+        setTags(newTags);
+        URLManager.handleUpdateURL(newTags);
+      } else {
+        console.log('Maximum of 3 tags reached.');
+      }
     },
     [tags]
   );
 
   const onRemove = useCallback(
-    (selectedList: any, selectedItem: string) => {
+    (selectedList, selectedItem) => {
       const newTags = tags.filter((m) => m !== selectedItem);
       setTags(newTags);
       if (newTags.length === 0) {
-        removeTagsFromURL();
+        URLManager.removeTagsFromURL();
       } else {
-        handleUpdateURL(newTags);
+        URLManager.handleUpdateURL(newTags);
       }
     },
     [tags]
@@ -99,11 +129,11 @@ const TagsInput = ({ predefinedTags }) => {
   return (
     <BCTagsInputWrapper>
       <Multiselect
-        options={SystemTags.map((m) => ({ name: m }))}
+        options={enumValues?.map((enumValue) => ({ name: enumValue.value, id: enumValue.id }))}
         displayValue="name"
         isObject={true}
-        selectedValues={tags}
         onSelect={onAdd}
+        selectionLimit={3}
         onRemove={onRemove}
         placeholder="Select tags"
       />
