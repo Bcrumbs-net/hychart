@@ -13,7 +13,6 @@ function ConnectionsCanvas({
   selectedModules,
 }: ConnectionsCanvasProps) {
   const selectedModule = selectedModules[0];
-
   const connectionList = useMemo(() => {
     const connectionList = [];
     for (const fromID in currentVersion.nodes) {
@@ -43,15 +42,14 @@ function ConnectionsCanvas({
           // toColor: ModuleInfo.getColor(toNode.type),
           fromColor: '#00589C',
           toColor: '#00589C',
+          parentColor: '#9c0017',
         });
       }
     }
 
     return connectionList;
   }, [currentVersion]);
-
   if (!currentVersion || !currentVersion.nodes) return null;
-
   return (
     <svg height="100%" width="100%" className="SVG_SPACE">
       {connectionList.map((conn) => (
@@ -61,6 +59,7 @@ function ConnectionsCanvas({
             selectedModule + '' === conn.fromID ||
             selectedModule + '' === conn.toID
           }
+          hasChildrenSelected={selectedModule === conn.toID}
           key={conn.fromID + '-' + conn.toID + '-' + conn.fromX + conn.fromY}
         />
       ))}

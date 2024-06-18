@@ -3,6 +3,8 @@ export type SelectModuleFunc = (
   groupSelect?: boolean
 ) => void;
 
+export type DeselectModuleFunc = (callback: () => void) => void;
+
 export enum NodeVariant {
   Person = "Person",
   Book = "Book",
@@ -24,6 +26,7 @@ export type NodeType = {
   city: string;
   icon: string;
   main: boolean;
+  parentIds: number[];
   tags: string;
   id: number;
 };
