@@ -45,6 +45,9 @@ function Canvas({
   });
 
   const onMouseUp = useCallback(() => {
+    if (scrollState.scrollLeft < 50) {
+      deselectModules();
+    }
     setIsScrolling(false);
     setScrollState({
       scrollLeft: 0,
@@ -52,7 +55,7 @@ function Canvas({
       clientX: 0,
       clientY: 0,
     });
-  }, [setIsScrolling, setScrollState]);
+  }, [setIsScrolling, setScrollState, deselectModules, scrollState]);
 
   const onMouseDown = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
@@ -106,17 +109,6 @@ function Canvas({
     [onMouseMove, deselectModules]
   );
 
-  const handleClick = useCallback(
-    (event) => {
-      if (event.target.closest('.designArea')) {
-        const { scrollLeft, scrollTop } = canvasRef.current;
-        if (scrollLeft < 50 && scrollTop < 50) {
-          deselectModules();
-        }
-      }
-    },
-    [deselectModules]
-  );
 
   useEffect(() => {
     toggleScrolling(isScrolling);
@@ -144,7 +136,6 @@ function Canvas({
         ref={canvasRef}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
-        onClick={handleClick}
       >
         <div
           ref={wrapperRef}
