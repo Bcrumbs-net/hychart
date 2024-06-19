@@ -45,7 +45,8 @@ function Canvas({
   });
 
   const onMouseUp = useCallback(() => {
-    if (scrollState.scrollLeft < 50) {
+    const canvas = canvasRef.current;
+    if ((canvas.scrollLeft + canvas.scrollTop) - (scrollState.scrollLeft + scrollState.scrollTop) < 50) {
       deselectModules();
     }
     setIsScrolling(false);
@@ -76,12 +77,14 @@ function Canvas({
   );
 
   const onDrop = useCallback(
-    (ev: React.DragEvent<HTMLDivElement>) => {
-      moveModule(
-        Number(ev.dataTransfer.getData('id')),
-        (ev.clientX - Number(ev.dataTransfer.getData('clientX'))) / (zoomLevel / 100),
-        (ev.clientY - Number(ev.dataTransfer.getData('clientY'))) / (zoomLevel / 100)
-      );
+    (ev) => {
+      if ((ev.dataTransfer.getData('clientX') + ev.dataTransfer.getData('clientY')) > 0) {
+        moveModule(
+          Number(ev.dataTransfer.getData('id')),
+          (ev.clientX - Number(ev.dataTransfer.getData('clientX'))) / (zoomLevel / 100),
+          (ev.clientY - Number(ev.dataTransfer.getData('clientY'))) / (zoomLevel / 100)
+        );
+      }
     },
     [zoomLevel, moveModule]
   );

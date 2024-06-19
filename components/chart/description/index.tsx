@@ -118,25 +118,6 @@ const Drawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, onClose, modul
     const descriptionPanelRef = useRef(null);
     const [successMessage, setSuccessMessage] = useState<string>('');
     const [errorMessage, setErrorMessage] = useState<string>('');
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (
-                open &&
-                event.scrollLeft < 50 && event.scrollTop < 50 &&
-                drawerRef.current &&
-                !drawerRef.current.contains(event.target) &&
-                !descriptionPanelRef.current.contains(event.target)
-            ) {
-                onClose();
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [onClose, open]);
-
     const copyURLWithNodeID = (nodeID: number | null) => {
         const queryParams = parse(window.location.search);
         queryParams['n'] = nodeID !== null ? String(nodeID) : '';
