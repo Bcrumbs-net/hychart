@@ -46,7 +46,11 @@ function Canvas({
 
   const onMouseUp = useCallback(() => {
     const canvas = canvasRef.current;
-    if ((canvas.scrollLeft + canvas.scrollTop) - (scrollState.scrollLeft + scrollState.scrollTop) < 50) {
+    if (
+      Math.abs(canvas.scrollLeft - scrollState.scrollLeft) +
+        Math.abs(canvas.scrollTop - scrollState.scrollTop) <
+      10
+    ) {
       deselectModules();
     }
     setIsScrolling(false);
@@ -62,7 +66,10 @@ function Canvas({
     (event: React.MouseEvent<HTMLDivElement>) => {
       if (canvasRef.current) {
         const { scrollLeft, scrollTop } = canvasRef.current;
-        if (event.target instanceof SVGElement && event.target.className.baseVal === 'SVG_SPACE') {
+        if (
+          event.target instanceof SVGElement &&
+          event.target.className.baseVal === 'SVG_SPACE'
+        ) {
           setIsScrolling(true);
           setScrollState({
             scrollLeft,
@@ -78,11 +85,17 @@ function Canvas({
 
   const onDrop = useCallback(
     (ev) => {
-      if ((ev.dataTransfer.getData('clientX') + ev.dataTransfer.getData('clientY')) > 0) {
+      if (
+        ev.dataTransfer.getData('clientX') +
+          ev.dataTransfer.getData('clientY') >
+        0
+      ) {
         moveModule(
           Number(ev.dataTransfer.getData('id')),
-          (ev.clientX - Number(ev.dataTransfer.getData('clientX'))) / (zoomLevel / 100),
-          (ev.clientY - Number(ev.dataTransfer.getData('clientY'))) / (zoomLevel / 100)
+          (ev.clientX - Number(ev.dataTransfer.getData('clientX'))) /
+            (zoomLevel / 100),
+          (ev.clientY - Number(ev.dataTransfer.getData('clientY'))) /
+            (zoomLevel / 100)
         );
       }
     },
@@ -112,7 +125,6 @@ function Canvas({
     [onMouseMove, deselectModules]
   );
 
-
   useEffect(() => {
     toggleScrolling(isScrolling);
 
@@ -127,9 +139,15 @@ function Canvas({
         <div className="zoomLevelSelector">
           <i className="flaticon-atom" onClick={organizeModules} />
           |
-          <i className="flaticon-minus-symbol" onClick={() => changeZoomLevel(-10)} />
+          <i
+            className="flaticon-minus-symbol"
+            onClick={() => changeZoomLevel(-10)}
+          />
           {zoomLevel + '%'}
-          <i className="flaticon-plus-symbol" onClick={() => changeZoomLevel(10)} />
+          <i
+            className="flaticon-plus-symbol"
+            onClick={() => changeZoomLevel(10)}
+          />
         </div>
       </div>
       <Scrollbars
