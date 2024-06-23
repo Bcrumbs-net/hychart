@@ -154,7 +154,7 @@ function Canvas({
         style={{ width: '100%', height: '100%' }}
         className="designArea"
         id="canvas"
-        ref={canvasRef}
+        ref={canvasRef as any}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
       >

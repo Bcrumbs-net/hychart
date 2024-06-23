@@ -88,11 +88,9 @@ const HeaderWapper = styled.div`
 export default function Header({
   showModulesSearch,
   chartName,
-  predefinedTags,
 }: {
   showModulesSearch: (state: boolean) => void;
   chartName: string;
-  predefinedTags: string[];
 }) {
 
   return (
@@ -105,7 +103,7 @@ export default function Header({
         </button>
       </div>
       <div className="leftSide">
-        <TagsInput predefinedTags={predefinedTags} />
+        <TagsInput />
       </div>
     </HeaderWapper>
   );
