@@ -19,14 +19,13 @@ function ModulesCanvas({
   return (
     <>
       {Object.keys(currentVersion.nodes).map((moduleKey) => {
-        const module = currentVersion.nodes[moduleKey];
-        const selected =
-          selectedModules.filter((m) => m === module.id).length > 0;
+        const m = currentVersion.nodes[moduleKey];
+        const selected = selectedModules.includes(+moduleKey);
         return (
           <Module
-            key={module.id}
+            key={m.id}
             isSelected={selected}
-            module={module}
+            module={m}
             selectModule={selectModule}
           />
         );

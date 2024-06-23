@@ -1,14 +1,16 @@
 {
-  "root": "packages/hychart",
+  "name": "hychart",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/hychart",
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/next:build",
-      "outputs": ["{options.outputPath}"],
+      "executor": "@nx/next:build",
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "defaultConfiguration": "production",
       "options": {
-        "root": "packages/hychart",
         "outputPath": "dist/packages/hychart"
       },
       "configurations": {
@@ -16,7 +18,7 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/next:server",
+      "executor": "@nx/next:server",
       "options": {
         "buildTarget": "hychart:build",
         "dev": true
@@ -29,24 +31,30 @@
       }
     },
     "export": {
-      "executor": "@nrwl/next:export",
+      "executor": "@nx/next:export",
       "options": {
         "buildTarget": "hychart:build:production"
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/hychart"],
+      "executor": "@nx/jest:jest",
+      "outputs": [
+        "{workspaceRoot}/coverage/packages/hychart"
+      ],
       "options": {
         "jestConfig": "packages/hychart/jest.config.js",
         "passWithNoTests": true
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "outputs": ["{options.outputFile}"],
+      "executor": "@nx/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
       "options": {
-        "lintFilePatterns": ["packages/hychart/**/*.{ts,tsx,js,jsx}"]
+        "lintFilePatterns": [
+          "packages/hychart/**/*.{ts,tsx,js,jsx}"
+        ]
       }
     }
   },

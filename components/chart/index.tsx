@@ -1,31 +1,26 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { HotKeys } from 'react-hotkeys';
 import { Config, GraphContent } from '@bcrumbs.net/bc-api';
 import { SHORTCUT_KEYS } from './Constants';
-import organizeModulesProc from './organizeModules';
 import Canvas from './canvas';
 import Header from './header';
 import Search, { SearchType } from './search';
-import { ChartType } from './types';
+import { ChartType, NodeType } from './types';
 import parseContentsToNodes from './parseContentsToNodes';
+import DescriptionDrawer from './description';
+import { parse } from 'querystring';
 
-function Chart({
-  data,
-  keydown,
-}: {
-  config: Config;
-  data: GraphContent[];
-  keydown: any;
-}) {
+function Chart({ data }: { config: Config; data: GraphContent[] }) {
   const rootContent = data[0];
   const [zoomLevel, setZoomLevel] = useState(100);
   const [selectedModules, setSelectedModules] = useState([]);
+  const [selectedModule, setSelectedModule] = useState<NodeType>();
   const [currentVersion, setCurentVersion] = useState<ChartType>(
     parseContentsToNodes(data)
   );
   const [showSearch, setShowSearch] = useState(false);
   const [search, setSearch] = useState<SearchType>({
-    value: null,
+    value: '',
     isValid: true,
     message: '',
   });
@@ -55,52 +50,71 @@ function Chart({
     ZOOM_OUT: () => changeZoomLevel(10),
   };
 
-  const selectModule = useCallback(
-    (id: number, groupSelect?: boolean) => {
-      let newSelectedModules = selectedModules;
-      if (groupSelect) {
-        if (
-          newSelectedModules &&
-          newSelectedModules.filter((m) => m === id).length <= 0
-        )
-          newSelectedModules.push(id);
-        else newSelectedModules = selectedModules.filter((m) => m !== id);
-      } else if (
-        newSelectedModules &&
-        newSelectedModules.length === 1 &&
-        newSelectedModules[0] === id
-      )
-        newSelectedModules = [];
-      else newSelectedModules = [id];
+  const findModuleById = (id: number): NodeType | undefined => {
+    const arrayOfNodes = Object.keys(currentVersion.nodes).map(
+      (key) => currentVersion.nodes[key]
+    );
+    const m: NodeType = arrayOfNodes.find((module) => module.id === id);
+    return m ? m : undefined;
+  };
 
-      setSelectedModules(newSelectedModules);
+  const deselectModules = useCallback(() => {
+    setSelectedModules([]);
+    setSelectedModule(undefined);
+  }, [setSelectedModules]);
+
+  const selectModule = useCallback(
+    (module: NodeType, groupSelect?: boolean) => {
+      if (
+        selectedModule &&
+        selectedModule.id === module.id &&
+        selectedModules.length == 1
+      ) {
+        deselectModules();
+      } else {
+        setSelectedModule(module);
+
+        let newSelectedModules = selectedModules;
+        if (groupSelect) {
+          if (
+            newSelectedModules &&
+            newSelectedModules.filter((m) => m === module.id).length <= 0
+          )
+            newSelectedModules.push(module.id);
+          else
+            newSelectedModules = selectedModules.filter((m) => m !== module.id);
+        } else if (
+          newSelectedModules &&
+          newSelectedModules.length === 1 &&
+          newSelectedModules[0] === module.id
+        )
+          newSelectedModules = [];
+        else newSelectedModules = [module.id];
+        setSelectedModules(newSelectedModules);
+      }
     },
-    [selectedModules, setSelectedModules]
+    [selectedModules, setSelectedModules, selectedModule, deselectModules]
   );
 
   const focusModule = useCallback(
-    (name: string) => {
+    (id: string) => {
       if (currentVersion && currentVersion.nodes) {
-        const moduleNumberTrimmed = name.substring(0, name.indexOf('>'));
-
-        const moduleId = parseInt(moduleNumberTrimmed);
-
-        Object.keys(currentVersion.nodes).forEach((key) => {
-          const node = currentVersion.nodes[key];
-          if (node.id === moduleId) {
-            const toX = node.x;
-            const toy = node.y;
-            const canvas = document.getElementById('canvas');
-            canvas.scrollLeft = toX - 500 > 0 ? toX - 500 : 0;
-            canvas.scrollTop = toy - 250 > 0 ? toy - 250 : 0;
-            selectModule(moduleId);
-            setShowSearch(false);
-            setSearch({ value: '', isValid: true, message: '' });
-          }
-        });
+        const moduleId = parseInt(id);
+        const node = findModuleById(moduleId);
+        if (node) {
+          selectModule(node);
+          setShowSearch(false);
+          setSearch({ value: '', isValid: true, message: '' });
+        }
       }
     },
-    [currentVersion, selectModule, setShowSearch, setSearch]
+    [
+      currentVersion,
+      setSelectedModule,
+      setSelectedModules,
+      setShowSearch,
+      setSearch,
+    ]
   );
 
   const changeZoomLevel = useCallback(
@@ -108,14 +122,6 @@ function Chart({
       setZoomLevel(Math.min(Math.max(20, zoomLevel + delta), 300));
     },
     [zoomLevel, setZoomLevel]
-  );
-
-  const deselectModule = useCallback(
-    (callback: () => void) => {
-      setSelectedModules([]);
-      callback?.();
-    },
-    [setSelectedModules]
   );
 
   const moveModule = useCallback(
@@ -151,12 +157,20 @@ function Chart({
     [selectedModules, setCurentVersion, currentVersion]
   );
 
-  //TODO: Not working fine
   const organizeModules = useCallback(() => {
-    const newVersion = organizeModulesProc(currentVersion);
-    setCurentVersion(newVersion);
-  }, [currentVersion, setCurentVersion]);
+    const originVersion = parseContentsToNodes(data);
+    setCurentVersion(originVersion);
+  }, [data, setCurentVersion]);
 
+  useEffect(() => {
+    const queryParams = parse(window.location.search);
+    const nodeIdFromUrl = queryParams['?n']
+      ? parseInt(queryParams['?n'] as string)
+      : null;
+    if (nodeIdFromUrl !== null) {
+      focusModule(nodeIdFromUrl.toString());
+    }
+  }, [focusModule]);
   return (
     //@ts-ignore
     <HotKeys keyMap={SHORTCUT_KEYS} handlers={shortcutHandlers}>
@@ -172,10 +186,20 @@ function Chart({
             selectModule={selectModule}
             currentVersion={currentVersion}
             selectedModules={selectedModules}
+            deselectModules={deselectModules}
             organizeModules={organizeModules}
             changeZoomLevel={changeZoomLevel}
           />
         </div>
+        <DescriptionDrawer
+          module={selectedModule}
+          open={!!selectedModule && selectedModules.length === 1}
+          onClose={() => setSelectedModule(undefined)}
+        >
+          <div
+            dangerouslySetInnerHTML={{ __html: selectedModule?.description }}
+          />
+        </DescriptionDrawer>
         {showSearch ? (
           <Search
             currentVersion={currentVersion}

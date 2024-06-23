@@ -4,7 +4,7 @@ import Head from 'next/head';
 import ErrorSec from '../components/error';
 import { ResetCSS } from '../public/assets/css/style';
 
-class Error extends React.Component<{ statusCode: string }> {
+class Error extends React.Component<{ statusCode?: string }> {
   static async getInitialProps({ res, err }) {
     const statusCode = res ? res.statusCode : err ? err.statusCode : null;
     return { statusCode };
@@ -24,11 +24,7 @@ class Error extends React.Component<{ statusCode: string }> {
         {/*@ts-ignore: Unreachable code error */}
         <ResetCSS />
         <div>
-          {this.props.statusCode ? (
-            `An error ${this.props.statusCode} occurred on server`
-          ) : (
-            <ErrorSec></ErrorSec>
-          )}
+          <ErrorSec ></ErrorSec>
         </div>
       </>
     );

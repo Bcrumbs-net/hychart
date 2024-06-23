@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import ModuleInfo from '../moduleBlocks/ModuleInfo';
 import ModuleConnection from './Connection';
 import { BLOCK_HEIGHT, BLOCK_WIDTH } from '../Constants';
 import { ChartType } from '../types';
@@ -14,7 +13,6 @@ function ConnectionsCanvas({
   selectedModules,
 }: ConnectionsCanvasProps) {
   const selectedModule = selectedModules[0];
-
   const connectionList = useMemo(() => {
     const connectionList = [];
     for (const fromID in currentVersion.nodes) {
@@ -36,21 +34,22 @@ function ConnectionsCanvas({
         connectionList.push({
           fromID: fromID,
           toID: toID,
-          fromX: fromNode.x + BLOCK_WIDTH, // x coordinate of origin of arrow
-          fromY: fromNode.y + (i + 1) * (BLOCK_HEIGHT / (numberOfFromConn + 1)), // y coordinate of origin of arrow
+          fromX: fromNode.x + BLOCK_WIDTH - 8, // x coordinate of origin of arrow
+          fromY: fromNode.y + (i + 1) * (BLOCK_HEIGHT * 0.6 / (numberOfFromConn + 1)) + 20, // y coordinate of origin of arrow
           toX: toNode.x, // x coordinate of target of arrow
           toY: toNode.y + BLOCK_HEIGHT / 2, // y coordinate of target of arrow
-          fromColor: ModuleInfo.getColor(fromNode.type),
-          toColor: ModuleInfo.getColor(toNode.type),
+          // fromColor: ModuleInfo.getColor(fromNode.type),
+          // toColor: ModuleInfo.getColor(toNode.type),
+          fromColor: '#00589C',
+          toColor: '#00589C',
+          parentColor: '#9c0017',
         });
       }
     }
 
     return connectionList;
   }, [currentVersion]);
-
   if (!currentVersion || !currentVersion.nodes) return null;
-
   return (
     <svg height="100%" width="100%" className="SVG_SPACE">
       {connectionList.map((conn) => (
@@ -60,6 +59,7 @@ function ConnectionsCanvas({
             selectedModule + '' === conn.fromID ||
             selectedModule + '' === conn.toID
           }
+          hasChildrenSelected={selectedModule === conn.toID}
           key={conn.fromID + '-' + conn.toID + '-' + conn.fromX + conn.fromY}
         />
       ))}

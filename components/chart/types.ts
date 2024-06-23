@@ -1,11 +1,14 @@
-export type SelectModuleFunc = (id: number, groupSelect?: boolean) => void;
+export type SelectModuleFunc = (
+  module: NodeType,
+  groupSelect?: boolean
+) => void;
 
 export type DeselectModuleFunc = (callback: () => void) => void;
 
 export enum NodeVariant {
-  Person = 'Person',
-  Book = 'Book',
-  Idea = 'Idea',
+  Person = "Person",
+  Book = "Book",
+  Idea = "Idea",
 }
 
 export type ConnectionType = {
@@ -18,8 +21,13 @@ export type NodeType = {
   y: number;
   connections: ConnectionType[];
   title: string;
+  sub_title: string;
   description: string;
+  city: string;
+  icon: string;
   main: boolean;
+  parentIds: number[];
+  tags: string;
   id: number;
 };
 

@@ -2,8 +2,9 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 // import { BCTooltip } from '@bcrumbs.net/bc-ui';
 import ModulesCanvas from './ModulesCanvas';
 import ConnectionsCanvas from './ConnectionsCanvas';
-import { DeselectModuleFunc, SelectModuleFunc } from '../types';
+import { SelectModuleFunc } from '../types';
 //import './styles.scss';
+import Scrollbars from 'react-scrollbars-custom';
 
 export type ScrollPositionType = {
   scrollLeft?: number;
@@ -19,6 +20,7 @@ export type CanvasProps = {
   selectModule: SelectModuleFunc;
   changeZoomLevel: (value: number) => void;
   organizeModules: () => void;
+  deselectModules: () => void;
   moveModule: (id: number, x: number, y: number) => void;
 };
 
@@ -27,29 +29,47 @@ function Canvas({
   currentVersion,
   selectedModules,
   selectModule,
+  deselectModules,
   changeZoomLevel,
   organizeModules,
   moveModule,
 }: CanvasProps) {
-  const canvasRef = useRef<HTMLDivElement>();
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const [isScrolling, setIsScrolling] = useState(false);
-  const [scrollState, setScrollState] = useState<ScrollPositionType>();
+  const [scrollState, setScrollState] = useState<ScrollPositionType>({
+    scrollLeft: 0,
+    scrollTop: 0,
+    clientX: 0,
+    clientY: 0,
+  });
 
   const onMouseUp = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (
+      Math.abs(canvas.scrollLeft - scrollState.scrollLeft) +
+        Math.abs(canvas.scrollTop - scrollState.scrollTop) <
+      10
+    ) {
+      deselectModules();
+    }
     setIsScrolling(false);
     setScrollState({
-      clientX: 0,
-      clientY: 0,
       scrollLeft: 0,
       scrollTop: 0,
+      clientX: 0,
+      clientY: 0,
     });
-  }, [setIsScrolling, setScrollState]);
+  }, [setIsScrolling, setScrollState, deselectModules, scrollState]);
 
   const onMouseDown = useCallback(
-    (event) => {
-      if (canvasRef?.current) {
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      if (canvasRef.current) {
         const { scrollLeft, scrollTop } = canvasRef.current;
-        if (event.target.className.baseVal === 'SVG_SPACE') {
+        if (
+          event.target instanceof SVGElement &&
+          event.target.className.baseVal === 'SVG_SPACE'
+        ) {
           setIsScrolling(true);
           setScrollState({
             scrollLeft,
@@ -65,35 +85,44 @@ function Canvas({
 
   const onDrop = useCallback(
     (ev) => {
-      moveModule(
-        ev.dataTransfer.getData('id'),
-        (ev.clientX - ev.dataTransfer.getData('clientX')) / (zoomLevel / 100),
-        (ev.clientY - ev.dataTransfer.getData('clientY')) / (zoomLevel / 100)
-      );
+      if (
+        ev.dataTransfer.getData('clientX') +
+          ev.dataTransfer.getData('clientY') >
+        0
+      ) {
+        moveModule(
+          Number(ev.dataTransfer.getData('id')),
+          (ev.clientX - Number(ev.dataTransfer.getData('clientX'))) /
+            (zoomLevel / 100),
+          (ev.clientY - Number(ev.dataTransfer.getData('clientY'))) /
+            (zoomLevel / 100)
+        );
+      }
     },
     [zoomLevel, moveModule]
   );
 
   const onMouseMove = useCallback(
-    (event) => {
+    (event: MouseEvent) => {
       const { clientX, scrollLeft, scrollTop, clientY } = scrollState;
-      if (canvasRef && canvasRef.current) {
-        canvasRef.current.scrollLeft = scrollLeft + clientX - event.clientX;
-        canvasRef.current.scrollTop = scrollTop + clientY - event.clientY;
+      if (canvasRef.current) {
+        const canvas = canvasRef.current;
+        canvas.scrollLeft = scrollLeft + clientX - event.clientX;
+        canvas.scrollTop = scrollTop + clientY - event.clientY;
       }
     },
     [scrollState, canvasRef]
   );
 
   const toggleScrolling = useCallback(
-    (isEnable) => {
+    (isEnable: boolean) => {
       if (isEnable) {
         window.addEventListener('mousemove', onMouseMove);
       } else {
         window.removeEventListener('mousemove', onMouseMove);
       }
     },
-    [onMouseMove]
+    [onMouseMove, deselectModules]
   );
 
   useEffect(() => {
@@ -110,21 +139,29 @@ function Canvas({
         <div className="zoomLevelSelector">
           <i className="flaticon-atom" onClick={organizeModules} />
           |
-          <i className="flaticon-minus-symbol" onClick={() => changeZoomLevel(-10)} />
+          <i
+            className="flaticon-minus-symbol"
+            onClick={() => changeZoomLevel(-10)}
+          />
           {zoomLevel + '%'}
-          <i className="flaticon-plus-symbol" onClick={() => changeZoomLevel(10)} />
+          <i
+            className="flaticon-plus-symbol"
+            onClick={() => changeZoomLevel(10)}
+          />
         </div>
       </div>
-      <div
-        id="canvas"
+      <Scrollbars
+        style={{ width: '100%', height: '100%' }}
         className="designArea"
-        ref={canvasRef}
-        style={{ zoom: zoomLevel + '%' }}
+        id="canvas"
+        ref={canvasRef as any}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
       >
         <div
+          ref={wrapperRef}
           id="designAreaInner"
+          style={{ zoom: `${zoomLevel}%` }}
           className="designAreaInner"
           onDragOver={(ev) => {
             ev.preventDefault();
@@ -141,7 +178,7 @@ function Canvas({
             selectedModules={selectedModules}
           />
         </div>
-      </div>
+      </Scrollbars>
     </>
   );
 }
