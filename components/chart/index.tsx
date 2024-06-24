@@ -178,7 +178,6 @@ function Chart({ data }: { config: Config; data: GraphContent[] }) {
         <Header
           showModulesSearch={setShowSearch}
           chartName={rootContent.title}
-          predefinedTags={[]}
         />
         <div className="designer">
           <Canvas

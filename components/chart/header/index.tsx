@@ -1,6 +1,5 @@
 import 'react-tagsinput/react-tagsinput.css';
 import React, { useState, useEffect } from 'react';
-import { WithContext as ReactTags } from 'react-tag-input';
 import styled from 'styled-components';
 import TagsInput from './tagsInput';
 
@@ -58,14 +57,6 @@ const HeaderWapper = styled.div`
     max-width: 500px;
     height: 50px;
     max-height: 300px;
-    button {
-      background-color: gray;
-      color: white;
-      border: 1px solid white;
-      border-radius: 20px;
-      padding: 5px;
-      margin-left: 10px;
-    }
     .profile-nav {
       border-bottom: none;
       display: inline-block;
@@ -88,12 +79,25 @@ const HeaderWapper = styled.div`
 export default function Header({
   showModulesSearch,
   chartName,
-  predefinedTags,
 }: {
   showModulesSearch: (state: boolean) => void;
   chartName: string;
-  predefinedTags: string[];
 }) {
+  useEffect(() => {
+    // Check if the URL has a 'token' query parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+
+    if (token) {
+      storeToken(token);
+      // Remove the 'token' query parameter from the URL
+      const newUrl = `${window.location.origin}${window.location.pathname}`;
+      window.history.replaceState({}, document.title, newUrl);
+    }
+  });
+  function storeToken(token) {
+    localStorage.setItem('bc-auth-token', token);
+  }
 
   return (
     <HeaderWapper>
@@ -105,7 +109,7 @@ export default function Header({
         </button>
       </div>
       <div className="leftSide">
-        <TagsInput predefinedTags={predefinedTags} />
+        <TagsInput />
       </div>
     </HeaderWapper>
   );
