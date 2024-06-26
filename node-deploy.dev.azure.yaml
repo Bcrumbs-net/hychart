@@ -40,6 +40,6 @@ spec:
             requests:
               cpu: #{cpu}#
               memory: #{memory}#
-
-
-
+          env:
+            name: LOGIN_URL
+            value: ${LOGIN_URL}

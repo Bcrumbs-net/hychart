@@ -83,21 +83,6 @@ export default function Header({
   showModulesSearch: (state: boolean) => void;
   chartName: string;
 }) {
-  useEffect(() => {
-    // Check if the URL has a 'token' query parameter
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
-
-    if (token) {
-      storeToken(token);
-      // Remove the 'token' query parameter from the URL
-      const newUrl = `${window.location.origin}${window.location.pathname}`;
-      window.history.replaceState({}, document.title, newUrl);
-    }
-  });
-  function storeToken(token) {
-    localStorage.setItem('bc-auth-token', token);
-  }
 
   return (
     <HeaderWapper>

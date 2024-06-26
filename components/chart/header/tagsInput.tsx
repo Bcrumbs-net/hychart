@@ -142,9 +142,10 @@ const TagsInput = () => {
     if (typeof window !== 'undefined') {
       const loginUrl = {
         //I used a local URL for testing, and when everything is okay. I will change it to the appropriate URL.
-        pathname: `http://localhost:4200/account/login`,
+        pathname: process.env.LOGIN_URL,
         search: `?source=${window.location.origin}`,
       };
+
       window.location.href = `${loginUrl.pathname}${loginUrl.search}`;
 
     }
