@@ -38,9 +38,6 @@ const nextConfig = {
   compiler: {
     styledComponents: true,
   },
-  env: {
-    LOGIN_URL: process.env.LOGIN_URL,
-  },
 };
 
 module.exports = nextConfig;
