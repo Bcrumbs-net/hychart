@@ -10,7 +10,7 @@ import parseContentsToNodes from './parseContentsToNodes';
 import DescriptionDrawer from './description';
 import { parse } from 'querystring';
 
-function Chart({ data }: { config: Config; data: GraphContent[] }) {
+function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: string }) {
   const rootContent = data[0];
   const [zoomLevel, setZoomLevel] = useState(100);
   const [selectedModules, setSelectedModules] = useState([]);

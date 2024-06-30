@@ -1,6 +1,5 @@
 import 'react-tagsinput/react-tagsinput.css';
 import React, { useState, useEffect } from 'react';
-import { WithContext as ReactTags } from 'react-tag-input';
 import styled from 'styled-components';
 import TagsInput from './tagsInput';
 
@@ -58,14 +57,6 @@ const HeaderWapper = styled.div`
     max-width: 500px;
     height: 50px;
     max-height: 300px;
-    button {
-      background-color: gray;
-      color: white;
-      border: 1px solid white;
-      border-radius: 20px;
-      padding: 5px;
-      margin-left: 10px;
-    }
     .profile-nav {
       border-bottom: none;
       display: inline-block;
