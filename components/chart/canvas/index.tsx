@@ -22,9 +22,11 @@ export type CanvasProps = {
   organizeModules: () => void;
   deselectModules: () => void;
   moveModule: (id: number, x: number, y: number) => void;
+  editMode: boolean;
 };
 
 function Canvas({
+  editMode,
   zoomLevel,
   currentVersion,
   selectedModules,
@@ -48,7 +50,7 @@ function Canvas({
     const canvas = canvasRef.current;
     if (
       Math.abs(canvas.scrollLeft - scrollState.scrollLeft) +
-        Math.abs(canvas.scrollTop - scrollState.scrollTop) <
+      Math.abs(canvas.scrollTop - scrollState.scrollTop) <
       10
     ) {
       deselectModules();
@@ -87,15 +89,15 @@ function Canvas({
     (ev) => {
       if (
         ev.dataTransfer.getData('clientX') +
-          ev.dataTransfer.getData('clientY') >
+        ev.dataTransfer.getData('clientY') >
         0
       ) {
         moveModule(
           Number(ev.dataTransfer.getData('id')),
           (ev.clientX - Number(ev.dataTransfer.getData('clientX'))) /
-            (zoomLevel / 100),
+          (zoomLevel / 100),
           (ev.clientY - Number(ev.dataTransfer.getData('clientY'))) /
-            (zoomLevel / 100)
+          (zoomLevel / 100)
         );
       }
     },
@@ -169,6 +171,7 @@ function Canvas({
           onDrop={onDrop}
         >
           <ModulesCanvas
+            editMode={editMode}
             currentVersion={currentVersion}
             selectedModules={selectedModules}
             selectModule={selectModule}

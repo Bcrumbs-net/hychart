@@ -6,10 +6,12 @@ export type ModulesCanvasProps = {
   currentVersion: ChartType;
   selectedModules: any[];
   selectModule: SelectModuleFunc;
+  editMode: boolean;
 };
 
 function ModulesCanvas({
   currentVersion,
+  editMode,
   selectedModules,
   selectModule,
 }: ModulesCanvasProps) {
@@ -23,6 +25,7 @@ function ModulesCanvas({
         const selected = selectedModules.includes(+moduleKey);
         return (
           <Module
+            editMode={editMode}
             key={m.id}
             isSelected={selected}
             module={m}

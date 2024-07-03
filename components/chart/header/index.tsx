@@ -79,11 +79,14 @@ const HeaderWapper = styled.div`
 export default function Header({
   showModulesSearch,
   chartName,
+  setEditMode,
+  editMode
 }: {
   showModulesSearch: (state: boolean) => void;
   chartName: string;
+  setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
+  editMode: boolean;
 }) {
-
   return (
     <HeaderWapper>
       <div className="chartName">{chartName}</div>
@@ -94,7 +97,10 @@ export default function Header({
         </button>
       </div>
       <div className="leftSide">
-        <TagsInput />
+        <TagsInput
+          setEditMode={setEditMode}
+          editMode={editMode}
+        />
       </div>
     </HeaderWapper>
   );

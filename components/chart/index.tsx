@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { HotKeys } from 'react-hotkeys';
-import { Config, GraphContent } from '@bcrumbs.net/bc-api';
+import { Config, GraphContent, auth } from '@bcrumbs.net/bc-api';
 import { SHORTCUT_KEYS } from './Constants';
 import Canvas from './canvas';
 import Header from './header';
@@ -9,6 +9,7 @@ import { ChartType, NodeType } from './types';
 import parseContentsToNodes from './parseContentsToNodes';
 import DescriptionDrawer from './description';
 import { parse } from 'querystring';
+import AddNewModule from './editMode/AddNewModule';
 
 function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: string }) {
   const rootContent = data[0];
@@ -24,6 +25,7 @@ function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: 
     isValid: true,
     message: '',
   });
+  const [editMode, setEditMode] = useState(false);
 
   const shortcutHandlers = {
     SEARCH: () => {
@@ -170,7 +172,13 @@ function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: 
     if (nodeIdFromUrl !== null) {
       focusModule(nodeIdFromUrl.toString());
     }
+
   }, [focusModule]);
+
+  const addNewModule = () => {
+    console.log('Add New Module');
+  }
+
   return (
     //@ts-ignore
     <HotKeys keyMap={SHORTCUT_KEYS} handlers={shortcutHandlers}>
@@ -178,9 +186,12 @@ function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: 
         <Header
           showModulesSearch={setShowSearch}
           chartName={rootContent.title}
+          editMode={editMode}
+          setEditMode={setEditMode}
         />
         <div className="designer">
           <Canvas
+            editMode={editMode}
             zoomLevel={zoomLevel}
             moveModule={moveModule}
             selectModule={selectModule}
@@ -208,6 +219,9 @@ function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: 
             setSearch={setSearch}
             setShowSearch={setShowSearch}
           />
+        ) : null}
+        {typeof window !== 'undefined' && auth?.isAuthenticated() && editMode ? (
+          <AddNewModule onClick={addNewModule} />
         ) : null}
       </div>
     </HotKeys>

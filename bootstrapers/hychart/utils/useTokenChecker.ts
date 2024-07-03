@@ -1,9 +1,19 @@
 import { auth } from "@bcrumbs.net/bc-api";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-export function useTokenChecker() {
+export const useTokenChecker = () => {
   const router = useRouter();
+  const [hasToken, setHasToken] = useState(false);
+
+  const handleLogOut = () => {
+    try {
+      auth.clearAllAppStorage();
+      setHasToken(false);
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
 
   useEffect(() => {
     // Check if the URL has a 'token' query parameter
@@ -12,19 +22,44 @@ export function useTokenChecker() {
     if (token) {
       auth.setToken(token as string);
       // Remove the 'token' query parameter from the URL
-      const { pathname, query, ...rest } = router;
+      const { pathname, query, ...rest } = router.query;
       router.replace(
         {
-          pathname,
-          query: Object.fromEntries(
-            Object.entries(query).filter(([key]) => key !== "token")
-          ),
+          pathname: router.pathname,
+          query: query
+            ? Object.fromEntries(
+                Object.entries(query).filter(([key]) => key !== "token")
+              )
+            : {},
         },
         undefined,
         { shallow: true }
       );
     }
-  }, [router.query.token]);
 
-  return null;
-}
+    // Check if there's a token stored in the auth module
+    const checkToken = async () => {
+      try {
+        if (!!auth.getToken()) {
+          const token = await auth.getToken();
+          setHasToken(!!token);
+        }
+      } catch (error) {
+        console.error("Error checking token:", error);
+        setHasToken(false);
+      }
+    };
+
+    checkToken();
+  }, [router]);
+
+  return { hasToken, handleLogOut };
+};
+
+export const HasTokenChecker = ({ children }) => {
+  const { hasToken } = useTokenChecker();
+
+  if ((hasToken && hasToken !== null) || hasToken !== undefined) {
+    return hasToken ? children : null;
+  }
+};
