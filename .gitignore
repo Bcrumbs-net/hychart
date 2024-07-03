@@ -1,6 +1,6 @@
 node_modules
 .next
-.env.local
+package-lock.json
 package-lock.json
 .env
 package-lock.json
