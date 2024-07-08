@@ -130,7 +130,7 @@ function Module({ editMode, module, selectModule, isSelected }: ModuleProps) {
           <FaPlusCircle color="#699041" />
         </IconContainer>
       ) : null}
-      < ModuleContainer
+      <ModuleContainer
         isIconModule={!!module.icon}
         style={{ top: module.y, left: module.x, zIndex: module.id }}
         onDragStart={(ev) => onDragStart(module.id, ev)}

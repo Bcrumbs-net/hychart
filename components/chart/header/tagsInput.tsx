@@ -1,10 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import Switch from "react-switch";
+import React, { useCallback, useState } from 'react';
 import Multiselect from 'multiselect-react-dropdown';
 import styled from 'styled-components';
 import useTagsEnumValuesQuery from '../../../bootstrapers/hychart/utils/useTagsEnumValuesQuery';
-import { useTokenChecker } from '../../../bootstrapers/hychart/utils';
-import { auth } from '@bcrumbs.net/bc-api';
 
 const BCTagsInputWrapper = styled.div`
   display: flex;
@@ -22,21 +19,6 @@ const BCTagsInputWrapper = styled.div`
       opacity: 1; /* Firefox */
     }
   }
-  .login{
-    background-color: #699041;
-    border: solid 1px var(--bc-secondary-light-hover);
-    border-radius: 20px;
-    margin-left:5px;
-    height: 32px;
-    width: 100px;
-    color: #fff;
-    cursor: pointer;
-    font-weight: bold; 
-    font-size: 13px; 
-  }
-  .login:hover {
-    background-color: #5a7736; /* Brown hover color */
-  }
   .searchWrapper {
     background-color: #fff;
     border: solid 1px var(--bc-secondary-light-hover);
@@ -50,11 +32,6 @@ const BCTagsInputWrapper = styled.div`
       padding: 2px 8px;
       background-color: #699041;
     }
-  }
-  .switch {
-      margin-left:8px;
-      margin-right:6px;
-      border: solid 1px var(--bc-secondary-light-hover);
   }
   .optionListContainer {
     position: fixed;
@@ -120,16 +97,10 @@ const URLManager = {
 };
 
 const TagsInput = ({
-  setEditMode,
-  editMode,
 }: {
-  setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
-  editMode: boolean;
-
-}) => {
+  }) => {
   const [tags, setTags] = useState([]);
   const { enumValues } = useTagsEnumValuesQuery(403027);
-  const { handleLogOut } = useTokenChecker();
 
   const onAdd = useCallback(
     (selectedList, selectedItem) => {
@@ -157,25 +128,6 @@ const TagsInput = ({
     [tags]
   );
 
-  const handleLogin = () => {
-    if (typeof window !== 'undefined') {
-      const loginUrl = {
-        pathname: process.env.LOGIN_URL,
-        search: `?source=${window.location.origin}`,
-      };
-      window.location.href = `${loginUrl.pathname}${loginUrl.search}`;
-    }
-  };
-  const handleEditModeChange = () => {
-    setEditMode(() => !editMode);
-  };
-
-  const handleUserLogOut = () => {
-    if (typeof window !== 'undefined') {
-      handleLogOut();
-      setEditMode(false);
-    }
-  };
   return (
     <BCTagsInputWrapper>
       <Multiselect
@@ -187,29 +139,6 @@ const TagsInput = ({
         onRemove={onRemove}
         placeholder="Select tags"
       />
-      {typeof window !== 'undefined' && auth?.isAuthenticated() ? (
-        <>
-          <Switch
-            className="switch"
-            onChange={handleEditModeChange}
-            checked={editMode}
-            onColor="#699041"
-            offColor="#ccc"
-            onHandleColor="#fff"
-            offHandleColor="#fff"
-            handleDiameter={20}
-            uncheckedIcon={false}
-            checkedIcon={false}
-            boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
-            activeBoxShadow="0px 0px 1px 3px rgba(0, 0, 0, 0.2)"
-            height={20}
-            width={40}
-          />
-          <button className='login' onClick={handleUserLogOut}>logOut</button>
-        </>
-      ) : (
-        <button className='login' onClick={handleLogin}>login</button>
-      )}
     </BCTagsInputWrapper >
   );
 };
