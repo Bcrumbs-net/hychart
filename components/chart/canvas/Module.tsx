@@ -1,12 +1,15 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import ModuleInfo from '../moduleBlocks/ModuleInfo';
 import { NodeType, SelectModuleFunc } from '../types';
 import styled, { css } from 'styled-components';
+import { FaPlusCircle } from 'react-icons/fa';
+import { auth } from '@bcrumbs.net/bc-api';
 
 interface ModuleProps {
   module: NodeType;
   selectModule: SelectModuleFunc;
   isSelected: boolean;
+  editMode: boolean;
 }
 
 interface ModuleContainerProps {
@@ -74,10 +77,10 @@ const ModuleContainer = styled.div<ModuleContainerProps>`
     }
   }
   .city {
-    position: absolute;
-    top: -18px; 
-    font-size: 12px;
-    font-weight: 700;
+  position: absolute;
+  top: -18px; 
+  font-size: 12px;
+  font-weight: 700;
   }
   .subTitle {
     position: absolute;
@@ -88,9 +91,23 @@ const ModuleContainer = styled.div<ModuleContainerProps>`
     transform: translateX(7%);
   }
 `;
-
-function Module({ module, selectModule, isSelected }: ModuleProps) {
+const IconContainer = styled.button`
+  border-radius: 100%;
+  position: absolute;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background-size: contain;
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+  padding:0px;
+`
+function Module({ editMode, module, selectModule, isSelected }: ModuleProps) {
   const moduleName = module.title || ModuleInfo.getModuleName(module.type);
+
   const onDragStart = useCallback((id, ev) => {
     ev.dataTransfer.setData('dragType', 'moveModule');
     ev.dataTransfer.setData('id', id);
@@ -98,38 +115,50 @@ function Module({ module, selectModule, isSelected }: ModuleProps) {
     ev.dataTransfer.setData('clientY', ev.clientY);
   }, []);
 
+  const handleAddChild = () => {
+    console.log("add child");
+  };
+
   return (
-    <ModuleContainer
-      isIconModule={!!module.icon}
-      style={{ top: module.y, left: module.x, zIndex: module.id }}
-      onDragStart={(ev) => onDragStart(module.id, ev)}
-      onClick={(e) => {
-        e.stopPropagation();
-        if (e.shiftKey) selectModule(module, true);
-        else selectModule(module, false);
-      }}
-    >
-      {module.icon ? (
-        <>
-          <p className='city'>{module.city}</p>
-          <img src={module.icon} alt="Module Icon" className={`IconImg ${isSelected ? 'active' : ''} `} />
-          <p className='subTitle'>{module.sub_title}</p>
-        </>
-      ) : (
-        <>
-          <p className='city'>{module.city}</p>
-          <div className="moduleIcon">
-            <i className={ModuleInfo.getIcon(module.type) + ' moduleIcon '}></i>
-          </div>
-          <div className={`moduleNameCon ${isSelected ? 'active' : ''} `}>
-            {moduleName.length >= 34
-              ? moduleName.substring(0, 34) + '...'
-              : moduleName}
-          </div>
-          <p className='subTitle'>{module.sub_title}</p>
-        </>
-      )}
-    </ModuleContainer>
+    <>
+      {typeof window !== 'undefined' && auth?.isAuthenticated() && editMode ? (
+        <IconContainer
+          className="custom-icon-class"
+          style={{ top: module.y + 50, left: module.x + 75, zIndex: module.id }}
+          onDragStart={(ev) => onDragStart(module.id, ev)}
+          onClick={handleAddChild}>
+          <FaPlusCircle color="#699041" />
+        </IconContainer>
+      ) : null}
+      <ModuleContainer
+        isIconModule={!!module.icon}
+        style={{ top: module.y, left: module.x, zIndex: module.id }}
+        onDragStart={(ev) => onDragStart(module.id, ev)}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (e.shiftKey) selectModule(module, true);
+          else selectModule(module, false);
+        }}
+      >
+        {module.icon ? (
+          <>
+            <p className="city">{module.city}</p>
+            <img src={module.icon} alt="Module Icon" className={`IconImg ${isSelected ? 'active' : ''} `} />
+            <p className='subTitle'>{module.sub_title}</p>
+          </>
+        ) : (
+          <>
+            <p className="city">{module.city}</p>
+            <div className={`moduleNameCon ${isSelected ? 'active' : ''} `}>
+              {moduleName.length >= 34
+                ? moduleName.substring(0, 34) + '...'
+                : moduleName}
+            </div>
+            <p className='subTitle'>{module.sub_title}</p>
+          </>
+        )}
+      </ModuleContainer >
+    </>
   );
 }
 

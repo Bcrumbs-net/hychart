@@ -19,18 +19,6 @@ const BCTagsInputWrapper = styled.div`
       opacity: 1; /* Firefox */
     }
   }
-  .login{
-    background-color: #699041;
-    border: solid 1px var(--bc-secondary-light-hover);
-    border-radius: 20px;
-    margin-left:5px;
-    height: 32px;
-    width: 100px;
-    color: #fff;
-    cursor: pointer;
-    font-weight: bold; 
-    font-size: 13px; 
-  }
   .searchWrapper {
     background-color: #fff;
     border: solid 1px var(--bc-secondary-light-hover);
@@ -108,7 +96,9 @@ const URLManager = {
   },
 };
 
-const TagsInput = () => {
+const TagsInput = ({
+}: {
+  }) => {
   const [tags, setTags] = useState([]);
   const { enumValues } = useTagsEnumValuesQuery(403027);
 
@@ -138,18 +128,6 @@ const TagsInput = () => {
     [tags]
   );
 
-  const handleLogin = () => {
-    if (typeof window !== 'undefined') {
-      const loginUrl = {
-        pathname: process.env.LOGIN_URL,
-        search: `?source=${window.location.origin}`,
-      };
-
-      window.location.href = `${loginUrl.pathname}${loginUrl.search}`;
-
-    }
-  };
-
   return (
     <BCTagsInputWrapper>
       <Multiselect
@@ -161,7 +139,6 @@ const TagsInput = () => {
         onRemove={onRemove}
         placeholder="Select tags"
       />
-      <button className='login' onClick={handleLogin}>login</button>
     </BCTagsInputWrapper >
   );
 };

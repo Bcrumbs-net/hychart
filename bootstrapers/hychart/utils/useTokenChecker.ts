@@ -1,9 +1,10 @@
 import { auth } from "@bcrumbs.net/bc-api";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-export function useTokenChecker() {
+export const useTokenChecker = () => {
   const router = useRouter();
+  const [hasToken, setHasToken] = useState(false);
 
   useEffect(() => {
     // Check if the URL has a 'token' query parameter
@@ -15,16 +16,33 @@ export function useTokenChecker() {
       const { pathname, query, ...rest } = router;
       router.replace(
         {
-          pathname,
-          query: Object.fromEntries(
-            Object.entries(query).filter(([key]) => key !== "token")
-          ),
+          pathname: router.pathname,
+          query: query
+            ? Object.fromEntries(
+                Object.entries(query).filter(([key]) => key !== "token")
+              )
+            : {},
         },
         undefined,
         { shallow: true }
       );
     }
-  }, [router.query.token]);
 
-  return null;
-}
+    // Check if there's a token stored in the auth module
+    const checkToken = () => {
+      try {
+        if (!!auth.getToken()) {
+          const token = auth.getToken();
+          setHasToken(!!token);
+        }
+      } catch (error) {
+        console.error("Error checking token:", error);
+        setHasToken(false);
+      }
+    };
+
+    checkToken();
+  }, [router]);
+
+  return { hasToken, setHasToken };
+};
