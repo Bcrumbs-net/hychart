@@ -6,15 +6,6 @@ export const useTokenChecker = () => {
   const router = useRouter();
   const [hasToken, setHasToken] = useState(false);
 
-  const handleLogOut = () => {
-    try {
-      auth.clearAllAppStorage();
-      setHasToken(false);
-    } catch (error) {
-      console.error("Error logging out:", error);
-    }
-  };
-
   useEffect(() => {
     // Check if the URL has a 'token' query parameter
     const { token } = router.query;
@@ -22,7 +13,7 @@ export const useTokenChecker = () => {
     if (token) {
       auth.setToken(token as string);
       // Remove the 'token' query parameter from the URL
-      const { pathname, query, ...rest } = router.query;
+      const { pathname, query, ...rest } = router;
       router.replace(
         {
           pathname: router.pathname,
@@ -38,10 +29,10 @@ export const useTokenChecker = () => {
     }
 
     // Check if there's a token stored in the auth module
-    const checkToken = async () => {
+    const checkToken = () => {
       try {
         if (!!auth.getToken()) {
-          const token = await auth.getToken();
+          const token = auth.getToken();
           setHasToken(!!token);
         }
       } catch (error) {
@@ -53,13 +44,5 @@ export const useTokenChecker = () => {
     checkToken();
   }, [router]);
 
-  return { hasToken, handleLogOut };
-};
-
-export const HasTokenChecker = ({ children }) => {
-  const { hasToken } = useTokenChecker();
-
-  if ((hasToken && hasToken !== null) || hasToken !== undefined) {
-    return hasToken ? children : null;
-  }
+  return { hasToken, setHasToken };
 };

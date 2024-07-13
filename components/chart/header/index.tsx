@@ -126,7 +126,7 @@ export default function Header({
   setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
   editMode: boolean;
 }) {
-  const { handleLogOut } = useTokenChecker();
+  const { setHasToken, hasToken } = useTokenChecker();
   const handleLogin = () => {
     if (typeof window !== 'undefined') {
       const loginUrl = {
@@ -140,10 +140,14 @@ export default function Header({
     setEditMode(() => !editMode);
   };
 
-  const handleUserLogOut = () => {
-    if (typeof window !== 'undefined') {
-      handleLogOut();
+
+  const handleLogout = () => {
+    try {
+      auth.clearAllAppStorage();
+      setHasToken(false);
       setEditMode(false);
+    } catch (error) {
+      console.error("Error logging out:", error);
     }
   };
   return (
@@ -160,7 +164,7 @@ export default function Header({
           <TagsInput />
         </div>
         <div className="login-logout-container">
-          {typeof window !== 'undefined' && auth?.isAuthenticated() ? (
+          {hasToken ? (
             <>
               <Switch
                 className="switch"
@@ -178,7 +182,7 @@ export default function Header({
                 height={20}
                 width={40}
               />
-              <button className='login' onClick={handleUserLogOut}>logout</button>
+              <button className='login' onClick={handleLogout}>logout</button>
             </>
           ) : (
             <button className='login' onClick={handleLogin}>login</button>
