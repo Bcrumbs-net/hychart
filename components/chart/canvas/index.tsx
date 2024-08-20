@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 // import { BCTooltip } from '@bcrumbs.net/bc-ui';
 import ModulesCanvas from './ModulesCanvas';
 import ConnectionsCanvas from './ConnectionsCanvas';
-import { SelectModuleFunc } from '../types';
+import { NodeType, SelectModuleFunc } from '../types';
 //import './styles.scss';
 import Scrollbars from 'react-scrollbars-custom';
 
@@ -23,6 +23,7 @@ export type CanvasProps = {
   deselectModules: () => void;
   moveModule: (id: number, x: number, y: number) => void;
   editMode: boolean;
+  searchedNode: NodeType;
 };
 
 function Canvas({
@@ -30,6 +31,7 @@ function Canvas({
   zoomLevel,
   currentVersion,
   selectedModules,
+  searchedNode,
   selectModule,
   deselectModules,
   changeZoomLevel,
@@ -45,7 +47,6 @@ function Canvas({
     clientX: 0,
     clientY: 0,
   });
-
   const onMouseUp = useCallback(() => {
     const canvas = canvasRef.current;
     if (
@@ -130,10 +131,20 @@ function Canvas({
   useEffect(() => {
     toggleScrolling(isScrolling);
 
+    if (searchedNode && canvasRef.current) {
+      const { clientHeight, clientWidth } = canvasRef.current;
+      const newScrollTop = Math.max(0, searchedNode.y - clientHeight / 2);
+      const newScrollLeft = Math.max(0, searchedNode.x - clientWidth / 2);
+      canvasRef.current.scrollTop = newScrollTop;
+      canvasRef.current.scrollLeft = newScrollLeft;
+    }
+
+
     return () => {
       window.removeEventListener('mousemove', onMouseMove);
     };
-  }, [isScrolling, onMouseMove, toggleScrolling]);
+  }, [isScrolling, onMouseMove, toggleScrolling, searchedNode, zoomLevel, selectedModules]);
+
 
   return (
     <>

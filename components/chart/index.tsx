@@ -26,6 +26,7 @@ function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: 
     message: '',
   });
   const [editMode, setEditMode] = useState(false);
+  const [searchedNode, setSearchedNode] = useState<NodeType | undefined>(undefined);
 
   const shortcutHandlers = {
     SEARCH: () => {
@@ -56,8 +57,11 @@ function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: 
     const arrayOfNodes = Object.keys(currentVersion.nodes).map(
       (key) => currentVersion.nodes[key]
     );
-    const m: NodeType = arrayOfNodes.find((module) => module.id === id);
-    return m ? m : undefined;
+    const module = arrayOfNodes.find((m) => m.id === id);
+    if (module) {
+      setSearchedNode(module);
+    }
+    return module;
   };
 
   const deselectModules = useCallback(() => {
@@ -118,7 +122,6 @@ function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: 
       setSearch,
     ]
   );
-
   const changeZoomLevel = useCallback(
     (delta: number) => {
       setZoomLevel(Math.min(Math.max(20, zoomLevel + delta), 300));
@@ -197,6 +200,7 @@ function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: 
             selectModule={selectModule}
             currentVersion={currentVersion}
             selectedModules={selectedModules}
+            searchedNode={searchedNode}
             deselectModules={deselectModules}
             organizeModules={organizeModules}
             changeZoomLevel={changeZoomLevel}
