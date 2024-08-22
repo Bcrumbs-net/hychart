@@ -23,7 +23,7 @@ export type CanvasProps = {
   deselectModules: () => void;
   moveModule: (id: number, x: number, y: number) => void;
   editMode: boolean;
-  searchedNode: NodeType;
+  focusNode: NodeType;
 };
 
 function Canvas({
@@ -31,7 +31,7 @@ function Canvas({
   zoomLevel,
   currentVersion,
   selectedModules,
-  searchedNode,
+  focusNode,
   selectModule,
   deselectModules,
   changeZoomLevel,
@@ -131,20 +131,20 @@ function Canvas({
   useEffect(() => {
     toggleScrolling(isScrolling);
 
-    if (searchedNode && canvasRef.current) {
-      const { clientHeight, clientWidth } = canvasRef.current;
-      const newScrollTop = Math.max(0, searchedNode.y - clientHeight / 2);
-      const newScrollLeft = Math.max(0, searchedNode.x - clientWidth / 2);
-      canvasRef.current.scrollTop = newScrollTop;
-      canvasRef.current.scrollLeft = newScrollLeft;
-    }
-
-
     return () => {
       window.removeEventListener('mousemove', onMouseMove);
     };
-  }, [isScrolling, onMouseMove, toggleScrolling, searchedNode, zoomLevel, selectedModules]);
+  }, [isScrolling, onMouseMove, toggleScrolling]);
 
+  useEffect(() => {
+    if (focusNode && canvasRef.current) {
+      const { clientHeight, clientWidth } = canvasRef.current;
+      const newScrollTop = Math.max(0, focusNode.y - clientHeight / 2);
+      const newScrollLeft = Math.max(0, focusNode.x - clientWidth / 2);
+      canvasRef.current.scrollTop = newScrollTop;
+      canvasRef.current.scrollLeft = newScrollLeft;
+    }
+  }, [focusNode, canvasRef]);
 
   return (
     <>
