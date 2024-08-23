@@ -4,11 +4,14 @@ import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from '
 import styled from 'styled-components';
 import { NodeType } from '../types';
 import {
+  useUpdateContentInstanceFieldValuesMutation,
   useContentInstancesQuery,
   useModelsQuery,
-  useUpdateContentInstanceFieldValuesMutation,
 } from '@bcrumbs.net/bc-api';
-import { useBCForm } from '@bcrumbs.net/bc-ui';
+import { Controller, useForm } from "react-hook-form";
+import { TEMPLATE_CONTEXT_ID } from '../Constants';
+import useTagsEnumValuesQuery from '../../../bootstrapers/hychart/utils/useTagsEnumValuesQuery';
+import FieldRenderer from './FieldRenderer';
 type DrawerProps = {
   module: NodeType;
   open: boolean;
@@ -115,57 +118,116 @@ const ToastMessage = styled.span`
   font-size: 14px;
   font-weight: bold;
 `;
+const Button = styled.button`
+  display: block;
+  width: 85%;
+  height: 40px;
+  padding: 10px;
+  font-weight: bold;
+  font-size: 16px;
+  margin: 10px 0;
+  background-color: #699041;
+  border: solid 1px var(--bc-secondary-light-hover);
+  border-radius: 20px;
+  color: #fff;
+  cursor: pointer;
+  
+  &:hover {
+    background-color: #5a7736; /* Brown hover color */
+  }
+`;
 const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, onClose, module, children }) => {
-  console.log(module);
+  interface FormData {
+    value: string;
+    isValid: boolean;
+    message: string;
+  }
+  const [formData, setFormData] = useState<{ [key: string]: FormData }>();
   const drawerRef = useRef(null);
   const descriptionPanelRef = useRef(null);
   const [successMessage, setSuccessMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const { data, loading } = useContentInstancesQuery(module?.id);
-  console.log(data);
-  // const { data: modelsResult, loading: modelsLoading } =
-  //   useModelsQuery(1170); // Fixed: use module.templateContextId instead of templateContextId
-  // console.log({ data: modelsResult, loading: modelsLoading }, 'da2');
-  // const [
-  //   updateContentInstanceFieldValues,
-  //   {
-  //     data: updateContentInstanceFieldValuesCallData,
-  //     error: updateContentInstanceFieldValuesCallError,
-  //     loading: updateContentInstanceFieldValuesLoading,
-  //   },
-  // ] = useUpdateContentInstanceFieldValuesMutation();
+  const { data: modelsResult, loading: modelsLoading } =
+    useModelsQuery(TEMPLATE_CONTEXT_ID);
+  const [
+    updateContentInstanceFieldValues,
+    {
+      data: updateContentInstanceFieldValuesCallData,
+      error: updateContentInstanceFieldValuesCallError,
+      loading: updateContentInstanceFieldValuesLoading,
+    },
+  ] = useUpdateContentInstanceFieldValuesMutation();
 
-  // const targetModel = useMemo(() => {
-  //   if (modelsResult?.viewTypes) {
-  //     console.log(modelsResult, 'model');
-  //     return modelsResult.viewTypes.find(viewType => viewType.Id === 403537); // Fixed: use find() instead of assignment
-  //   }
-  //   return undefined;
-  // }, [modelsResult, module?.id]);
+  const targetModel = useMemo(() => {
+    if (modelsResult?.viewTypes) {
+      return modelsResult.viewTypes.find(viewType => viewType.Id === 403537);
+    }
+    return undefined;
+  }, [modelsResult, module?.id]);
 
-  // const formInitialValue = useMemo(
-  //     () =>
-  //         targetModel && data?.contentInstances.length > 0 // Fixed: check if data.contentInstances is not empty
-  //             ? targetModel?.ViewFields.reduce(
-  //                 (obj, m) => ({
-  //                     ...obj,
-  //                     [m.Id]: {
-  //                         value: data.contentInstances[0].FieldsValues.find(
-  //                             (f) => f.FieldId === m.Id
-  //                         )?.Value,
-  //                         validations: [],
-  //                     },
-  //                 }),
-  //                 {}
-  //             )
-  //             : undefined,
-  //     [data, targetModel]
-  // );
+  const { control, handleSubmit, formState: { errors }, register, setValue } = useForm<any>();
+  useEffect(() => {
+    if (targetModel && data?.contentInstances.length > 0) {
+      targetModel?.ViewFields.reduce(
+        (obj, field) => {
+          const fieldData = data.contentInstances[0].FieldsValues.find(
+            (f) => f.FieldId === field.Id
+          );
+          setValue(`${field.Id}`, fieldData?.Value || '')
+          return {
+            ...obj,
+            [`${field.Id}`]: fieldData?.Value || '',
+          };
+        },
+        {}
+      );
+    }
+  }, [data, targetModel]);
+  console.log(data.contentInstances[0]);
+  const onSubmit = (formData) => {
+    // Handle form submission logic here
+    // console.log(formData);
+    data.contentInstances[0].FieldsValues.map((details, index) => {
+      const ci = details.ContentId
+    });
 
-  // const [
-  //     formData,
-  //     { validateField, setFieldValue, renderDroplistField, renderField },
-  // ] = useBCForm(formInitialValue);
+    // updateContentInstanceFieldValues({
+    //   variables: {
+    //     body: {
+    //       Id: '117112',
+    //       FieldsValues: Object.keys(formData).map((key) => ({
+    //         FieldId: parseInt(key.replace('117112' + '-', '')),
+    //         Value: formData[key].value,
+    //         ContentId: '117112',
+    //       })),
+    //     },
+    //   },
+    // }).then(() => {
+    //   console.log('done');
+    // });
+
+    // Update content instance field values
+    // updateContentInstanceFieldValues({
+    //   variables: {
+    //     input: {
+    //       FieldsValues: Object.entries(formData).map(([fieldId, value]) => ({
+    //         FieldId: parseInt(fieldId),
+    //         Value: value,
+    //       })),
+    //     },
+    //   },
+    // })
+    //   .then((result) => {
+    //     setSuccessMessage('Content instance updated successfully');
+    //     setErrorMessage('');
+    //   })
+    //   .catch((error) => {
+    //     setErrorMessage('Error updating content instance');
+    //     setSuccessMessage('');
+    //   });
+  };
+  const { enumValues } = useTagsEnumValuesQuery(403027);
 
   return (
     <>
@@ -175,11 +237,35 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, onClose, m
             <div className='header'>
               <BsX onClick={onClose} className='closeIcon' />
               <div className='title'>
-                <h1 >edit</h1>
+                <h1>{data?.contentInstances[0]?.Name}</h1>
               </div>
             </div>
 
-            <Offcanvas.Body ref={descriptionPanelRef}>{children}</Offcanvas.Body>
+            <Offcanvas.Body ref={descriptionPanelRef}>
+              <form onSubmit={handleSubmit(onSubmit)}>
+                {targetModel?.ViewFields.map((field) => (
+                  <div key={field.Id}>
+                    <Controller
+                      control={control}
+                      name={`${field.Id}`}
+                      render={({ field: { onChange, value } }) => {
+                        // const fieldData = initialValues[`${field.Id}`];
+                        return (
+                          <FieldRenderer
+                            field={field}
+                            // value={fieldData}
+                            onChange={onChange}
+                            enumValues={enumValues}
+                            register={register}
+                          />
+                        );
+                      }}
+                    />
+                  </div>
+                ))}
+                <Button type="submit">تعديل</Button>
+              </form>
+            </Offcanvas.Body>
           </StyledDrawer>
         </div>
         {successMessage && (
