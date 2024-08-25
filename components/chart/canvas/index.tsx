@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 // import { BCTooltip } from '@bcrumbs.net/bc-ui';
 import ModulesCanvas from './ModulesCanvas';
 import ConnectionsCanvas from './ConnectionsCanvas';
-import { SelectModuleFunc } from '../types';
+import { NodeType, SelectModuleFunc } from '../types';
 //import './styles.scss';
 import Scrollbars from 'react-scrollbars-custom';
 
@@ -22,12 +22,16 @@ export type CanvasProps = {
   organizeModules: () => void;
   deselectModules: () => void;
   moveModule: (id: number, x: number, y: number) => void;
+  editMode: boolean;
+  focusNode: NodeType;
 };
 
 function Canvas({
+  editMode,
   zoomLevel,
   currentVersion,
   selectedModules,
+  focusNode,
   selectModule,
   deselectModules,
   changeZoomLevel,
@@ -48,7 +52,7 @@ function Canvas({
     const canvas = canvasRef.current;
     if (
       Math.abs(canvas.scrollLeft - scrollState.scrollLeft) +
-        Math.abs(canvas.scrollTop - scrollState.scrollTop) <
+      Math.abs(canvas.scrollTop - scrollState.scrollTop) <
       10
     ) {
       deselectModules();
@@ -87,15 +91,15 @@ function Canvas({
     (ev) => {
       if (
         ev.dataTransfer.getData('clientX') +
-          ev.dataTransfer.getData('clientY') >
+        ev.dataTransfer.getData('clientY') >
         0
       ) {
         moveModule(
           Number(ev.dataTransfer.getData('id')),
           (ev.clientX - Number(ev.dataTransfer.getData('clientX'))) /
-            (zoomLevel / 100),
+          (zoomLevel / 100),
           (ev.clientY - Number(ev.dataTransfer.getData('clientY'))) /
-            (zoomLevel / 100)
+          (zoomLevel / 100)
         );
       }
     },
@@ -133,6 +137,16 @@ function Canvas({
     };
   }, [isScrolling, onMouseMove, toggleScrolling]);
 
+  useEffect(() => {
+    if (focusNode && canvasRef.current) {
+      const { clientHeight, clientWidth } = canvasRef.current;
+      const newScrollTop = Math.max(0, focusNode.y - clientHeight / 2);
+      const newScrollLeft = Math.max(0, focusNode.x - clientWidth / 2);
+      canvasRef.current.scrollTop = newScrollTop;
+      canvasRef.current.scrollLeft = newScrollLeft;
+    }
+  }, [focusNode, canvasRef]);
+
   return (
     <>
       <div className="designAreadHeader">
@@ -169,6 +183,7 @@ function Canvas({
           onDrop={onDrop}
         >
           <ModulesCanvas
+            editMode={editMode}
             currentVersion={currentVersion}
             selectedModules={selectedModules}
             selectModule={selectModule}

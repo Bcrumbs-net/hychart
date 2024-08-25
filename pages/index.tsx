@@ -4,6 +4,7 @@ import {
   logWebsiteVisit,
   fetchWebsiteConfig,
   fetchWebsiteContents,
+  useTokenChecker,
 } from '../bootstrapers/hychart/utils';
 import Chart from '../components/chart';
 import Error from './_error';
@@ -48,7 +49,6 @@ export async function getServerSideProps({ req, query }) {
     },
   };
 }
-
 export const TemplateRouter = ({
   config,
   data,
@@ -70,6 +70,9 @@ export const TemplateRouter = ({
   if (invalid) {
     return <Error />;
   }
+
+  // Call the useTokenChecker hook here
+  useTokenChecker();
 
   return <Chart config={config} data={data} />;
 };

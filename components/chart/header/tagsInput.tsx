@@ -96,7 +96,9 @@ const URLManager = {
   },
 };
 
-const TagsInput = () => {
+const TagsInput = ({
+}: {
+  }) => {
   const [tags, setTags] = useState([]);
   const { enumValues } = useTagsEnumValuesQuery(403027);
 
@@ -137,7 +139,7 @@ const TagsInput = () => {
         onRemove={onRemove}
         placeholder="Select tags"
       />
-    </BCTagsInputWrapper>
+    </BCTagsInputWrapper >
   );
 };
 

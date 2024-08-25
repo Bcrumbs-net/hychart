@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { HotKeys } from 'react-hotkeys';
-import { Config, GraphContent } from '@bcrumbs.net/bc-api';
+import { Config, GraphContent, auth } from '@bcrumbs.net/bc-api';
 import { SHORTCUT_KEYS } from './Constants';
 import Canvas from './canvas';
 import Header from './header';
@@ -9,8 +9,9 @@ import { ChartType, NodeType } from './types';
 import parseContentsToNodes from './parseContentsToNodes';
 import DescriptionDrawer from './description';
 import { parse } from 'querystring';
+import AddNewModule from './editMode/AddNewModule';
 
-function Chart({ data }: { config: Config; data: GraphContent[] }) {
+function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: string }) {
   const rootContent = data[0];
   const [zoomLevel, setZoomLevel] = useState(100);
   const [selectedModules, setSelectedModules] = useState([]);
@@ -24,6 +25,8 @@ function Chart({ data }: { config: Config; data: GraphContent[] }) {
     isValid: true,
     message: '',
   });
+  const [editMode, setEditMode] = useState(false);
+  const [focusNode, setFocusNode] = useState<NodeType | undefined>(undefined);
 
   const shortcutHandlers = {
     SEARCH: () => {
@@ -103,6 +106,7 @@ function Chart({ data }: { config: Config; data: GraphContent[] }) {
         const node = findModuleById(moduleId);
         if (node) {
           selectModule(node);
+          setFocusNode(node);
           setShowSearch(false);
           setSearch({ value: '', isValid: true, message: '' });
         }
@@ -116,7 +120,6 @@ function Chart({ data }: { config: Config; data: GraphContent[] }) {
       setSearch,
     ]
   );
-
   const changeZoomLevel = useCallback(
     (delta: number) => {
       setZoomLevel(Math.min(Math.max(20, zoomLevel + delta), 300));
@@ -170,6 +173,21 @@ function Chart({ data }: { config: Config; data: GraphContent[] }) {
     if (nodeIdFromUrl !== null) {
       focusModule(nodeIdFromUrl.toString());
     }
+
+  }, [focusModule]);
+
+  const addNewModule = () => {
+    console.log('Add New Module');
+  }
+
+  useEffect(() => {
+    const queryParams = parse(window.location.search);
+    const nodeIdFromUrl = queryParams['?n']
+      ? parseInt(queryParams['?n'] as string)
+      : null;
+    if (nodeIdFromUrl !== null) {
+      focusModule(nodeIdFromUrl.toString());
+    }
   }, [focusModule]);
   return (
     //@ts-ignore
@@ -178,14 +196,18 @@ function Chart({ data }: { config: Config; data: GraphContent[] }) {
         <Header
           showModulesSearch={setShowSearch}
           chartName={rootContent.title}
+          editMode={editMode}
+          setEditMode={setEditMode}
         />
         <div className="designer">
           <Canvas
+            editMode={editMode}
             zoomLevel={zoomLevel}
             moveModule={moveModule}
             selectModule={selectModule}
             currentVersion={currentVersion}
             selectedModules={selectedModules}
+            focusNode={focusNode}
             deselectModules={deselectModules}
             organizeModules={organizeModules}
             changeZoomLevel={changeZoomLevel}
@@ -208,6 +230,9 @@ function Chart({ data }: { config: Config; data: GraphContent[] }) {
             setSearch={setSearch}
             setShowSearch={setShowSearch}
           />
+        ) : null}
+        {typeof window !== 'undefined' && auth?.isAuthenticated() && editMode ? (
+          <AddNewModule onClick={addNewModule} />
         ) : null}
       </div>
     </HotKeys>
