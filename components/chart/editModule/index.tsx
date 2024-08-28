@@ -7,17 +7,18 @@ import {
   useUpdateContentInstanceFieldValuesMutation,
   useContentInstancesQuery,
   useModelsQuery,
+  ModelFieldsTypes,
 } from '@bcrumbs.net/bc-api';
-import { Controller, useForm } from "react-hook-form";
-import { TEMPLATE_CONTEXT_ID } from '../Constants';
+import { Controller, useForm, FieldValues } from "react-hook-form";
+import { HYCHART_VIEW_TYPE_ID, TEMPLATE_CONTEXT_ID } from '../Constants';
 import useTagsEnumValuesQuery from '../../../bootstrapers/hychart/utils/useTagsEnumValuesQuery';
 import FieldRenderer from './FieldRenderer';
 type DrawerProps = {
   module: NodeType;
   open: boolean;
   onClose: () => void;
+  lang: string;
 };
-
 const StyledDrawer = styled.div`
   position: fixed;
   padding-left: 20px;
@@ -36,52 +37,32 @@ const StyledDrawer = styled.div`
 
   .header {
     display: flex;
-    direction: ltr;
     justify-content: space-between;
     align-items: center;
-    
+    direction: ${({ lang }) =>
+    lang === null || lang === 'en' ? 'ltr' : 'rtl'};
     .title {
-      margin-top:10px;
-      display: flex; 
+      margin-top: 10px;
+      display: flex;
       font-weight: bold;
       align-items: center;
-      .linkIcon{
-          width: 20px;
-          height: 20px;
-          cursor: pointer;
-          margin-right:10px;
+
+      .linkIcon {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        margin-right: 10px;
       }
     }
+
     .closeIcon {
       width: 40px;
       height: 40px;
       cursor: pointer;
     }
   }
-  
- 
-  .sub_title {
-    margin-top:-5px;
-    font-size: 18px;
-    font-weight: bold; 
-  }
-  .tags{
-    display: flex; 
 
-  }
-  .tagsItem {
-    padding-left:10px;
-    padding-right:10px;
-    margin-left:10px;
-    margin-top:-5px;
-    font-size: 15px;
-    font-weight: bold; 
-    border: 1px solid var(--bc-primary-color);
-    box-shadow: 0px 0px 2px 0px rgb(100, 57, 0);
-    border-radius: 20px;
-  }
   &.show {
-    direction: rtl;
     transform: translateX(0);
     overflow-y: auto;
     max-height: 100%;
@@ -136,17 +117,12 @@ const Button = styled.button`
     background-color: #5a7736; /* Brown hover color */
   }
 `;
-const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, onClose, module, children }) => {
-  interface FormData {
-    value: string;
-    isValid: boolean;
-    message: string;
-  }
-  const [formData, setFormData] = useState<{ [key: string]: FormData }>();
+const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onClose, module, children }) => {
   const drawerRef = useRef(null);
-  const descriptionPanelRef = useRef(null);
+  const editPanelRef = useRef(null);
   const [successMessage, setSuccessMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [fieldId, setFieldId] = useState<number>();
   const { data, loading } = useContentInstancesQuery(module?.id);
   const { data: modelsResult, loading: modelsLoading } =
     useModelsQuery(TEMPLATE_CONTEXT_ID);
@@ -161,20 +137,36 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, onClose, m
 
   const targetModel = useMemo(() => {
     if (modelsResult?.viewTypes) {
-      return modelsResult.viewTypes.find(viewType => viewType.Id === 403537);
+      return modelsResult.viewTypes.find(viewType => viewType.Id === HYCHART_VIEW_TYPE_ID);
     }
     return undefined;
   }, [modelsResult, module?.id]);
 
-  const { control, handleSubmit, formState: { errors }, register, setValue } = useForm<any>();
+  const { control, handleSubmit, formState: { errors }, register, setValue, getValues } = useForm<any>();
   useEffect(() => {
     if (targetModel && data?.contentInstances.length > 0) {
       targetModel?.ViewFields.reduce(
         (obj, field) => {
           const fieldData = data.contentInstances[0].FieldsValues.find(
-            (f) => f.FieldId === field.Id
+            (f) => (f.FieldId === field.Id),
           );
-          setValue(`${field.Id}`, fieldData?.Value || '')
+          if (field.Type === ModelFieldsTypes.PredefinedListCheckboxes) {
+            const fieldDataForCheckboex = data.contentInstances[0].FieldsValues.filter(
+              (f) => f.FieldId === field.Id,
+              setFieldId(field.Id),
+            );
+            const finishedCheckedBox = fieldDataForCheckboex.map((checkBoxValue) => checkBoxValue.Value.split(','))
+            setValue(`${field.Id}`, finishedCheckedBox.flat() || '')
+          } else if (field.Type === ModelFieldsTypes.Boolean) {
+            data.contentInstances[0].FieldsValues.filter(
+              (f) => f.FieldId === field.Id,
+            ).map((item) => {
+              setValue(`${field.Id}`, item.Value === 'True' ? true : false)
+            });
+          } else {
+            setValue(`${field.Id}`, fieldData?.Value || '')
+          }
+
           return {
             ...obj,
             [`${field.Id}`]: fieldData?.Value || '',
@@ -184,48 +176,56 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, onClose, m
       );
     }
   }, [data, targetModel]);
-  console.log(data.contentInstances[0]);
-  const onSubmit = (formData) => {
-    // Handle form submission logic here
-    // console.log(formData);
-    data.contentInstances[0].FieldsValues.map((details, index) => {
-      const ci = details.ContentId
-    });
 
-    // updateContentInstanceFieldValues({
-    //   variables: {
-    //     body: {
-    //       Id: '117112',
-    //       FieldsValues: Object.keys(formData).map((key) => ({
-    //         FieldId: parseInt(key.replace('117112' + '-', '')),
-    //         Value: formData[key].value,
-    //         ContentId: '117112',
-    //       })),
-    //     },
-    //   },
-    // }).then(() => {
-    //   console.log('done');
-    // });
+  const onSubmit = (formData: FieldValues) => {
+    const updatedFormData: FieldValues = { ...formData };
+    let ci: number;
+    if (targetModel && data?.contentInstances.length > 0) {
+      targetModel?.ViewFields.reduce(
+        (obj, field) => {
+          if (field.Type === ModelFieldsTypes.PredefinedListCheckboxes) {
+            updatedFormData[field.Id] = formData[fieldId].join(',')
+          } else if (field.Type === ModelFieldsTypes.Boolean) {
+            updatedFormData[field.Id] = formData[fieldId] === true ? 'True' : 'False'
+          }
+          data.contentInstances[0].FieldsValues.map((details, index) => {
+            ci = details.ContentId;
+          });
+          return {
+            ...obj,
+          };
+        },
+        {}
+      );
+    }
 
-    // Update content instance field values
-    // updateContentInstanceFieldValues({
-    //   variables: {
-    //     input: {
-    //       FieldsValues: Object.entries(formData).map(([fieldId, value]) => ({
-    //         FieldId: parseInt(fieldId),
-    //         Value: value,
-    //       })),
-    //     },
-    //   },
-    // })
-    //   .then((result) => {
-    //     setSuccessMessage('Content instance updated successfully');
-    //     setErrorMessage('');
-    //   })
-    //   .catch((error) => {
-    //     setErrorMessage('Error updating content instance');
-    //     setSuccessMessage('');
-    //   });
+    updateContentInstanceFieldValues({
+      variables: {
+        body: {
+          Id: ci,
+          FieldsValues: Object.keys(formData).map((key) => ({
+            FieldId: parseInt(key.replace(ci + '-', '')),
+            Value: updatedFormData[key],
+            ContentId: ci,
+          })),
+        },
+      },
+    })
+      .then(() => {
+        setSuccessMessage('Content instance updated successfully');
+        setErrorMessage('');
+        setTimeout(() => {
+          setSuccessMessage('');
+        }, 3000);
+      })
+      .catch((error) => {
+        setErrorMessage(`${error}: Error updating content instance`);
+        setSuccessMessage('');
+        setTimeout(() => {
+          setSuccessMessage('');
+        }, 3000);
+      });
+
   };
   const { enumValues } = useTagsEnumValuesQuery(403027);
 
@@ -241,7 +241,7 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, onClose, m
               </div>
             </div>
 
-            <Offcanvas.Body ref={descriptionPanelRef}>
+            <Offcanvas.Body ref={editPanelRef}>
               <form onSubmit={handleSubmit(onSubmit)}>
                 {targetModel?.ViewFields.map((field) => (
                   <div key={field.Id}>
@@ -249,14 +249,13 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, onClose, m
                       control={control}
                       name={`${field.Id}`}
                       render={({ field: { onChange, value } }) => {
-                        // const fieldData = initialValues[`${field.Id}`];
                         return (
                           <FieldRenderer
                             field={field}
-                            // value={fieldData}
-                            onChange={onChange}
                             enumValues={enumValues}
                             register={register}
+                            getValues={getValues}
+                            setValue={setValue}
                           />
                         );
                       }}

@@ -15,3 +15,4 @@ export const DEFAULT_X_PADDING = 150;
 export const DEFAULT_Y_PADDING = 70;
 
 export const TEMPLATE_CONTEXT_ID = 1170;
+export const HYCHART_VIEW_TYPE_ID = 403537;

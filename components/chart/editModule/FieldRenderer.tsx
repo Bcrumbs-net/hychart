@@ -4,6 +4,7 @@ import {
     ModelFieldsTypes,
     ModelField,
 } from '@bcrumbs.net/bc-api';
+import dynamic from 'next/dynamic';
 
 const Label = styled.label`
   display: block;
@@ -87,41 +88,42 @@ const TextArea = styled.textarea`
 `;
 interface FieldRendererProps {
     field: ModelField;
-    // value?: string;
-    onChange: (value: any) => void;
     enumValues?: { value: string; label: string }[];
     register?: any;
+    getValues?: any;
+    setValue?: any
 }
+const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 
-const FieldRenderer: React.FC<FieldRendererProps> = ({ field, onChange, enumValues, register }) => {
+const FieldRenderer: React.FC<FieldRendererProps> = ({ field, enumValues, register, getValues, setValue }) => {
     switch (field.Type) {
         case ModelFieldsTypes.Boolean:
+            const booleanInitialValue = getValues(`${field.Id}`);
             return (
                 <>
                     <Label>{field.Name}</Label>
                     <CheckboxInput
                         type="checkbox"
                         {...register(`${field.Id}`)}
-
-                    // checked={value === "True" ? true : false}
-                    // onChange={(e) => onChange(e.target.checked)}
+                        defaultChecked={booleanInitialValue}
                     />
                 </>
             );
         case ModelFieldsTypes.PredefinedListCheckboxes:
-            // const fieldValues = enumValues ? enumValues.split(',').map((val) => val.trim()) : [];
-            // console.log(fieldValues);
+            const initialValue = getValues(`${field.Id}`)
             return (
                 <>
                     <Label>{field.Name}</Label>
                     <CheckboxContainer>
-                        {enumValues?.map((option) => (
-                            <CheckboxColumn key={option.value}>
-                                <CheckboxLabel key={option.value}>
+                        {enumValues?.map((option, index) => (
+                            <CheckboxColumn key={index}>
+                                <CheckboxLabel >
                                     <CheckboxInput
+                                        key={option.value}
                                         type="checkbox"
-                                        {...register(`${field.Name}[]`, { value: option.value })}
-                                    // defaultChecked={value?.includes(option.value)}
+                                        {...register(`${field.Id}`)}
+                                        value={option.value}
+                                        defaultChecked={initialValue ? initialValue?.includes(option.value) ? true : false : false}
                                     />
                                     {option.value}
                                 </CheckboxLabel>
@@ -133,7 +135,6 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ field, onChange, enumValu
         case ModelFieldsTypes.String:
             return (
                 <>
-                    {field.Id}
                     <Label>{field.Name}</Label>
                     <Input {...register(`${field.Id}`)} type="text" placeholder={field.Name} />
                 </>
@@ -170,10 +171,18 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ field, onChange, enumValu
                 </>
             );
         case ModelFieldsTypes.RichTextBox:
+            const descriptionInitialValue: string = getValues(`${field.Id}`)
             return (
                 <>
                     <Label>{field.Name}</Label>
-                    <TextArea  {...register(`${field.Id}`)} />
+                    <JoditEditor
+                        value={descriptionInitialValue}
+                        onChange={(newValue) => setValue(`${field.Id}`, newValue || '')}
+                        className="w-full h-[70%] mt-10 bg-white"
+                    />
+                    <style>
+                        {`.jodit-wysiwyg{height:300px !important}`}
+                    </style>
                 </>
             );
         default:

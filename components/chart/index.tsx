@@ -13,7 +13,7 @@ import AddNewModule from './editMode/AddNewModule';
 import EditDrawer from './editModule';
 import { useTokenChecker } from '../../bootstrapers/hychart/utils';
 
-function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: string }) {
+function Chart({ data, token, config }: { config: Config; data: GraphContent[]; token?: string }) {
   const rootContent = data[0];
   const [zoomLevel, setZoomLevel] = useState(100);
   const [selectedModules, setSelectedModules] = useState([]);
@@ -207,14 +207,11 @@ function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: 
         </div>
         {hasToken && editMode ? (
           <EditDrawer
+            lang={config.lang}
             module={selectedModule}
             open={!!selectedModule && selectedModules.length === 1}
             onClose={() => setSelectedModule(undefined)}
-          >
-            <div
-            />
-          </EditDrawer>
-
+          />
         ) :
           <DescriptionDrawer
             module={selectedModule}
@@ -238,7 +235,7 @@ function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: 
           <AddNewModule onClick={addNewModule} />
         ) : null}
       </div>
-    </HotKeys>
+    </HotKeys >
   );
 }
 
