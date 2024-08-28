@@ -122,7 +122,6 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onCl
   const editPanelRef = useRef(null);
   const [successMessage, setSuccessMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [fieldId, setFieldId] = useState<number>();
   const { data, loading } = useContentInstancesQuery(module?.id);
   const { data: modelsResult, loading: modelsLoading } =
     useModelsQuery(TEMPLATE_CONTEXT_ID);
@@ -153,7 +152,6 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onCl
           if (field.Type === ModelFieldsTypes.PredefinedListCheckboxes) {
             const fieldDataForCheckboex = data.contentInstances[0].FieldsValues.filter(
               (f) => f.FieldId === field.Id,
-              setFieldId(field.Id),
             );
             const finishedCheckedBox = fieldDataForCheckboex.map((checkBoxValue) => checkBoxValue.Value.split(','))
             setValue(`${field.Id}`, finishedCheckedBox.flat() || '')
@@ -184,9 +182,9 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onCl
       targetModel?.ViewFields.reduce(
         (obj, field) => {
           if (field.Type === ModelFieldsTypes.PredefinedListCheckboxes) {
-            updatedFormData[field.Id] = formData[fieldId].join(',')
+            updatedFormData[field.Id] = formData[field.Id].join(',')
           } else if (field.Type === ModelFieldsTypes.Boolean) {
-            updatedFormData[field.Id] = formData[fieldId] === true ? 'True' : 'False'
+            updatedFormData[field.Id] = formData[field.Id] === true ? 'True' : 'False'
           }
           data.contentInstances[0].FieldsValues.map((details, index) => {
             ci = details.ContentId;
