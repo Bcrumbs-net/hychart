@@ -214,6 +214,7 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
           />
         ) :
           <DescriptionDrawer
+            lang={config.lang}
             module={selectedModule}
             open={!!selectedModule && selectedModules.length === 1}
             onClose={() => setSelectedModule(undefined)}
