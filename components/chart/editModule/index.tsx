@@ -164,7 +164,7 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onCl
                     />
                   </div>
                 ))}
-                <Button type="submit">ُEdit</Button>
+                <Button type="submit">Edit</Button>
               </form>
             </Offcanvas.Body>
           </StyledDrawer>
