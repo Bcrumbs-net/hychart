@@ -29,6 +29,7 @@ export type NodeType = {
   parentIds: number[];
   tags: string;
   id: number;
+  iId: number;
 };
 
 export type ChartType = {

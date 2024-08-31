@@ -10,8 +10,10 @@ import parseContentsToNodes from './parseContentsToNodes';
 import DescriptionDrawer from './description';
 import { parse } from 'querystring';
 import AddNewModule from './editMode/AddNewModule';
+import EditDrawer from './editModule';
+import { useTokenChecker } from '../../bootstrapers/hychart/utils';
 
-function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: string }) {
+function Chart({ data, token, config }: { config: Config; data: GraphContent[]; token?: string }) {
   const rootContent = data[0];
   const [zoomLevel, setZoomLevel] = useState(100);
   const [selectedModules, setSelectedModules] = useState([]);
@@ -20,6 +22,7 @@ function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: 
     parseContentsToNodes(data)
   );
   const [showSearch, setShowSearch] = useState(false);
+  const { hasToken } = useTokenChecker();
   const [search, setSearch] = useState<SearchType>({
     value: '',
     isValid: true,
@@ -213,15 +216,24 @@ function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: 
             changeZoomLevel={changeZoomLevel}
           />
         </div>
-        <DescriptionDrawer
-          module={selectedModule}
-          open={!!selectedModule && selectedModules.length === 1}
-          onClose={() => setSelectedModule(undefined)}
-        >
-          <div
-            dangerouslySetInnerHTML={{ __html: selectedModule?.description }}
+        {hasToken && editMode ? (
+          <EditDrawer
+            lang={config.lang}
+            module={selectedModule}
+            open={!!selectedModule && selectedModules.length === 1}
+            onClose={() => setSelectedModule(undefined)}
           />
-        </DescriptionDrawer>
+        ) :
+          <DescriptionDrawer
+            lang={config.lang}
+            module={selectedModule}
+            open={!!selectedModule && selectedModules.length === 1}
+            onClose={() => setSelectedModule(undefined)}
+          >
+            <div
+              dangerouslySetInnerHTML={{ __html: selectedModule?.description }}
+            />
+          </DescriptionDrawer>}
         {showSearch ? (
           <Search
             currentVersion={currentVersion}
@@ -235,7 +247,7 @@ function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: 
           <AddNewModule onClick={addNewModule} />
         ) : null}
       </div>
-    </HotKeys>
+    </HotKeys >
   );
 }
 
