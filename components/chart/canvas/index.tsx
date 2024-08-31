@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 // import { BCTooltip } from '@bcrumbs.net/bc-ui';
 import ModulesCanvas from './ModulesCanvas';
 import ConnectionsCanvas from './ConnectionsCanvas';
-import { SelectModuleFunc } from '../types';
+import { NodeType, SelectModuleFunc } from '../types';
 //import './styles.scss';
 import Scrollbars from 'react-scrollbars-custom';
 
@@ -23,6 +23,7 @@ export type CanvasProps = {
   deselectModules: () => void;
   moveModule: (id: number, x: number, y: number) => void;
   editMode: boolean;
+  focusNode: NodeType;
 };
 
 function Canvas({
@@ -30,6 +31,7 @@ function Canvas({
   zoomLevel,
   currentVersion,
   selectedModules,
+  focusNode,
   selectModule,
   deselectModules,
   changeZoomLevel,
@@ -134,6 +136,16 @@ function Canvas({
       window.removeEventListener('mousemove', onMouseMove);
     };
   }, [isScrolling, onMouseMove, toggleScrolling]);
+
+  useEffect(() => {
+    if (focusNode && canvasRef.current) {
+      const { clientHeight, clientWidth } = canvasRef.current;
+      const newScrollTop = Math.max(0, focusNode.y - clientHeight / 2);
+      const newScrollLeft = Math.max(0, focusNode.x - clientWidth / 2);
+      canvasRef.current.scrollTop = newScrollTop;
+      canvasRef.current.scrollLeft = newScrollLeft;
+    }
+  }, [focusNode, canvasRef]);
 
   return (
     <>

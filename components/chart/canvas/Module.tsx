@@ -107,7 +107,6 @@ const IconContainer = styled.button`
 `
 function Module({ editMode, module, selectModule, isSelected }: ModuleProps) {
   const moduleName = module.title || ModuleInfo.getModuleName(module.type);
-
   const onDragStart = useCallback((id, ev) => {
     ev.dataTransfer.setData('dragType', 'moveModule');
     ev.dataTransfer.setData('id', id);
