@@ -28,15 +28,15 @@ const nextConfig = {
       },
     ];
   },
-  nx: {
-    // Set this to true if you would like to to use SVGR
-    // See: https://github.com/gregberge/svgr
-    svgr: false,
-  },
+  // nx: {
+  //   // Set this to true if you would like to to use SVGR
+  //   // See: https://github.com/gregberge/svgr
+  //   svgr: false,
+  // },
   typescript: {
     tsconfigPath: "./tsconfig.github.json",
   },
-  experimental: { esmExternals: "loose" },
+  experimental: { esmExternals: true },
   compiler: {
     styledComponents: true,
   },
