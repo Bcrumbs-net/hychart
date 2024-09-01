@@ -22,7 +22,7 @@
   "homepage": "https://github.com/Bcrumbs-net/hychart#readme",
   "dependencies": {
     "@apollo/client": "^3.9.5",
-    "@bcrumbs.net/bc-api": "^0.0.20",
+    "@bcrumbs.net/bc-api": "^0.0.26",
     "@bcrumbs.net/bc-ui": "^0.0.1",
     "@sentry/nextjs": "^8.27.0",
     "apollo": "^2.33.9",

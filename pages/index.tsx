@@ -68,7 +68,7 @@ export const TemplateRouter = ({
   invalid?: boolean;
 }) => {
   if (invalid) {
-    return <Error />;
+    return <Error statusCode={400}/>;
   }
 
   // Call the useTokenChecker hook here
