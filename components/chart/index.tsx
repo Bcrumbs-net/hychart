@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { HotKeys } from 'react-hotkeys';
 import { Config, GraphContent, auth } from '@bcrumbs.net/bc-api';
 import { SHORTCUT_KEYS } from './Constants';
@@ -30,6 +30,7 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
     message: '',
   });
   const [editMode, setEditMode] = useState(false);
+  const [focusNode, setFocusNode] = useState<NodeType | undefined>(undefined);
 
   const shortcutHandlers = {
     SEARCH: () => {
@@ -109,6 +110,7 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
         const node = findModuleById(moduleId);
         if (node) {
           selectModule(node);
+          setFocusNode(node);
           setShowSearch(false);
           setSearch({ value: '', isValid: true, message: '' });
         }
@@ -122,7 +124,6 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
       setSearch,
     ]
   );
-
   const changeZoomLevel = useCallback(
     (delta: number) => {
       setZoomLevel(Math.min(Math.max(20, zoomLevel + delta), 300));
@@ -183,6 +184,15 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
     setShowCreateModule(true)
   }
 
+  useEffect(() => {
+    const queryParams = parse(window.location.search);
+    const nodeIdFromUrl = queryParams['?n']
+      ? parseInt(queryParams['?n'] as string)
+      : null;
+    if (nodeIdFromUrl !== null) {
+      focusModule(nodeIdFromUrl.toString());
+    }
+  }, [focusModule]);
   return (
     //@ts-ignore
     <HotKeys keyMap={SHORTCUT_KEYS} handlers={shortcutHandlers}>
@@ -201,6 +211,7 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
             selectModule={selectModule}
             currentVersion={currentVersion}
             selectedModules={selectedModules}
+            focusNode={focusNode}
             deselectModules={deselectModules}
             organizeModules={organizeModules}
             changeZoomLevel={changeZoomLevel}

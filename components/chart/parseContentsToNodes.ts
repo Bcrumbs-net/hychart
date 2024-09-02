@@ -29,6 +29,8 @@ function convertContentsToNodes(
     const connectionList = getNodeConnectionList(content, contentData);
     nodes[content.id] = {
       id: content.id,
+      // @ts-ignore
+      iId: content.iId,
       type: contentData.type as NodeVariant,
       x: Number(contentData.x_position) + DEFAULT_X_PADDING,
       y: Number(contentData.y_position) + DEFAULT_Y_PADDING,

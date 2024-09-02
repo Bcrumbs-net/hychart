@@ -65,7 +65,6 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onCl
     return undefined;
   }, [modelsResult, module?.id]);
 
-
   const targetContentInstance = useMemo(() => {
     if (data?.contentInstances.length > 0) {
       return data.contentInstances[0];
@@ -106,11 +105,11 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onCl
     updateContentInstanceFieldValues({
       variables: {
         body: {
-          Id: targetContentInstance.ContentId,
+          Id: targetContentInstance.Id,
           FieldsValues: Object.keys(formData).map((key) => ({
-            FieldId: parseInt(key.replace(targetContentInstance.ContentId + '-', '')),
+            FieldId: parseInt(key.replace(targetContentInstance.Id + '-', '')),
             Value: updatedFormData[key],
-            ContentId: targetContentInstance.ContentId,
+            ContentId: targetContentInstance.Id,
           })),
         },
       },
@@ -164,7 +163,7 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onCl
                     />
                   </div>
                 ))}
-                <Button type="submit">ُEdit</Button>
+                <Button type="submit">Edit</Button>
               </form>
             </Offcanvas.Body>
           </StyledDrawer>

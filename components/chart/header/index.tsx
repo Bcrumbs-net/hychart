@@ -114,7 +114,6 @@ const LeftSide = styled.div`
     }
   }
 `;
-
 export default function Header({
   showModulesSearch,
   chartName,
