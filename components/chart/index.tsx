@@ -22,6 +22,7 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
     parseContentsToNodes(data)
   );
   const [showSearch, setShowSearch] = useState(false);
+  const [showCreateModule, setShowCreateModule] = useState(false);
   const { hasToken } = useTokenChecker();
   const [search, setSearch] = useState<SearchType>({
     value: '',
@@ -179,7 +180,7 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
   }, [focusModule]);
 
   const addNewModule = () => {
-    console.log('Add New Module');
+    setShowCreateModule(true)
   }
 
   return (
@@ -233,7 +234,12 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
           />
         ) : null}
         {typeof window !== 'undefined' && auth?.isAuthenticated() && editMode ? (
-          <AddNewModule onClick={addNewModule} />
+          <AddNewModule
+            onClick={addNewModule}
+            showCreateModule={showCreateModule}
+            setSelectedModules={setSelectedModules}
+            setShowCreateModule={setShowCreateModule}
+          />
         ) : null}
       </div>
     </HotKeys >

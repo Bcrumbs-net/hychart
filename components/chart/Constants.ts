@@ -17,3 +17,4 @@ export const DEFAULT_Y_PADDING = 70;
 export const TEMPLATE_CONTEXT_ID = 1170;
 export const HYCHART_VIEW_TYPE_ID = 403537;
 export const TAGS_ENUM_ID = 403027;
+export const HYCHART_ROOT_ID = 419496;
