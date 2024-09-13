@@ -31,6 +31,7 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
   });
   const [editMode, setEditMode] = useState(false);
   const [focusNode, setFocusNode] = useState<NodeType | undefined>(undefined);
+  const [parentId, setParentId] = useState<number>();
 
   const shortcutHandlers = {
     SEARCH: () => {
@@ -102,7 +103,6 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
     },
     [selectedModules, setSelectedModules, selectedModule, deselectModules]
   );
-
   const focusModule = useCallback(
     (id: string) => {
       if (currentVersion && currentVersion.nodes) {
@@ -215,6 +215,8 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
             deselectModules={deselectModules}
             organizeModules={organizeModules}
             changeZoomLevel={changeZoomLevel}
+            setShowCreateModule={setShowCreateModule}
+            setParentId={setParentId}
           />
         </div>
         {hasToken && editMode ? (
@@ -246,10 +248,12 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
         ) : null}
         {typeof window !== 'undefined' && auth?.isAuthenticated() && editMode ? (
           <AddNewModule
+            selectModule={selectModule}
             onClick={addNewModule}
+            findModuleById={findModuleById}
             showCreateModule={showCreateModule}
-            setSelectedModules={setSelectedModules}
             setShowCreateModule={setShowCreateModule}
+            parentId={parentId}
           />
         ) : null}
       </div>

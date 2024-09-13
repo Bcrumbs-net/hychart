@@ -7,6 +7,9 @@ export type ModulesCanvasProps = {
   selectedModules: any[];
   selectModule: SelectModuleFunc;
   editMode: boolean;
+  setShowCreateModule: React.Dispatch<React.SetStateAction<boolean>>;
+  setParentId: React.Dispatch<React.SetStateAction<number>>;
+
 };
 
 function ModulesCanvas({
@@ -14,6 +17,8 @@ function ModulesCanvas({
   editMode,
   selectedModules,
   selectModule,
+  setShowCreateModule,
+  setParentId
 }: ModulesCanvasProps) {
   if (currentVersion === undefined || currentVersion.nodes === undefined)
     return null;
@@ -30,6 +35,8 @@ function ModulesCanvas({
             isSelected={selected}
             module={m}
             selectModule={selectModule}
+            setShowCreateModule={setShowCreateModule}
+            setParentId={setParentId}
           />
         );
       })}

@@ -105,11 +105,11 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onCl
     updateContentInstanceFieldValues({
       variables: {
         body: {
-          Id: targetContentInstance.Id,
+          Id: targetContentInstance?.Id,
           FieldsValues: Object.keys(formData).map((key) => ({
-            FieldId: parseInt(key.replace(targetContentInstance.Id + '-', '')),
+            FieldId: parseInt(key.replace(targetContentInstance?.Id + '-', '')),
             Value: updatedFormData[key],
-            ContentId: targetContentInstance.Id,
+            ContentId: targetContentInstance?.Id,
           })),
         },
       },

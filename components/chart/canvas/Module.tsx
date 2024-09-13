@@ -10,6 +10,10 @@ interface ModuleProps {
   selectModule: SelectModuleFunc;
   isSelected: boolean;
   editMode: boolean;
+  setShowCreateModule: React.Dispatch<React.SetStateAction<boolean>>;
+  setParentId: React.Dispatch<React.SetStateAction<number>>;
+
+
 }
 
 interface ModuleContainerProps {
@@ -105,7 +109,7 @@ const IconContainer = styled.button`
   background-color: transparent;
   padding:0px;
 `
-function Module({ editMode, module, selectModule, isSelected }: ModuleProps) {
+function Module({ editMode, module, setParentId, selectModule, setShowCreateModule, isSelected }: ModuleProps) {
   const moduleName = module.title || ModuleInfo.getModuleName(module.type);
   const onDragStart = useCallback((id, ev) => {
     ev.dataTransfer.setData('dragType', 'moveModule');
@@ -115,7 +119,8 @@ function Module({ editMode, module, selectModule, isSelected }: ModuleProps) {
   }, []);
 
   const handleAddChild = () => {
-    console.log("add child");
+    setShowCreateModule(true);
+    setParentId(module.id);
   };
 
   return (

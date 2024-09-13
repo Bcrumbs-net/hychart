@@ -1,16 +1,19 @@
-import { useCreateContentInstanceMutation, useCreateContentMutation } from '@bcrumbs.net/bc-api';
+import { auth, useCreateContentInstanceMutation, useCreateContentMutation } from '@bcrumbs.net/bc-api';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { BsX } from 'react-icons/bs';
 import styled from 'styled-components';
-import { HYCHART_VIEW_TYPE_ID } from '../Constants';
+import { HYCHART_ROOT_ID, HYCHART_VIEW_TYPE_ID } from '../Constants';
 import { SuccessToast, ToastMessage, ErrorToast } from '../../common/toasts';
+import { NodeType, SelectModuleFunc } from '../types';
 
 interface AddNewModuleProps {
   onClick?: () => void;
   showCreateModule?: boolean;
-  setSelectedModules?: React.Dispatch<React.SetStateAction<[]>>;
   setShowCreateModule?: React.Dispatch<React.SetStateAction<boolean>>;
+  selectModule?: SelectModuleFunc;
+  findModuleById?: (id: number) => NodeType | undefined;
+  parentId?: number | string;
 }
 
 const StyledAddNewModule = styled.div<AddNewModuleProps>`
@@ -108,7 +111,8 @@ const Button = styled.button`
   }
 `;
 
-const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, showCreateModule, setSelectedModules, setShowCreateModule }) => {
+const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, parentId, selectModule, findModuleById, showCreateModule, setShowCreateModule }) => {
+  const [newModule, setNewModule] = useState<NodeType>();
   const [successMessage, setSuccessMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [
@@ -122,7 +126,7 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, showCreateModule, 
   ] = useCreateContentInstanceMutation();
 
   const { control, handleSubmit, register, setValue } = useForm<any>();
-
+  auth.setContext('1171');
   const onSubmit = (formData: any) => {
     createContentMutation({
       variables: {
@@ -135,7 +139,7 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, showCreateModule, 
           ContentType: 4,
           ContentInstances: [],
           StageId: null,
-          ParentId: null,
+          ParentId: parentId ? parentId : HYCHART_ROOT_ID,
         },
       },
     }).then(
@@ -145,7 +149,7 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, showCreateModule, 
         },
       }) => {
         if (result === 'true' && obj) {
-          setSelectedModules(obj.Id);
+          selectModule(obj);
           createContentInstanceMutation({
             variables: {
               body: {
@@ -172,7 +176,7 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, showCreateModule, 
               },
             }) => {
               if (result === 'true' && obj) {
-                console.log(result, obj), 'createContentInstance';
+                formData.name = ''
               }
             }
           );
@@ -187,10 +191,11 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, showCreateModule, 
       }, 3000);
     })
       .catch((error) => {
+        setShowCreateModule(false);
         setErrorMessage(`${error}: Error creating content and content instance`);
         setSuccessMessage('');
         setTimeout(() => {
-          setSuccessMessage('');
+          setErrorMessage('');
         }, 3000);
       });
   }
