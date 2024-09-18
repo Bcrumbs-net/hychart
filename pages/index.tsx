@@ -79,7 +79,7 @@ export const TemplateRouter = ({
   // Call the useTokenChecker hook here
   useTokenChecker();
 
-  return <Chart config={config} contextId={contextId} data={data} />;
+  return <Chart config={config} data={data} />;
 };
 
 export default TemplateRouter;
