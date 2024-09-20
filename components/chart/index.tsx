@@ -248,9 +248,9 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
         ) : null}
         {typeof window !== 'undefined' && auth?.isAuthenticated() && editMode ? (
           <AddNewModule
+            contextId={contextId}
             selectModule={selectModule}
             onClick={addNewModule}
-            findModuleById={findModuleById}
             showCreateModule={showCreateModule}
             setShowCreateModule={setShowCreateModule}
             parentId={parentId}

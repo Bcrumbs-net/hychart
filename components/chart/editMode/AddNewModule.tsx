@@ -6,14 +6,15 @@ import styled from 'styled-components';
 import { HYCHART_ROOT_ID, HYCHART_VIEW_TYPE_ID } from '../Constants';
 import { SuccessToast, ToastMessage, ErrorToast } from '../../common/toasts';
 import { NodeType, SelectModuleFunc } from '../types';
+import convertToNodeType from '../convertToNodeType';
 
 interface AddNewModuleProps {
   onClick?: () => void;
   showCreateModule?: boolean;
   setShowCreateModule?: React.Dispatch<React.SetStateAction<boolean>>;
   selectModule?: SelectModuleFunc;
-  findModuleById?: (id: number) => NodeType | undefined;
   parentId?: number | string;
+  contextId?: string;
 }
 
 const StyledAddNewModule = styled.div<AddNewModuleProps>`
@@ -111,8 +112,7 @@ const Button = styled.button`
   }
 `;
 
-const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, parentId, selectModule, findModuleById, showCreateModule, setShowCreateModule }) => {
-  const [newModule, setNewModule] = useState<NodeType>();
+const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, contextId, parentId, selectModule, showCreateModule, setShowCreateModule }) => {
   const [successMessage, setSuccessMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [
@@ -124,9 +124,8 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, parentId, selectMo
     createContentInstanceMutation,
     { data: createContentInstanceData, error: createContentInstanceError, loading: creatingContentInsLoading },
   ] = useCreateContentInstanceMutation();
-
   const { control, handleSubmit, register, setValue } = useForm<any>();
-  auth.setContext('1171');
+  auth.setContext(contextId);
   const onSubmit = (formData: any) => {
     createContentMutation({
       variables: {
@@ -145,16 +144,15 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, parentId, selectMo
     }).then(
       ({
         data: {
-          createContent: { result, obj },
+          createContent: { result, obj: content },
         },
       }) => {
-        if (result === 'true' && obj) {
-          selectModule(obj);
+        if (result === 'true' && content) {
           createContentInstanceMutation({
             variables: {
               body: {
                 Id: 0,
-                ContentId: obj.Id,
+                ContentId: content.Id,
                 Name: formData.name,
                 Title: '',
                 MetaDescription: '',
@@ -172,11 +170,13 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, parentId, selectMo
           }).then(
             ({
               data: {
-                createContent: { result, obj },
+                createContent: { result, obj: contentInstance },
               },
             }) => {
-              if (result === 'true' && obj) {
-                formData.name = ''
+              if (result === 'true' && contentInstance) {
+                const node = convertToNodeType(contentInstance.Id, content.Id);
+                selectModule(node);
+                formData.name = '';
               }
             }
           );
@@ -199,7 +199,6 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, parentId, selectMo
         }, 3000);
       });
   }
-
   return (
     <>
       <StyledAddNewModule onClick={onClick}>
