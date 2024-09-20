@@ -13,7 +13,7 @@ import AddNewModule from './editMode/AddNewModule';
 import EditDrawer from './editModule';
 import { useTokenChecker } from '../../bootstrapers/hychart/utils';
 
-function Chart({ data, token, config }: { config: Config; data: GraphContent[]; token?: string }) {
+function Chart({ data, token, contextId, config }: { config: Config; contextId: string; data: GraphContent[]; token?: string }) {
   const rootContent = data[0];
   const [zoomLevel, setZoomLevel] = useState(100);
   const [selectedModules, setSelectedModules] = useState([]);
@@ -22,6 +22,7 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
     parseContentsToNodes(data)
   );
   const [showSearch, setShowSearch] = useState(false);
+  const [showCreateModule, setShowCreateModule] = useState(false);
   const { hasToken } = useTokenChecker();
   const [search, setSearch] = useState<SearchType>({
     value: '',
@@ -30,6 +31,7 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
   });
   const [editMode, setEditMode] = useState(false);
   const [focusNode, setFocusNode] = useState<NodeType | undefined>(undefined);
+  const [parentId, setParentId] = useState<number>();
 
   const shortcutHandlers = {
     SEARCH: () => {
@@ -101,7 +103,6 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
     },
     [selectedModules, setSelectedModules, selectedModule, deselectModules]
   );
-
   const focusModule = useCallback(
     (id: string) => {
       if (currentVersion && currentVersion.nodes) {
@@ -180,7 +181,7 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
   }, [focusModule]);
 
   const addNewModule = () => {
-    console.log('Add New Module');
+    setShowCreateModule(true)
   }
 
   useEffect(() => {
@@ -214,6 +215,8 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
             deselectModules={deselectModules}
             organizeModules={organizeModules}
             changeZoomLevel={changeZoomLevel}
+            setShowCreateModule={setShowCreateModule}
+            setParentId={setParentId}
           />
         </div>
         {hasToken && editMode ? (
@@ -244,7 +247,14 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
           />
         ) : null}
         {typeof window !== 'undefined' && auth?.isAuthenticated() && editMode ? (
-          <AddNewModule onClick={addNewModule} />
+          <AddNewModule
+            contextId={contextId}
+            selectModule={selectModule}
+            onClick={addNewModule}
+            showCreateModule={showCreateModule}
+            setShowCreateModule={setShowCreateModule}
+            parentId={parentId}
+          />
         ) : null}
       </div>
     </HotKeys >
