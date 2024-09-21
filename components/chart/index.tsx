@@ -12,9 +12,11 @@ import { parse } from 'querystring';
 import AddNewModule from './editMode/AddNewModule';
 import EditDrawer from './editModule';
 import { useTokenChecker } from '../../bootstrapers/hychart/utils';
+import { useRouter } from 'next/router';
 
 function Chart({ data, token, config }: { config: Config; data: GraphContent[]; token?: string }) {
   const rootContent = data[0];
+  const router = useRouter();
   const [zoomLevel, setZoomLevel] = useState(100);
   const [selectedModules, setSelectedModules] = useState([]);
   const [selectedModule, setSelectedModule] = useState<NodeType>();
@@ -168,6 +170,30 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
     setCurentVersion(originVersion);
   }, [data, setCurentVersion]);
 
+  useEffect(() => {
+    const { editMode: queryEditMode } = router.query;
+
+    if (queryEditMode) {
+      const isEditMode = Array.isArray(queryEditMode)
+        ? queryEditMode[0] === 'true' // Convert to boolean if it's an array
+        : queryEditMode === 'true'; // Convert to boolean if it's a string
+
+      setEditMode(isEditMode);
+      const { pathname, query, ...rest } = router;
+      router.replace(
+        {
+          pathname: router.pathname,
+          query: query
+            ? Object.fromEntries(
+              Object.entries(query).filter(([key]) => key !== "editMode")
+            )
+            : {},
+        },
+        undefined,
+        { shallow: true }
+      );
+    }
+  });
   useEffect(() => {
     const queryParams = parse(window.location.search);
     const nodeIdFromUrl = queryParams['?n']
