@@ -174,12 +174,4 @@ export const Textbox = ({
   );
 };
 
-Textbox.defaultProps = {
-  className: "",
-  value: "",
-  disabled: false,
-  placeholder: undefined,
-  maxLength: undefined,
-};
-
 export default Textbox;
