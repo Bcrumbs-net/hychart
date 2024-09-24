@@ -1,7 +1,7 @@
 import { NodeType, NodeVariant } from "./types";
 import { DEFAULT_X_PADDING, DEFAULT_Y_PADDING } from "./Constants";
 
-function convertToNodeType(
+function createBlankNode(
   contentInstanceId: number,
   contentId: number
 ): NodeType {
@@ -25,4 +25,4 @@ function convertToNodeType(
   return node;
 }
 
-export default convertToNodeType;
+export default createBlankNode;

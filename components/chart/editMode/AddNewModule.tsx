@@ -3,18 +3,18 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { BsX } from 'react-icons/bs';
 import styled from 'styled-components';
-import { HYCHART_ROOT_ID, HYCHART_VIEW_TYPE_ID } from '../Constants';
+import { HYCHART_VIEW_TYPE_ID } from '../Constants';
 import { SuccessToast, ToastMessage, ErrorToast } from '../../common/toasts';
-import { NodeType, SelectModuleFunc } from '../types';
-import convertToNodeType from '../convertToNodeType';
+import { ChartType, NodeType, SelectModuleFunc } from '../types';
+import createBlankNode from '../createBlankNode';
 
 interface AddNewModuleProps {
   onClick?: () => void;
-  showCreateModule?: boolean;
-  setShowCreateModule?: React.Dispatch<React.SetStateAction<boolean>>;
+  parentIdToCreateChild?: number;
+  setParentIdToCreateChild?: React.Dispatch<React.SetStateAction<number | null>>;
   selectModule?: SelectModuleFunc;
-  parentId?: number | string;
-  contextId?: string;
+  currentVersion?: any;
+  setCurrentVersion?: React.Dispatch<React.SetStateAction<ChartType>>;
 }
 
 const StyledAddNewModule = styled.div<AddNewModuleProps>`
@@ -112,7 +112,7 @@ const Button = styled.button`
   }
 `;
 
-const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, contextId, parentId, selectModule, showCreateModule, setShowCreateModule }) => {
+const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, setCurrentVersion, currentVersion, selectModule, parentIdToCreateChild, setParentIdToCreateChild }) => {
   const [successMessage, setSuccessMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [
@@ -125,7 +125,6 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, contextId, parentI
     { data: createContentInstanceData, error: createContentInstanceError, loading: creatingContentInsLoading },
   ] = useCreateContentInstanceMutation();
   const { control, handleSubmit, register, setValue } = useForm<any>();
-  auth.setContext(contextId);
   const onSubmit = (formData: any) => {
     createContentMutation({
       variables: {
@@ -138,7 +137,7 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, contextId, parentI
           ContentType: 4,
           ContentInstances: [],
           StageId: null,
-          ParentId: parentId ? parentId : HYCHART_ROOT_ID,
+          ParentId: parentIdToCreateChild,
         },
       },
     }).then(
@@ -174,25 +173,31 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, contextId, parentI
               },
             }) => {
               if (result === 'true' && contentInstance) {
-                const node = convertToNodeType(contentInstance.Id, content.Id);
+                const node = createBlankNode(contentInstance.Id, content.Id);
+                setCurrentVersion({
+                  ...currentVersion,
+                  nodes: {
+                    ...currentVersion.nodes,
+                    [node.id]: node,
+                  },
+                });
                 selectModule(node);
-                formData.name = '';
               }
             }
           );
         }
       }
     ).then(() => {
-      setShowCreateModule(false);
-      setSuccessMessage('Content and content instance create successfully');
+      setParentIdToCreateChild(null);
+      setSuccessMessage('Node is created successfully');
       setErrorMessage('');
       setTimeout(() => {
         setSuccessMessage('');
       }, 3000);
     })
       .catch((error) => {
-        setShowCreateModule(false);
-        setErrorMessage(`${error}: Error creating content and content instance`);
+        setParentIdToCreateChild(null);
+        setErrorMessage(`${error}: Error creating node, please try again`);
         setSuccessMessage('');
         setTimeout(() => {
           setErrorMessage('');
@@ -204,12 +209,12 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, contextId, parentI
       <StyledAddNewModule onClick={onClick}>
         <span>+</span>
       </StyledAddNewModule>
-      {showCreateModule && (
+      {parentIdToCreateChild && (
         <BackgroundStyle>
           <CreateFormStyle>
             <div className='header'>
               <h1>Create New Node</h1>
-              <BsX onClick={() => setShowCreateModule(false)} className='closeIcon' />
+              <BsX onClick={() => setParentIdToCreateChild(null)} className='closeIcon' />
             </div>
             <form onSubmit={handleSubmit(onSubmit)} className='form-input-style'>
               <Label>Name</Label>

@@ -20,11 +20,11 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
   const [zoomLevel, setZoomLevel] = useState(100);
   const [selectedModules, setSelectedModules] = useState([]);
   const [selectedModule, setSelectedModule] = useState<NodeType>();
-  const [currentVersion, setCurentVersion] = useState<ChartType>(
+  const [currentVersion, setCurrentVersion] = useState<ChartType>(
     parseContentsToNodes(data)
   );
   const [showSearch, setShowSearch] = useState(false);
-  const [showCreateModule, setShowCreateModule] = useState(false);
+  const [parentIdToCreateChild, setParentIdToCreateChild] = useState<number>();
   const { hasToken } = useTokenChecker();
   const [search, setSearch] = useState<SearchType>({
     value: '',
@@ -33,7 +33,6 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
   });
   const [editMode, setEditMode] = useState(false);
   const [focusNode, setFocusNode] = useState<NodeType | undefined>(undefined);
-  const [parentId, setParentId] = useState<number>();
 
   const shortcutHandlers = {
     SEARCH: () => {
@@ -147,7 +146,7 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
             newVersion.nodes[selectedModule].y += y;
           }
         });
-        setCurentVersion({
+        setCurrentVersion({
           ...newVersion,
         });
       } else {
@@ -155,7 +154,7 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
         if (targetNode) {
           newVersion.nodes[id].x += x;
           newVersion.nodes[id].y += y;
-          setCurentVersion({
+          setCurrentVersion({
             ...newVersion,
           });
         } else {
@@ -163,17 +162,17 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
         }
       }
     },
-    [selectedModules, setCurentVersion, currentVersion]
+    [selectedModules, setCurrentVersion, currentVersion]
   );
 
   const organizeModules = useCallback(() => {
     const originVersion = parseContentsToNodes(data);
-    setCurentVersion(originVersion);
-  }, [data, setCurentVersion]);
+    setCurrentVersion(originVersion);
+  }, [data, setCurrentVersion]);
 
   useEffect(() => {
     const { editMode: queryEditMode } = router.query;
-
+    auth.setContext(contextId);
     if (queryEditMode) {
       const isEditMode = Array.isArray(queryEditMode)
         ? queryEditMode[0] === 'true' // Convert to boolean if it's an array
@@ -207,7 +206,7 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
   }, [focusModule]);
 
   const addNewModule = () => {
-    setShowCreateModule(true)
+    setParentIdToCreateChild(rootContent.id)
   }
 
   useEffect(() => {
@@ -241,8 +240,7 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
             deselectModules={deselectModules}
             organizeModules={organizeModules}
             changeZoomLevel={changeZoomLevel}
-            setShowCreateModule={setShowCreateModule}
-            setParentId={setParentId}
+            setParentIdToCreateChild={setParentIdToCreateChild}
           />
         </div>
         {hasToken && editMode ? (
@@ -274,12 +272,12 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
         ) : null}
         {typeof window !== 'undefined' && auth?.isAuthenticated() && editMode ? (
           <AddNewModule
-            contextId={contextId}
             selectModule={selectModule}
             onClick={addNewModule}
-            showCreateModule={showCreateModule}
-            setShowCreateModule={setShowCreateModule}
-            parentId={parentId}
+            parentIdToCreateChild={parentIdToCreateChild}
+            setParentIdToCreateChild={setParentIdToCreateChild}
+            currentVersion={currentVersion}
+            setCurrentVersion={setCurrentVersion}
           />
         ) : null}
       </div>

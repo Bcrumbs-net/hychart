@@ -24,8 +24,7 @@ export type CanvasProps = {
   moveModule: (id: number, x: number, y: number) => void;
   editMode: boolean;
   focusNode: NodeType;
-  setShowCreateModule: React.Dispatch<React.SetStateAction<boolean>>;
-  setParentId: React.Dispatch<React.SetStateAction<number>>;
+  setParentIdToCreateChild: React.Dispatch<React.SetStateAction<number>>;
 };
 
 function Canvas({
@@ -39,8 +38,7 @@ function Canvas({
   changeZoomLevel,
   organizeModules,
   moveModule,
-  setShowCreateModule,
-  setParentId,
+  setParentIdToCreateChild,
 }: CanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -191,8 +189,7 @@ function Canvas({
             currentVersion={currentVersion}
             selectedModules={selectedModules}
             selectModule={selectModule}
-            setShowCreateModule={setShowCreateModule}
-            setParentId={setParentId}
+            setParentIdToCreateChild={setParentIdToCreateChild}
           />
           <ConnectionsCanvas
             currentVersion={currentVersion}
