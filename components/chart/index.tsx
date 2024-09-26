@@ -14,6 +14,10 @@ import EditDrawer from './editModule';
 import { useTokenChecker } from '../../bootstrapers/hychart/utils';
 import { useRouter } from 'next/router';
 
+export type NodePositionType = {
+  X?: number;
+  Y?: number;
+};
 function Chart({ data, token, contextId, config }: { config: Config; contextId: string; data: GraphContent[]; token?: string }) {
   const rootContent = data[0];
   const router = useRouter();
@@ -24,7 +28,7 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
     parseContentsToNodes(data)
   );
   const [showSearch, setShowSearch] = useState(false);
-  const [parentIdToCreateChild, setParentIdToCreateChild] = useState<number>();
+  const [parentIdToCreateChild, setParentIdToCreateChild] = useState<number | undefined>();
   const { hasToken } = useTokenChecker();
   const [search, setSearch] = useState<SearchType>({
     value: '',
@@ -33,6 +37,10 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
   });
   const [editMode, setEditMode] = useState(false);
   const [focusNode, setFocusNode] = useState<NodeType | undefined>(undefined);
+  const [nodePosition, setNodePosition] = useState<NodePositionType>({
+    X: 0,
+    Y: 0,
+  });
 
   const shortcutHandlers = {
     SEARCH: () => {
@@ -171,12 +179,16 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
   }, [data, setCurrentVersion]);
 
   useEffect(() => {
-    const { editMode: queryEditMode } = router.query;
     auth.setContext(contextId);
+  }, []);
+
+  useEffect(() => {
+    const { editMode: queryEditMode } = router.query;
+
     if (queryEditMode) {
       const isEditMode = Array.isArray(queryEditMode)
-        ? queryEditMode[0] === 'true' // Convert to boolean if it's an array
-        : queryEditMode === 'true'; // Convert to boolean if it's a string
+        ? queryEditMode[0] === 'true'
+        : queryEditMode === 'true';
 
       setEditMode(isEditMode);
       const { pathname, query, ...rest } = router;
@@ -193,7 +205,8 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
         { shallow: true }
       );
     }
-  });
+  }, [router.query]);
+
   useEffect(() => {
     const queryParams = parse(window.location.search);
     const nodeIdFromUrl = queryParams['?n']
@@ -241,6 +254,7 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
             organizeModules={organizeModules}
             changeZoomLevel={changeZoomLevel}
             setParentIdToCreateChild={setParentIdToCreateChild}
+            setNodePosition={setNodePosition}
           />
         </div>
         {hasToken && editMode ? (
@@ -278,6 +292,7 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
             setParentIdToCreateChild={setParentIdToCreateChild}
             currentVersion={currentVersion}
             setCurrentVersion={setCurrentVersion}
+            nodePosition={nodePosition}
           />
         ) : null}
       </div>

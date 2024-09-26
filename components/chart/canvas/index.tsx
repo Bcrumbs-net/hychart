@@ -5,6 +5,7 @@ import ConnectionsCanvas from './ConnectionsCanvas';
 import { NodeType, SelectModuleFunc } from '../types';
 //import './styles.scss';
 import Scrollbars from 'react-scrollbars-custom';
+import { NodePositionType } from '..';
 
 export type ScrollPositionType = {
   scrollLeft?: number;
@@ -25,6 +26,7 @@ export type CanvasProps = {
   editMode: boolean;
   focusNode: NodeType;
   setParentIdToCreateChild: React.Dispatch<React.SetStateAction<number>>;
+  setNodePosition: React.Dispatch<React.SetStateAction<NodePositionType>>;
 };
 
 function Canvas({
@@ -39,6 +41,7 @@ function Canvas({
   organizeModules,
   moveModule,
   setParentIdToCreateChild,
+  setNodePosition
 }: CanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -190,6 +193,7 @@ function Canvas({
             selectedModules={selectedModules}
             selectModule={selectModule}
             setParentIdToCreateChild={setParentIdToCreateChild}
+            setNodePosition={setNodePosition}
           />
           <ConnectionsCanvas
             currentVersion={currentVersion}

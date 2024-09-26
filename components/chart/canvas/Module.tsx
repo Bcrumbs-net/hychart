@@ -4,6 +4,7 @@ import { NodeType, SelectModuleFunc } from '../types';
 import styled, { css } from 'styled-components';
 import { FaPlusCircle } from 'react-icons/fa';
 import { auth } from '@bcrumbs.net/bc-api';
+import { NodePositionType } from '..';
 
 interface ModuleProps {
   module: NodeType;
@@ -11,8 +12,7 @@ interface ModuleProps {
   isSelected: boolean;
   editMode: boolean;
   setParentIdToCreateChild: React.Dispatch<React.SetStateAction<number>>;
-
-
+  setNodePosition: React.Dispatch<React.SetStateAction<NodePositionType>>;
 }
 
 interface ModuleContainerProps {
@@ -49,14 +49,6 @@ const ModuleContainer = styled.div<ModuleContainerProps>`
       }
     `}
 
-  .moduleIcon {
-    text-align: center;
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    background-repeat: no-repeat;
-    background-position: center;
-  }
   .moduleNameCon{
     padding: 4px;
     color: #fff;
@@ -108,9 +100,10 @@ const IconContainer = styled.button`
   background-color: transparent;
   padding:0px;
 `
-function Module({ editMode, module, setParentIdToCreateChild, selectModule, isSelected }: ModuleProps) {
+function Module({ editMode, module, setParentIdToCreateChild, selectModule, setNodePosition, isSelected }: ModuleProps) {
   const moduleName = module.title || ModuleInfo.getModuleName(module.type);
   const onDragStart = useCallback((id, ev) => {
+    console.log('ll');
     ev.dataTransfer.setData('dragType', 'moveModule');
     ev.dataTransfer.setData('id', id);
     ev.dataTransfer.setData('clientX', ev.clientX);
@@ -119,6 +112,10 @@ function Module({ editMode, module, setParentIdToCreateChild, selectModule, isSe
 
   const handleAddChild = () => {
     setParentIdToCreateChild(module.id);
+    setNodePosition({
+      X: module.x,
+      Y: module.y
+    })
   };
 
   return (

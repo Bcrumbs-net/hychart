@@ -1,6 +1,7 @@
 import React from 'react';
 import Module from './Module';
 import { ChartType, SelectModuleFunc } from '../types';
+import { NodePositionType } from '..';
 
 export type ModulesCanvasProps = {
   currentVersion: ChartType;
@@ -8,6 +9,7 @@ export type ModulesCanvasProps = {
   selectModule: SelectModuleFunc;
   editMode: boolean;
   setParentIdToCreateChild: React.Dispatch<React.SetStateAction<number>>;
+  setNodePosition: React.Dispatch<React.SetStateAction<NodePositionType>>;
 
 };
 
@@ -16,7 +18,8 @@ function ModulesCanvas({
   editMode,
   selectedModules,
   selectModule,
-  setParentIdToCreateChild
+  setParentIdToCreateChild,
+  setNodePosition
 }: ModulesCanvasProps) {
   if (currentVersion === undefined || currentVersion.nodes === undefined)
     return null;
@@ -34,6 +37,7 @@ function ModulesCanvas({
             module={m}
             selectModule={selectModule}
             setParentIdToCreateChild={setParentIdToCreateChild}
+            setNodePosition={setNodePosition}
           />
         );
       })}

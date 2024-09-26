@@ -7,14 +7,16 @@ import { HYCHART_VIEW_TYPE_ID } from '../Constants';
 import { SuccessToast, ToastMessage, ErrorToast } from '../../common/toasts';
 import { ChartType, NodeType, SelectModuleFunc } from '../types';
 import createBlankNode from '../createBlankNode';
+import { NodePositionType } from '..';
 
 interface AddNewModuleProps {
   onClick?: () => void;
   parentIdToCreateChild?: number;
-  setParentIdToCreateChild?: React.Dispatch<React.SetStateAction<number | null>>;
+  setParentIdToCreateChild?: React.Dispatch<React.SetStateAction<number | undefined>>;
   selectModule?: SelectModuleFunc;
   currentVersion?: any;
   setCurrentVersion?: React.Dispatch<React.SetStateAction<ChartType>>;
+  nodePosition?: NodePositionType;
 }
 
 const StyledAddNewModule = styled.div<AddNewModuleProps>`
@@ -112,7 +114,7 @@ const Button = styled.button`
   }
 `;
 
-const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, setCurrentVersion, currentVersion, selectModule, parentIdToCreateChild, setParentIdToCreateChild }) => {
+const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, nodePosition, setCurrentVersion, currentVersion, selectModule, parentIdToCreateChild, setParentIdToCreateChild }) => {
   const [successMessage, setSuccessMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [
@@ -173,7 +175,7 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, setCurrentVersion,
               },
             }) => {
               if (result === 'true' && contentInstance) {
-                const node = createBlankNode(contentInstance.Id, content.Id);
+                const node = createBlankNode(contentInstance.Id, content.Id, nodePosition);
                 setCurrentVersion({
                   ...currentVersion,
                   nodes: {
@@ -188,7 +190,7 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, setCurrentVersion,
         }
       }
     ).then(() => {
-      setParentIdToCreateChild(null);
+      setParentIdToCreateChild(undefined);
       setSuccessMessage('Node is created successfully');
       setErrorMessage('');
       setTimeout(() => {
@@ -196,7 +198,7 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, setCurrentVersion,
       }, 3000);
     })
       .catch((error) => {
-        setParentIdToCreateChild(null);
+        setParentIdToCreateChild(undefined);
         setErrorMessage(`${error}: Error creating node, please try again`);
         setSuccessMessage('');
         setTimeout(() => {
@@ -214,7 +216,7 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, setCurrentVersion,
           <CreateFormStyle>
             <div className='header'>
               <h1>Create New Node</h1>
-              <BsX onClick={() => setParentIdToCreateChild(null)} className='closeIcon' />
+              <BsX onClick={() => setParentIdToCreateChild(undefined)} className='closeIcon' />
             </div>
             <form onSubmit={handleSubmit(onSubmit)} className='form-input-style'>
               <Label>Name</Label>
