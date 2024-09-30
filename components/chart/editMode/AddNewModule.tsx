@@ -5,18 +5,16 @@ import { BsX } from 'react-icons/bs';
 import styled from 'styled-components';
 import { HYCHART_VIEW_TYPE_ID } from '../Constants';
 import { SuccessToast, ToastMessage, ErrorToast } from '../../common/toasts';
-import { ChartType, NodeType, SelectModuleFunc } from '../types';
+import { ChartType, NodeInformationType, NodeType, SelectModuleFunc } from '../types';
 import createBlankNode from '../createBlankNode';
-import { NodePositionType } from '..';
 
 interface AddNewModuleProps {
   onClick?: () => void;
-  parentIdToCreateChild?: number;
-  setParentIdToCreateChild?: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setInfoToCreateChild?: React.Dispatch<React.SetStateAction<NodeInformationType | undefined>>;
   selectModule?: SelectModuleFunc;
   currentVersion?: any;
   setCurrentVersion?: React.Dispatch<React.SetStateAction<ChartType>>;
-  nodePosition?: NodePositionType;
+  infoToCreateChild?: NodeInformationType;
 }
 
 const StyledAddNewModule = styled.div<AddNewModuleProps>`
@@ -114,7 +112,7 @@ const Button = styled.button`
   }
 `;
 
-const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, nodePosition, setCurrentVersion, currentVersion, selectModule, parentIdToCreateChild, setParentIdToCreateChild }) => {
+const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, infoToCreateChild, setCurrentVersion, currentVersion, selectModule, setInfoToCreateChild }) => {
   const [successMessage, setSuccessMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [
@@ -139,7 +137,7 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, nodePosition, setC
           ContentType: 4,
           ContentInstances: [],
           StageId: null,
-          ParentId: parentIdToCreateChild,
+          ParentId: infoToCreateChild.parentId,
         },
       },
     }).then(
@@ -175,7 +173,7 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, nodePosition, setC
               },
             }) => {
               if (result === 'true' && contentInstance) {
-                const node = createBlankNode(contentInstance.Id, content.Id, nodePosition);
+                const node = createBlankNode(contentInstance.Id, content.Id, infoToCreateChild);
                 setCurrentVersion({
                   ...currentVersion,
                   nodes: {
@@ -190,7 +188,7 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, nodePosition, setC
         }
       }
     ).then(() => {
-      setParentIdToCreateChild(undefined);
+      setInfoToCreateChild(undefined);
       setSuccessMessage('Node is created successfully');
       setErrorMessage('');
       setTimeout(() => {
@@ -198,7 +196,7 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, nodePosition, setC
       }, 3000);
     })
       .catch((error) => {
-        setParentIdToCreateChild(undefined);
+        setInfoToCreateChild(undefined);
         setErrorMessage(`${error}: Error creating node, please try again`);
         setSuccessMessage('');
         setTimeout(() => {
@@ -211,12 +209,12 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, nodePosition, setC
       <StyledAddNewModule onClick={onClick}>
         <span>+</span>
       </StyledAddNewModule>
-      {parentIdToCreateChild && (
+      {infoToCreateChild?.parentId && (
         <BackgroundStyle>
           <CreateFormStyle>
             <div className='header'>
               <h1>Create New Node</h1>
-              <BsX onClick={() => setParentIdToCreateChild(undefined)} className='closeIcon' />
+              <BsX onClick={() => setInfoToCreateChild(undefined)} className='closeIcon' />
             </div>
             <form onSubmit={handleSubmit(onSubmit)} className='form-input-style'>
               <Label>Name</Label>

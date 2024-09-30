@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { HotKeys } from 'react-hotkeys';
 import { Config, GraphContent, auth } from '@bcrumbs.net/bc-api';
-import { SHORTCUT_KEYS } from './Constants';
+import { DEFAULT_X_PADDING, DEFAULT_Y_PADDING, SHORTCUT_KEYS } from './Constants';
 import Canvas from './canvas';
 import Header from './header';
 import Search, { SearchType } from './search';
-import { ChartType, NodeType } from './types';
+import { ChartType, NodeInformationType, NodeType } from './types';
 import parseContentsToNodes from './parseContentsToNodes';
 import DescriptionDrawer from './description';
 import { parse } from 'querystring';
@@ -14,10 +14,6 @@ import EditDrawer from './editModule';
 import { useTokenChecker } from '../../bootstrapers/hychart/utils';
 import { useRouter } from 'next/router';
 
-export type NodePositionType = {
-  X?: number;
-  Y?: number;
-};
 function Chart({ data, token, contextId, config }: { config: Config; contextId: string; data: GraphContent[]; token?: string }) {
   const rootContent = data[0];
   const router = useRouter();
@@ -28,7 +24,6 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
     parseContentsToNodes(data)
   );
   const [showSearch, setShowSearch] = useState(false);
-  const [parentIdToCreateChild, setParentIdToCreateChild] = useState<number | undefined>();
   const { hasToken } = useTokenChecker();
   const [search, setSearch] = useState<SearchType>({
     value: '',
@@ -37,9 +32,10 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
   });
   const [editMode, setEditMode] = useState(false);
   const [focusNode, setFocusNode] = useState<NodeType | undefined>(undefined);
-  const [nodePosition, setNodePosition] = useState<NodePositionType>({
-    X: 0,
-    Y: 0,
+  const [infoToCreateChild, setInfoToCreateChild] = useState<NodeInformationType>({
+    parentId: 0,
+    parentX: 0,
+    parentY: 0,
   });
 
   const shortcutHandlers = {
@@ -219,7 +215,9 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
   }, [focusModule]);
 
   const addNewModule = () => {
-    setParentIdToCreateChild(rootContent.id)
+    setInfoToCreateChild({
+      parentId: rootContent.id,
+    })
   }
 
   useEffect(() => {
@@ -253,8 +251,7 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
             deselectModules={deselectModules}
             organizeModules={organizeModules}
             changeZoomLevel={changeZoomLevel}
-            setParentIdToCreateChild={setParentIdToCreateChild}
-            setNodePosition={setNodePosition}
+            setInfoToCreateChild={setInfoToCreateChild}
           />
         </div>
         {hasToken && editMode ? (
@@ -288,11 +285,10 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
           <AddNewModule
             selectModule={selectModule}
             onClick={addNewModule}
-            parentIdToCreateChild={parentIdToCreateChild}
-            setParentIdToCreateChild={setParentIdToCreateChild}
+            setInfoToCreateChild={setInfoToCreateChild}
+            infoToCreateChild={infoToCreateChild}
             currentVersion={currentVersion}
             setCurrentVersion={setCurrentVersion}
-            nodePosition={nodePosition}
           />
         ) : null}
       </div>

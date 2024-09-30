@@ -1,18 +1,17 @@
-import { NodeType, NodeVariant } from "./types";
+import { NodeInformationType, NodeType, NodeVariant } from "./types";
 import { DEFAULT_X_PADDING, DEFAULT_Y_PADDING } from "./Constants";
-import { NodePositionType } from ".";
 
 function createBlankNode(
   contentInstanceId: number,
   contentId: number,
-  nodePosition: NodePositionType
+  infoToCreateChild: NodeInformationType
 ): NodeType {
   const node: NodeType = {
     id: contentId,
     iId: contentInstanceId,
     type: NodeVariant.Person,
-    x: nodePosition.X + DEFAULT_X_PADDING,
-    y: nodePosition.Y + DEFAULT_Y_PADDING,
+    x: infoToCreateChild.parentX + DEFAULT_X_PADDING,
+    y: infoToCreateChild.parentY + DEFAULT_Y_PADDING,
     connections: [],
     title: "",
     sub_title: "",
@@ -21,7 +20,7 @@ function createBlankNode(
     tags: "",
     icon: "",
     main: Boolean(""),
-    parentIds: [],
+    parentIds: [infoToCreateChild.parentId],
   };
 
   return node;

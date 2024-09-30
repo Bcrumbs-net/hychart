@@ -2,10 +2,9 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 // import { BCTooltip } from '@bcrumbs.net/bc-ui';
 import ModulesCanvas from './ModulesCanvas';
 import ConnectionsCanvas from './ConnectionsCanvas';
-import { NodeType, SelectModuleFunc } from '../types';
+import { NodeInformationType, NodeType, SelectModuleFunc } from '../types';
 //import './styles.scss';
 import Scrollbars from 'react-scrollbars-custom';
-import { NodePositionType } from '..';
 
 export type ScrollPositionType = {
   scrollLeft?: number;
@@ -25,8 +24,7 @@ export type CanvasProps = {
   moveModule: (id: number, x: number, y: number) => void;
   editMode: boolean;
   focusNode: NodeType;
-  setParentIdToCreateChild: React.Dispatch<React.SetStateAction<number>>;
-  setNodePosition: React.Dispatch<React.SetStateAction<NodePositionType>>;
+  setInfoToCreateChild: React.Dispatch<React.SetStateAction<NodeInformationType>>;
 };
 
 function Canvas({
@@ -40,8 +38,7 @@ function Canvas({
   changeZoomLevel,
   organizeModules,
   moveModule,
-  setParentIdToCreateChild,
-  setNodePosition
+  setInfoToCreateChild
 }: CanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -192,8 +189,7 @@ function Canvas({
             currentVersion={currentVersion}
             selectedModules={selectedModules}
             selectModule={selectModule}
-            setParentIdToCreateChild={setParentIdToCreateChild}
-            setNodePosition={setNodePosition}
+            setInfoToCreateChild={setInfoToCreateChild}
           />
           <ConnectionsCanvas
             currentVersion={currentVersion}
