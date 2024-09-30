@@ -1,12 +1,14 @@
 import React from 'react';
 import Module from './Module';
-import { ChartType, SelectModuleFunc } from '../types';
+import { ChartType, NodeInformationType, SelectModuleFunc } from '../types';
 
 export type ModulesCanvasProps = {
   currentVersion: ChartType;
   selectedModules: any[];
   selectModule: SelectModuleFunc;
   editMode: boolean;
+  setInfoToCreateChild: React.Dispatch<React.SetStateAction<NodeInformationType>>;
+
 };
 
 function ModulesCanvas({
@@ -14,6 +16,7 @@ function ModulesCanvas({
   editMode,
   selectedModules,
   selectModule,
+  setInfoToCreateChild
 }: ModulesCanvasProps) {
   if (currentVersion === undefined || currentVersion.nodes === undefined)
     return null;
@@ -30,6 +33,7 @@ function ModulesCanvas({
             isSelected={selected}
             module={m}
             selectModule={selectModule}
+            setInfoToCreateChild={setInfoToCreateChild}
           />
         );
       })}

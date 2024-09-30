@@ -36,3 +36,8 @@ export type ChartType = {
   nodes: { [key: number]: NodeType };
   init: number;
 };
+export type NodeInformationType = {
+  parentId: number;
+  parentX?: number;
+  parentY?: number;
+};

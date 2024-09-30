@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { HotKeys } from 'react-hotkeys';
 import { Config, GraphContent, auth } from '@bcrumbs.net/bc-api';
-import { SHORTCUT_KEYS } from './Constants';
+import { DEFAULT_X_PADDING, DEFAULT_Y_PADDING, SHORTCUT_KEYS } from './Constants';
 import Canvas from './canvas';
 import Header from './header';
 import Search, { SearchType } from './search';
-import { ChartType, NodeType } from './types';
+import { ChartType, NodeInformationType, NodeType } from './types';
 import parseContentsToNodes from './parseContentsToNodes';
 import DescriptionDrawer from './description';
 import { parse } from 'querystring';
@@ -14,13 +14,13 @@ import EditDrawer from './editModule';
 import { useTokenChecker } from '../../bootstrapers/hychart/utils';
 import { useRouter } from 'next/router';
 
-function Chart({ data, token, config }: { config: Config; data: GraphContent[]; token?: string }) {
+function Chart({ data, token, contextId, config }: { config: Config; contextId: string; data: GraphContent[]; token?: string }) {
   const rootContent = data[0];
   const router = useRouter();
   const [zoomLevel, setZoomLevel] = useState(100);
   const [selectedModules, setSelectedModules] = useState([]);
   const [selectedModule, setSelectedModule] = useState<NodeType>();
-  const [currentVersion, setCurentVersion] = useState<ChartType>(
+  const [currentVersion, setCurrentVersion] = useState<ChartType>(
     parseContentsToNodes(data)
   );
   const [showSearch, setShowSearch] = useState(false);
@@ -32,6 +32,11 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
   });
   const [editMode, setEditMode] = useState(false);
   const [focusNode, setFocusNode] = useState<NodeType | undefined>(undefined);
+  const [infoToCreateChild, setInfoToCreateChild] = useState<NodeInformationType>({
+    parentId: 0,
+    parentX: 0,
+    parentY: 0,
+  });
 
   const shortcutHandlers = {
     SEARCH: () => {
@@ -103,7 +108,6 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
     },
     [selectedModules, setSelectedModules, selectedModule, deselectModules]
   );
-
   const focusModule = useCallback(
     (id: string) => {
       if (currentVersion && currentVersion.nodes) {
@@ -146,7 +150,7 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
             newVersion.nodes[selectedModule].y += y;
           }
         });
-        setCurentVersion({
+        setCurrentVersion({
           ...newVersion,
         });
       } else {
@@ -154,7 +158,7 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
         if (targetNode) {
           newVersion.nodes[id].x += x;
           newVersion.nodes[id].y += y;
-          setCurentVersion({
+          setCurrentVersion({
             ...newVersion,
           });
         } else {
@@ -162,21 +166,25 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
         }
       }
     },
-    [selectedModules, setCurentVersion, currentVersion]
+    [selectedModules, setCurrentVersion, currentVersion]
   );
 
   const organizeModules = useCallback(() => {
     const originVersion = parseContentsToNodes(data);
-    setCurentVersion(originVersion);
-  }, [data, setCurentVersion]);
+    setCurrentVersion(originVersion);
+  }, [data, setCurrentVersion]);
+
+  useEffect(() => {
+    auth.setContext(contextId);
+  }, []);
 
   useEffect(() => {
     const { editMode: queryEditMode } = router.query;
 
     if (queryEditMode) {
       const isEditMode = Array.isArray(queryEditMode)
-        ? queryEditMode[0] === 'true' // Convert to boolean if it's an array
-        : queryEditMode === 'true'; // Convert to boolean if it's a string
+        ? queryEditMode[0] === 'true'
+        : queryEditMode === 'true';
 
       setEditMode(isEditMode);
       const { pathname, query, ...rest } = router;
@@ -193,7 +201,8 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
         { shallow: true }
       );
     }
-  });
+  }, [router.query]);
+
   useEffect(() => {
     const queryParams = parse(window.location.search);
     const nodeIdFromUrl = queryParams['?n']
@@ -206,7 +215,9 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
   }, [focusModule]);
 
   const addNewModule = () => {
-    console.log('Add New Module');
+    setInfoToCreateChild({
+      parentId: rootContent.id,
+    })
   }
 
   useEffect(() => {
@@ -240,6 +251,7 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
             deselectModules={deselectModules}
             organizeModules={organizeModules}
             changeZoomLevel={changeZoomLevel}
+            setInfoToCreateChild={setInfoToCreateChild}
           />
         </div>
         {hasToken && editMode ? (
@@ -270,7 +282,14 @@ function Chart({ data, token, config }: { config: Config; data: GraphContent[]; 
           />
         ) : null}
         {typeof window !== 'undefined' && auth?.isAuthenticated() && editMode ? (
-          <AddNewModule onClick={addNewModule} />
+          <AddNewModule
+            selectModule={selectModule}
+            onClick={addNewModule}
+            setInfoToCreateChild={setInfoToCreateChild}
+            infoToCreateChild={infoToCreateChild}
+            currentVersion={currentVersion}
+            setCurrentVersion={setCurrentVersion}
+          />
         ) : null}
       </div>
     </HotKeys >

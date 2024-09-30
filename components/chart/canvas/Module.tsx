@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import ModuleInfo from '../moduleBlocks/ModuleInfo';
-import { NodeType, SelectModuleFunc } from '../types';
+import { NodeInformationType, NodeType, SelectModuleFunc } from '../types';
 import styled, { css } from 'styled-components';
 import { FaPlusCircle } from 'react-icons/fa';
 import { auth } from '@bcrumbs.net/bc-api';
@@ -10,6 +10,7 @@ interface ModuleProps {
   selectModule: SelectModuleFunc;
   isSelected: boolean;
   editMode: boolean;
+  setInfoToCreateChild: React.Dispatch<React.SetStateAction<NodeInformationType>>;
 }
 
 interface ModuleContainerProps {
@@ -46,14 +47,6 @@ const ModuleContainer = styled.div<ModuleContainerProps>`
       }
     `}
 
-  .moduleIcon {
-    text-align: center;
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    background-repeat: no-repeat;
-    background-position: center;
-  }
   .moduleNameCon{
     padding: 4px;
     color: #fff;
@@ -105,7 +98,7 @@ const IconContainer = styled.button`
   background-color: transparent;
   padding:0px;
 `
-function Module({ editMode, module, selectModule, isSelected }: ModuleProps) {
+function Module({ editMode, module, selectModule, setInfoToCreateChild, isSelected }: ModuleProps) {
   const moduleName = module.title || ModuleInfo.getModuleName(module.type);
   const onDragStart = useCallback((id, ev) => {
     ev.dataTransfer.setData('dragType', 'moveModule');
@@ -115,7 +108,11 @@ function Module({ editMode, module, selectModule, isSelected }: ModuleProps) {
   }, []);
 
   const handleAddChild = () => {
-    console.log("add child");
+    setInfoToCreateChild({
+      parentId: module.id,
+      parentX: module.x,
+      parentY: module.y,
+    })
   };
 
   return (
