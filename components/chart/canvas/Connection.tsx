@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import colorContext from "../../common/context/colorContext";
+import themeContext from "../../common/context/themeContext";
 
 export type ModuleConnectionProps = {
   fromID: number;
@@ -30,8 +30,9 @@ function ModuleConnection({
   const middleX = (fromX + toX) / 2;
   const middleY = (fromY + toY) / 2;
   const spaceFromX = 20;
-  const { colorValues } = useContext(colorContext);
-  const connectionColor = colorValues.find(item => item.Key === "connection_color");
+  const colorValues = useContext(themeContext);
+  const { connection_color } = colorValues;
+
   if (fromX >= toX) {
     coordinateList.push(`L ${fromX + spaceFromX} ${fromY},`);
     coordinateList.push(`L ${fromX + spaceFromX} ${middleY},`);
@@ -59,7 +60,7 @@ function ModuleConnection({
         strokeLinejoin="bevel"
         style={{
           fill: 'none',
-          stroke: connectionColor.Value,
+          stroke: connection_color,
           strokeWidth: 1,
           zIndex: 1,
         }}

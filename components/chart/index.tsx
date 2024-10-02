@@ -13,7 +13,7 @@ import AddNewModule from './editMode/AddNewModule';
 import EditDrawer from './editModule';
 import { useTokenChecker } from '../../bootstrapers/hychart/utils';
 import { useRouter } from 'next/router';
-import colorContext from '../common/context/colorContext';
+import colorContext, { ColorValues } from '../common/context/themeContext';
 
 function Chart({ data, token, contextId, config }: { config: Config; contextId: string; data: GraphContent[]; token?: string }) {
   const rootContent = data[0];
@@ -38,7 +38,11 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
     parentX: 0,
     parentY: 0,
   });
-  const colorValues = rootContent.data;
+
+  const colorValues: ColorValues = rootContent.data.reduce((acc, curr) => {
+    acc[curr.Key as keyof ColorValues] = curr.Value;
+    return acc;
+  }, {} as ColorValues);
 
   const shortcutHandlers = {
     SEARCH: () => {
@@ -231,11 +235,12 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
       focusModule(nodeIdFromUrl.toString());
     }
   }, [focusModule]);
+
   return (
     //@ts-ignore
     <HotKeys keyMap={SHORTCUT_KEYS} handlers={shortcutHandlers}>
       <div className="chart" id="chart">
-        <colorContext.Provider value={{ colorValues }}>
+        <colorContext.Provider value={colorValues}>
           <Header
             showModulesSearch={setShowSearch}
             chartName={rootContent.title}

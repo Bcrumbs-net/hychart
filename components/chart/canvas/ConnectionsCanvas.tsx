@@ -2,7 +2,7 @@ import React, { useContext, useMemo } from 'react';
 import ModuleConnection from './Connection';
 import { BLOCK_HEIGHT, BLOCK_WIDTH } from '../Constants';
 import { ChartType } from '../types';
-import colorContext from '../../common/context/colorContext';
+import themeContext from '../../common/context/themeContext';
 
 export type ConnectionsCanvasProps = {
   currentVersion: ChartType;
@@ -14,9 +14,9 @@ function ConnectionsCanvas({
   selectedModules,
 }: ConnectionsCanvasProps) {
   const selectedModule = selectedModules[0];
-  const { colorValues } = useContext(colorContext);
-  const childActiveColor = colorValues.find(item => item.Key === "child_active_connection_color");
-  const parentctiveColor = colorValues.find(item => item.Key === "parent_active_connection_color");
+  const colorValues = useContext(themeContext);
+  const { child_active_connection_color } = colorValues;
+  const { parent_active_connection_color } = colorValues;
 
   const connectionList = useMemo(() => {
     const connectionList = [];
@@ -45,9 +45,9 @@ function ConnectionsCanvas({
           toY: toNode.y + BLOCK_HEIGHT / 2, // y coordinate of target of arrow
           // fromColor: ModuleInfo.getColor(fromNode.type),
           // toColor: ModuleInfo.getColor(toNode.type),
-          fromColor: childActiveColor.Value,
+          fromColor: child_active_connection_color,
           toColor: '#00589C',
-          parentColor: parentctiveColor.Value,
+          parentColor: parent_active_connection_color,
         });
       }
     }

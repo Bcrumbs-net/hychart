@@ -4,7 +4,7 @@ import { NodeInformationType, NodeType, SelectModuleFunc } from '../types';
 import styled, { css } from 'styled-components';
 import { FaPlusCircle } from 'react-icons/fa';
 import { auth } from '@bcrumbs.net/bc-api';
-import colorContext from '../../common/context/colorContext';
+import themeContext from '../../common/context/themeContext';
 
 interface ModuleProps {
   module: NodeType;
@@ -109,9 +109,9 @@ function Module({ editMode, module, selectModule, setInfoToCreateChild, isSelect
     ev.dataTransfer.setData('clientX', ev.clientX);
     ev.dataTransfer.setData('clientY', ev.clientY);
   }, []);
-  const { colorValues } = useContext(colorContext);
-  const nodeColor = colorValues.find(item => item.Key === "node_color");
-  const textColor = colorValues.find(item => item.Key === "text_color");
+  const colorValues = useContext(themeContext);
+  const { node_color } = colorValues;
+  const { text_color } = colorValues;
 
   const handleAddChild = () => {
     setInfoToCreateChild({
@@ -133,8 +133,8 @@ function Module({ editMode, module, selectModule, setInfoToCreateChild, isSelect
         </IconContainer>
       ) : null}
       <ModuleContainer
-        textColor={textColor.Value}
-        nodeColor={nodeColor.Value}
+        textColor={text_color}
+        nodeColor={node_color}
         isIconModule={!!module.icon}
         style={{ top: module.y, left: module.x, zIndex: module.id }}
         onDragStart={(ev) => onDragStart(module.id, ev)}

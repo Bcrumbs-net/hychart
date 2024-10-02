@@ -5,7 +5,7 @@ import TagsInput from './tagsInput';
 import Switch from "react-switch";
 import { auth } from '@bcrumbs.net/bc-api';
 import { useTokenChecker } from '../../../bootstrapers/hychart/utils';
-import colorContext from '../../common/context/colorContext';
+import themeContext from '../../common/context/themeContext';
 
 const HeaderWapper = styled.div<{ headerColor: string }>`
   width: 100%;
@@ -127,8 +127,8 @@ export default function Header({
   editMode: boolean;
 }) {
   const { setHasToken, hasToken } = useTokenChecker();
-  const { colorValues } = useContext(colorContext);
-  const headerColor = colorValues.find(item => item.Key === "headers_color");
+  const colorValues = useContext(themeContext);
+  const { headers_color } = colorValues;
 
   const handleLogin = () => {
     if (typeof window !== 'undefined') {
@@ -154,7 +154,7 @@ export default function Header({
     }
   };
   return (
-    <HeaderWapper headerColor={headerColor.Value}>
+    <HeaderWapper headerColor={headers_color}>
       <div className="chartName">{chartName}</div>
       <div className="search-btn">
         <button type="button" onClick={() => showModulesSearch(true)}>
