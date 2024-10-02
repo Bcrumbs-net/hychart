@@ -145,7 +145,7 @@ function Module({ editMode, module, selectModule, setInfoToCreateChild, isSelect
         ) : (
           <>
             <p className="city">{module.city}</p>
-            <div className={`moduleNameCon ${isSelected ? 'active' : ''} `}>
+            <div className={`moduleNameCon ${isSelected ? 'active' : ''}`} draggable>
               {moduleName.length >= 34
                 ? moduleName.substring(0, 34) + '...'
                 : moduleName}
