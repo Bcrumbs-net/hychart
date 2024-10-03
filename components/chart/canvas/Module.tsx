@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import ModuleInfo from '../moduleBlocks/ModuleInfo';
 import { NodeInformationType, NodeType, SelectModuleFunc } from '../types';
 import styled, { css } from 'styled-components';
 import { FaPlusCircle } from 'react-icons/fa';
 import { auth } from '@bcrumbs.net/bc-api';
+import themeContext from '../../common/context/themeContext';
 
 interface ModuleProps {
   module: NodeType;
@@ -15,6 +16,8 @@ interface ModuleProps {
 
 interface ModuleContainerProps {
   isIconModule: boolean;
+  nodeColor: string;
+  textColor: string;
 }
 
 const ModuleContainer = styled.div<ModuleContainerProps>`
@@ -49,11 +52,11 @@ const ModuleContainer = styled.div<ModuleContainerProps>`
 
   .moduleNameCon{
     padding: 4px;
-    color: #fff;
+    color: ${({ textColor }) => textColor};
     position: relative;
     font-size: 15px;
     font-weight: 700;
-    background-color: #699041;
+    background-color: ${({ nodeColor }) => nodeColor};
     height: 76px;
     width: 76px;
     display: flex;
@@ -106,6 +109,9 @@ function Module({ editMode, module, selectModule, setInfoToCreateChild, isSelect
     ev.dataTransfer.setData('clientX', ev.clientX);
     ev.dataTransfer.setData('clientY', ev.clientY);
   }, []);
+  const colorValues = useContext(themeContext);
+  const { node_color } = colorValues;
+  const { text_color } = colorValues;
 
   const handleAddChild = () => {
     setInfoToCreateChild({
@@ -127,6 +133,8 @@ function Module({ editMode, module, selectModule, setInfoToCreateChild, isSelect
         </IconContainer>
       ) : null}
       <ModuleContainer
+        textColor={text_color}
+        nodeColor={node_color}
         isIconModule={!!module.icon}
         style={{ top: module.y, left: module.x, zIndex: module.id }}
         onDragStart={(ev) => onDragStart(module.id, ev)}
