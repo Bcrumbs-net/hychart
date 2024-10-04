@@ -13,6 +13,7 @@ import AddNewModule from './editMode/AddNewModule';
 import EditDrawer from './editModule';
 import { useTokenChecker } from '../../bootstrapers/hychart/utils';
 import { useRouter } from 'next/router';
+import colorContext, { ColorValues } from '../common/context/themeContext';
 
 function Chart({ data, token, contextId, config }: { config: Config; contextId: string; data: GraphContent[]; token?: string }) {
   const rootContent = data[0];
@@ -38,6 +39,11 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
     parentY: 0,
   });
   const [visibleNodes, setVisibleNodes] = useState([]);
+
+  const colorValues: ColorValues = rootContent.data.reduce((acc, curr) => {
+    acc[curr.Key as keyof ColorValues] = curr.Value;
+    return acc;
+  }, {} as ColorValues);
 
   const shortcutHandlers = {
     SEARCH: () => {
@@ -235,30 +241,32 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
     //@ts-ignore
     <HotKeys keyMap={SHORTCUT_KEYS} handlers={shortcutHandlers}>
       <div className="chart" id="chart">
-        <Header
-          showModulesSearch={setShowSearch}
-          chartName={rootContent.title}
-          editMode={editMode}
-          setEditMode={setEditMode}
-          currentVersion={currentVersion}
-          setVisibleNodes={setVisibleNodes}
-        />
-        <div className="designer">
-          <Canvas
+        <colorContext.Provider value={colorValues}>
+          <Header
+            showModulesSearch={setShowSearch}
+            chartName={rootContent.title}
             editMode={editMode}
-            zoomLevel={zoomLevel}
-            moveModule={moveModule}
-            selectModule={selectModule}
+            setEditMode={setEditMode}
             currentVersion={currentVersion}
-            selectedModules={selectedModules}
-            focusNode={focusNode}
-            deselectModules={deselectModules}
-            organizeModules={organizeModules}
-            changeZoomLevel={changeZoomLevel}
-            setInfoToCreateChild={setInfoToCreateChild}
-            visibleNodes={visibleNodes}
+            setVisibleNodes={setVisibleNodes}
           />
-        </div>
+          <div className="designer">
+            <Canvas
+              editMode={editMode}
+              zoomLevel={zoomLevel}
+              moveModule={moveModule}
+              selectModule={selectModule}
+              currentVersion={currentVersion}
+              selectedModules={selectedModules}
+              focusNode={focusNode}
+              deselectModules={deselectModules}
+              organizeModules={organizeModules}
+              changeZoomLevel={changeZoomLevel}
+              setInfoToCreateChild={setInfoToCreateChild}
+              visibleNodes={visibleNodes}
+            />
+          </div>
+        </colorContext.Provider>
         {hasToken && editMode ? (
           <EditDrawer
             lang={config.lang}
@@ -298,6 +306,7 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
         ) : null}
       </div>
     </HotKeys >
+
   );
 }
 

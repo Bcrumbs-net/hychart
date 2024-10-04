@@ -1,10 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 // import { BCTooltip } from '@bcrumbs.net/bc-ui';
 import ModulesCanvas from './ModulesCanvas';
 import ConnectionsCanvas from './ConnectionsCanvas';
 import { NodeInformationType, NodeType, SelectModuleFunc } from '../types';
 //import './styles.scss';
 import Scrollbars from 'react-scrollbars-custom';
+import themeContext from '../../common/context/themeContext';
 
 export type ScrollPositionType = {
   scrollLeft?: number;
@@ -51,6 +52,9 @@ function Canvas({
     clientX: 0,
     clientY: 0,
   });
+  const colorValues = useContext(themeContext);
+  const { background_color } = colorValues;
+  // const canvasColor = colorValues.find(item => item.Key === "background_color");
 
   const onMouseUp = useCallback(() => {
     const canvas = canvasRef.current;
@@ -179,7 +183,7 @@ function Canvas({
         <div
           ref={wrapperRef}
           id="designAreaInner"
-          style={{ zoom: `${zoomLevel}%` }}
+          style={{ zoom: `${zoomLevel}%`, background: `${background_color}` }}
           className="designAreaInner"
           onDragOver={(ev) => {
             ev.preventDefault();
