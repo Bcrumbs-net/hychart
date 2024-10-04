@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Multiselect from 'multiselect-react-dropdown';
 import styled from 'styled-components';
 import useTagsEnumValuesQuery from '../../../bootstrapers/hychart/utils/useTagsEnumValuesQuery';
@@ -6,11 +6,11 @@ import useTagsEnumValuesQuery from '../../../bootstrapers/hychart/utils/useTagsE
 const BCTagsInputWrapper = styled.div`
   display: flex;
   align-items: center;
-  height: 50px;
+  max-height: 50px;
   justify-content: flex-end;
 
   input {
-    height: 20px;
+    height: 25px;
     width: auto;
     padding: 2px;
     margin: 0;
@@ -24,8 +24,10 @@ const BCTagsInputWrapper = styled.div`
     border: solid 1px var(--bc-secondary-light-hover);
     border-radius: 20px;
     min-height: auto;
+    max-height:30px;
     padding: 4px;
     width: auto; 
+    max-width:300px;
     color: var(--bc-secondary-light-hover);
     .chip {
       margin-bottom: 0;
@@ -36,7 +38,8 @@ const BCTagsInputWrapper = styled.div`
   .optionListContainer {
     position: fixed;
     z-index: 1000;
-    width: auto; 
+    width: 180px;
+    max-width:auto; 
     ul {
       border-radius: 10px;
       margin-top: -2px;
@@ -72,7 +75,7 @@ const BCTagsInputWrapper = styled.div`
     min-height: auto;
   }
 `;
-// Moved the URL management functions to a separate module
+
 const URLManager = {
   removeTagsFromURL: () => {
     const queryParams = new URLSearchParams(window.location.search);
@@ -97,8 +100,12 @@ const URLManager = {
 };
 
 const TagsInput = ({
+  currentVersion,
+  setVisibleNodes,
 }: {
-  }) => {
+  currentVersion: any;
+  setVisibleNodes: React.Dispatch<React.SetStateAction<number[]>>;
+}) => {
   const [tags, setTags] = useState([]);
   const { enumValues } = useTagsEnumValuesQuery(403027);
 
@@ -114,6 +121,22 @@ const TagsInput = ({
     },
     [tags]
   );
+  useEffect(() => {
+    if (tags.length > 0) {
+      const arrayOfNodes = Object.keys(currentVersion.nodes).map(
+        (key) => currentVersion.nodes[key]
+      );
+      const matchedNodes = arrayOfNodes.filter(node => {
+        if (node.tags) {
+          const nodeTagsArray = node.tags.split(',').map(tag => tag.trim());
+          return tags.every(tag => nodeTagsArray.includes(tag.name));
+        }
+        return false;
+      });
+      const matchedNodeIds = matchedNodes.map(node => node.id);
+      setVisibleNodes(matchedNodeIds);
+    }
+  }, [tags, currentVersion.nodes]);
 
   const onRemove = useCallback(
     (selectedList, selectedItem) => {

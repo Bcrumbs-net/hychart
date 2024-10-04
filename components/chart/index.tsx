@@ -37,6 +37,7 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
     parentX: 0,
     parentY: 0,
   });
+  const [visibleNodes, setVisibleNodes] = useState([]);
 
   const shortcutHandlers = {
     SEARCH: () => {
@@ -229,6 +230,7 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
       focusModule(nodeIdFromUrl.toString());
     }
   }, [focusModule]);
+
   return (
     //@ts-ignore
     <HotKeys keyMap={SHORTCUT_KEYS} handlers={shortcutHandlers}>
@@ -238,6 +240,8 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
           chartName={rootContent.title}
           editMode={editMode}
           setEditMode={setEditMode}
+          currentVersion={currentVersion}
+          setVisibleNodes={setVisibleNodes}
         />
         <div className="designer">
           <Canvas
@@ -252,6 +256,7 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
             organizeModules={organizeModules}
             changeZoomLevel={changeZoomLevel}
             setInfoToCreateChild={setInfoToCreateChild}
+            visibleNodes={visibleNodes}
           />
         </div>
         {hasToken && editMode ? (

@@ -5,6 +5,7 @@ import TagsInput from './tagsInput';
 import Switch from "react-switch";
 import { auth } from '@bcrumbs.net/bc-api';
 import { useTokenChecker } from '../../../bootstrapers/hychart/utils';
+import { SelectModuleFunc } from '../types';
 
 const HeaderWapper = styled.div`
   width: 100%;
@@ -118,12 +119,16 @@ export default function Header({
   showModulesSearch,
   chartName,
   setEditMode,
-  editMode
+  editMode,
+  currentVersion,
+  setVisibleNodes
 }: {
   showModulesSearch: (state: boolean) => void;
   chartName: string;
   setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
+  setVisibleNodes: React.Dispatch<React.SetStateAction<[]>>;
   editMode: boolean;
+  currentVersion: any;
 }) {
   const { setHasToken, hasToken } = useTokenChecker();
   const handleLogin = () => {
@@ -160,7 +165,10 @@ export default function Header({
       </div>
       <LeftSide>
         <div className="tagsInput-container">
-          <TagsInput />
+          <TagsInput
+            currentVersion={currentVersion}
+            setVisibleNodes={setVisibleNodes}
+          />
         </div>
         <div className="login-logout-container">
           {hasToken ? (
