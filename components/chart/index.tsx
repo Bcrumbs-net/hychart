@@ -38,7 +38,8 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
     parentX: 0,
     parentY: 0,
   });
-  const [visibleNodes, setVisibleNodes] = useState([]);
+  const [highlightedNodes, setHighlightedNodes] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
 
   const colorValues: ColorValues = rootContent.data.reduce((acc, curr) => {
     acc[curr.Key as keyof ColorValues] = curr.Value;
@@ -209,6 +210,25 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
       );
     }
   }, [router.query]);
+  useEffect(() => {
+    if (selectedTags.length > 0) {
+      const arrayOfNodes = Object.keys(currentVersion.nodes).map(
+        (key) => currentVersion.nodes[key]
+      );
+      const matchedNodes = arrayOfNodes.filter(node => {
+        if (node.tags) {
+          const nodeTagsArray = node.tags.split(',').map(tag => tag.trim());
+          return selectedTags.some(tag => nodeTagsArray.includes(tag.name));
+        }
+        return false;
+      });
+      const matchedNodeIds = matchedNodes.map(node => node.id);
+      setHighlightedNodes(matchedNodeIds);
+    }
+    else {
+      setHighlightedNodes([]);
+    }
+  }, [selectedTags, currentVersion.nodes]);
 
   useEffect(() => {
     const queryParams = parse(window.location.search);
@@ -247,8 +267,8 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
             chartName={rootContent.title}
             editMode={editMode}
             setEditMode={setEditMode}
-            currentVersion={currentVersion}
-            setVisibleNodes={setVisibleNodes}
+            setSelectedTags={setSelectedTags}
+            selectedTags={selectedTags}
           />
           <div className="designer">
             <Canvas
@@ -263,7 +283,7 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
               organizeModules={organizeModules}
               changeZoomLevel={changeZoomLevel}
               setInfoToCreateChild={setInfoToCreateChild}
-              visibleNodes={visibleNodes}
+              highlightedNodes={highlightedNodes}
             />
           </div>
         </colorContext.Provider>

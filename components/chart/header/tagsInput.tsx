@@ -12,11 +12,15 @@ const BCTagsInputWrapper = styled.div`
   input {
     height: 25px;
     width: auto;
-    padding: 2px;
+    padding: 8px 2px 20px 5px;
     margin: 0;
     ::placeholder {
       color: #000;
       opacity: 1; /* Firefox */
+    }
+      /* Hide placeholder when input is focused or has value */
+    :focus::placeholder {
+      opacity: 0;
     }
   }
   .searchWrapper {
@@ -89,8 +93,8 @@ const URLManager = {
 
     window.history.pushState({ path: updatedURL }, '', updatedURL);
   },
-  handleUpdateURL: (tags) => {
-    const tagNames = tags.map((tag) => tag.name);
+  handleUpdateURL: (selectedTags) => {
+    const tagNames = selectedTags.map((tag) => tag.name);
     const queryParams = new URLSearchParams(window.location.search);
     queryParams.set('tags', tagNames.join(', '));
     const currentURL = window.location.href;
@@ -100,55 +104,38 @@ const URLManager = {
 };
 
 const TagsInput = ({
-  currentVersion,
-  setVisibleNodes,
+  setSelectedTags,
+  selectedTags
 }: {
-  currentVersion: any;
-  setVisibleNodes: React.Dispatch<React.SetStateAction<number[]>>;
+  setSelectedTags: React.Dispatch<React.SetStateAction<any[]>>;
+  selectedTags: any;
 }) => {
-  const [tags, setTags] = useState([]);
   const { enumValues } = useTagsEnumValuesQuery(403027);
 
   const onAdd = useCallback(
     (selectedList, selectedItem) => {
       if (selectedList.length <= 3) {
-        const newTags = [...tags, selectedItem];
-        setTags(newTags);
+        const newTags = [...selectedTags, selectedItem];
+        setSelectedTags(newTags);
         URLManager.handleUpdateURL(newTags);
       } else {
         console.log('Maximum of 3 tags reached.');
       }
     },
-    [tags]
+    [selectedTags]
   );
-  useEffect(() => {
-    if (tags.length > 0) {
-      const arrayOfNodes = Object.keys(currentVersion.nodes).map(
-        (key) => currentVersion.nodes[key]
-      );
-      const matchedNodes = arrayOfNodes.filter(node => {
-        if (node.tags) {
-          const nodeTagsArray = node.tags.split(',').map(tag => tag.trim());
-          return tags.every(tag => nodeTagsArray.includes(tag.name));
-        }
-        return false;
-      });
-      const matchedNodeIds = matchedNodes.map(node => node.id);
-      setVisibleNodes(matchedNodeIds);
-    }
-  }, [tags, currentVersion.nodes]);
 
   const onRemove = useCallback(
     (selectedList, selectedItem) => {
-      const newTags = tags.filter((m) => m !== selectedItem);
-      setTags(newTags);
+      const newTags = selectedTags.filter((m) => m !== selectedItem);
+      setSelectedTags(newTags);
       if (newTags.length === 0) {
         URLManager.removeTagsFromURL();
       } else {
         URLManager.handleUpdateURL(newTags);
       }
     },
-    [tags]
+    [selectedTags]
   );
 
   return (

@@ -120,15 +120,15 @@ export default function Header({
   chartName,
   setEditMode,
   editMode,
-  currentVersion,
-  setVisibleNodes
+  setSelectedTags,
+  selectedTags
 }: {
   showModulesSearch: (state: boolean) => void;
   chartName: string;
   setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
-  setVisibleNodes: React.Dispatch<React.SetStateAction<[]>>;
+  setSelectedTags: React.Dispatch<React.SetStateAction<[]>>;
   editMode: boolean;
-  currentVersion: any;
+  selectedTags: any;
 }) {
   const { setHasToken, hasToken } = useTokenChecker();
   const colorValues = useContext(themeContext);
@@ -169,8 +169,8 @@ export default function Header({
       <LeftSide>
         <div className="tagsInput-container">
           <TagsInput
-            currentVersion={currentVersion}
-            setVisibleNodes={setVisibleNodes}
+            setSelectedTags={setSelectedTags}
+            selectedTags={selectedTags}
           />
         </div>
         <div className="login-logout-container">
