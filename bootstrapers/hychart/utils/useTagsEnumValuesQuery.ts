@@ -11,6 +11,7 @@ const GET_ENUM_VALUES = gql`
 `;
 
 const useTagsEnumValuesQuery = (enumId: number) => {
+  // @ts-ignore
   const { data } = useQuery(GET_ENUM_VALUES, {
     variables: { id: enumId },
   });

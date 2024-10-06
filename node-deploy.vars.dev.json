@@ -1,7 +1,7 @@
 {
   "replicas": 1,
-  "cpu": "100m",
+  "cpu": "50m",
   "memory": "256Mi",
-  "cpu-limit": "200m",
+  "cpu-limit": "100m",
   "memory-limit": "512Mi"
 }

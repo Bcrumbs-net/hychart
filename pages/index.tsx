@@ -5,6 +5,7 @@ import {
   fetchWebsiteConfig,
   fetchWebsiteContents,
   useTokenChecker,
+  fetchContextId
 } from '../bootstrapers/hychart/utils';
 import Chart from '../components/chart';
 import Error from './_error';
@@ -18,9 +19,11 @@ export async function getServerSideProps({ req, query }) {
 
   let config = undefined;
   let contents = undefined;
+  let contextId = undefined;
   try {
     // Getting needed data
     config = await fetchWebsiteConfig(targetDomain);
+    contextId = await fetchContextId(targetDomain);
     contents = await fetchWebsiteContents(config, path);
     // Logging the visit
     logWebsiteVisit(domain);
@@ -33,7 +36,6 @@ export async function getServerSideProps({ req, query }) {
       },
     };
   }
-
   if (!config) {
     return {
       props: {
@@ -45,12 +47,14 @@ export async function getServerSideProps({ req, query }) {
   return {
     props: {
       config,
+      contextId,
       data: contents,
     },
   };
 }
 export const TemplateRouter = ({
   config,
+  contextId,
   data,
   query,
   errorCode,
@@ -60,6 +64,7 @@ export const TemplateRouter = ({
   errorCode?: number;
   error?: string;
   config?: Config;
+  contextId: string;
   query?: {
     path: string;
     path2: string;
@@ -68,13 +73,13 @@ export const TemplateRouter = ({
   invalid?: boolean;
 }) => {
   if (invalid) {
-    return <Error />;
+    return <Error statusCode={400} />;
   }
 
   // Call the useTokenChecker hook here
   useTokenChecker();
 
-  return <Chart config={config} data={data} />;
+  return <Chart config={config} contextId={contextId} data={data} />;
 };
 
 export default TemplateRouter;

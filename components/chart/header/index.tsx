@@ -1,17 +1,18 @@
 import 'react-tagsinput/react-tagsinput.css';
-import React, { useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import TagsInput from './tagsInput';
 import Switch from "react-switch";
 import { auth } from '@bcrumbs.net/bc-api';
 import { useTokenChecker } from '../../../bootstrapers/hychart/utils';
+import themeContext from '../../common/context/themeContext';
 
-const HeaderWapper = styled.div`
+const HeaderWapper = styled.div<{ headerColor: string }>`
   width: 100%;
   height: 50px;
   z-index: 9999;
   position: relative;
-  background-color: #76665b;
+  background-color: ${({ headerColor }) => headerColor};
 
   .chartName {
     font-weight: 600;
@@ -74,7 +75,7 @@ const LeftSide = styled.div`
     align-items: center;
   }
 
-  .login {
+  .AuthButton {
     background-color: #699041;
     border: solid 1px var(--bc-secondary-light-hover);
     border-radius: 20px;
@@ -86,7 +87,7 @@ const LeftSide = styled.div`
     font-size: 13px;
   }
 
-  .login:hover {
+  .AuthButton:hover {
     background-color: #5a7736; /* Brown hover color */
   }
 
@@ -126,6 +127,9 @@ export default function Header({
   editMode: boolean;
 }) {
   const { setHasToken, hasToken } = useTokenChecker();
+  const colorValues = useContext(themeContext);
+  const { headers_color } = colorValues;
+
   const handleLogin = () => {
     if (typeof window !== 'undefined') {
       const loginUrl = {
@@ -150,7 +154,7 @@ export default function Header({
     }
   };
   return (
-    <HeaderWapper>
+    <HeaderWapper headerColor={headers_color}>
       <div className="chartName">{chartName}</div>
       <div className="search-btn">
         <button type="button" onClick={() => showModulesSearch(true)}>
@@ -181,10 +185,10 @@ export default function Header({
                 height={20}
                 width={40}
               />
-              <button className='login' onClick={handleLogout}>logout</button>
+              <button className='AuthButton' onClick={handleLogout}>logout</button>
             </>
           ) : (
-            <button className='login' onClick={handleLogin}>login</button>
+            <button className='AuthButton' onClick={handleLogin}>login</button>
           )}
         </div>
       </LeftSide>

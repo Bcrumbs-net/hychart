@@ -1,23 +1,25 @@
 /* eslint-disable @next/next/next-script-for-ga */
 /* eslint-disable react/display-name */
-import { Fragment, ReactElement } from 'react';
-import Document, { Html, Head, Main, NextScript } from 'next/document';
+import { ReactElement } from 'react';
+import NextDocument, { Html, Head, Main, NextScript } from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
 
 //@ts-ignore
-export default class CustomDocument extends Document<{
+export default class CustomDocument extends NextDocument<{
   styleTags: ReactElement[];
 }> {
-  static getInitialProps({ renderPage, req }) {
+  static async getInitialProps(ctx) {
+    const initialProps = await NextDocument.getInitialProps(ctx);
+
     const sheet = new ServerStyleSheet();
-    const domain = req.headers['host'];
-    const page = renderPage(
+    const domain = ctx.req.headers['host'];
+    const page = ctx.renderPage(
       (App) => (props) => sheet.collectStyles(<App {...props} />)
     );
 
     const styleTags = sheet.getStyleElement();
 
-    return { ...page, styleTags, domain };
+    return { ...page, styleTags, domain, ...initialProps };
   }
 
   render() {

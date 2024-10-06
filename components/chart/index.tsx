@@ -1,25 +1,31 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { HotKeys } from 'react-hotkeys';
 import { Config, GraphContent, auth } from '@bcrumbs.net/bc-api';
-import { SHORTCUT_KEYS } from './Constants';
+import { DEFAULT_X_PADDING, DEFAULT_Y_PADDING, SHORTCUT_KEYS } from './Constants';
 import Canvas from './canvas';
 import Header from './header';
 import Search, { SearchType } from './search';
-import { ChartType, NodeType } from './types';
+import { ChartType, NodeInformationType, NodeType } from './types';
 import parseContentsToNodes from './parseContentsToNodes';
 import DescriptionDrawer from './description';
 import { parse } from 'querystring';
 import AddNewModule from './editMode/AddNewModule';
+import EditDrawer from './editModule';
+import { useTokenChecker } from '../../bootstrapers/hychart/utils';
+import { useRouter } from 'next/router';
+import colorContext, { ColorValues } from '../common/context/themeContext';
 
-function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: string }) {
+function Chart({ data, token, contextId, config }: { config: Config; contextId: string; data: GraphContent[]; token?: string }) {
   const rootContent = data[0];
+  const router = useRouter();
   const [zoomLevel, setZoomLevel] = useState(100);
   const [selectedModules, setSelectedModules] = useState([]);
   const [selectedModule, setSelectedModule] = useState<NodeType>();
-  const [currentVersion, setCurentVersion] = useState<ChartType>(
+  const [currentVersion, setCurrentVersion] = useState<ChartType>(
     parseContentsToNodes(data)
   );
   const [showSearch, setShowSearch] = useState(false);
+  const { hasToken } = useTokenChecker();
   const [search, setSearch] = useState<SearchType>({
     value: '',
     isValid: true,
@@ -27,6 +33,16 @@ function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: 
   });
   const [editMode, setEditMode] = useState(false);
   const [focusNode, setFocusNode] = useState<NodeType | undefined>(undefined);
+  const [infoToCreateChild, setInfoToCreateChild] = useState<NodeInformationType>({
+    parentId: 0,
+    parentX: 0,
+    parentY: 0,
+  });
+
+  const colorValues: ColorValues = rootContent.data.reduce((acc, curr) => {
+    acc[curr.Key as keyof ColorValues] = curr.Value;
+    return acc;
+  }, {} as ColorValues);
 
   const shortcutHandlers = {
     SEARCH: () => {
@@ -98,7 +114,6 @@ function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: 
     },
     [selectedModules, setSelectedModules, selectedModule, deselectModules]
   );
-
   const focusModule = useCallback(
     (id: string) => {
       if (currentVersion && currentVersion.nodes) {
@@ -141,7 +156,7 @@ function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: 
             newVersion.nodes[selectedModule].y += y;
           }
         });
-        setCurentVersion({
+        setCurrentVersion({
           ...newVersion,
         });
       } else {
@@ -149,7 +164,7 @@ function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: 
         if (targetNode) {
           newVersion.nodes[id].x += x;
           newVersion.nodes[id].y += y;
-          setCurentVersion({
+          setCurrentVersion({
             ...newVersion,
           });
         } else {
@@ -157,13 +172,42 @@ function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: 
         }
       }
     },
-    [selectedModules, setCurentVersion, currentVersion]
+    [selectedModules, setCurrentVersion, currentVersion]
   );
 
   const organizeModules = useCallback(() => {
     const originVersion = parseContentsToNodes(data);
-    setCurentVersion(originVersion);
-  }, [data, setCurentVersion]);
+    setCurrentVersion(originVersion);
+  }, [data, setCurrentVersion]);
+
+  useEffect(() => {
+    auth.setContext(contextId);
+  }, []);
+
+  useEffect(() => {
+    const { editMode: queryEditMode } = router.query;
+
+    if (queryEditMode) {
+      const isEditMode = Array.isArray(queryEditMode)
+        ? queryEditMode[0] === 'true'
+        : queryEditMode === 'true';
+
+      setEditMode(isEditMode);
+      const { pathname, query, ...rest } = router;
+      router.replace(
+        {
+          pathname: router.pathname,
+          query: query
+            ? Object.fromEntries(
+              Object.entries(query).filter(([key]) => key !== "editMode")
+            )
+            : {},
+        },
+        undefined,
+        { shallow: true }
+      );
+    }
+  }, [router.query]);
 
   useEffect(() => {
     const queryParams = parse(window.location.search);
@@ -177,7 +221,9 @@ function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: 
   }, [focusModule]);
 
   const addNewModule = () => {
-    console.log('Add New Module');
+    setInfoToCreateChild({
+      parentId: rootContent.id,
+    })
   }
 
   useEffect(() => {
@@ -189,39 +235,52 @@ function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: 
       focusModule(nodeIdFromUrl.toString());
     }
   }, [focusModule]);
+
   return (
     //@ts-ignore
     <HotKeys keyMap={SHORTCUT_KEYS} handlers={shortcutHandlers}>
       <div className="chart" id="chart">
-        <Header
-          showModulesSearch={setShowSearch}
-          chartName={rootContent.title}
-          editMode={editMode}
-          setEditMode={setEditMode}
-        />
-        <div className="designer">
-          <Canvas
+        <colorContext.Provider value={colorValues}>
+          <Header
+            showModulesSearch={setShowSearch}
+            chartName={rootContent.title}
             editMode={editMode}
-            zoomLevel={zoomLevel}
-            moveModule={moveModule}
-            selectModule={selectModule}
-            currentVersion={currentVersion}
-            selectedModules={selectedModules}
-            focusNode={focusNode}
-            deselectModules={deselectModules}
-            organizeModules={organizeModules}
-            changeZoomLevel={changeZoomLevel}
+            setEditMode={setEditMode}
           />
-        </div>
-        <DescriptionDrawer
-          module={selectedModule}
-          open={!!selectedModule && selectedModules.length === 1}
-          onClose={() => setSelectedModule(undefined)}
-        >
-          <div
-            dangerouslySetInnerHTML={{ __html: selectedModule?.description }}
+          <div className="designer">
+            <Canvas
+              editMode={editMode}
+              zoomLevel={zoomLevel}
+              moveModule={moveModule}
+              selectModule={selectModule}
+              currentVersion={currentVersion}
+              selectedModules={selectedModules}
+              focusNode={focusNode}
+              deselectModules={deselectModules}
+              organizeModules={organizeModules}
+              changeZoomLevel={changeZoomLevel}
+              setInfoToCreateChild={setInfoToCreateChild}
+            />
+          </div>
+        </colorContext.Provider>
+        {hasToken && editMode ? (
+          <EditDrawer
+            lang={config.lang}
+            module={selectedModule}
+            open={!!selectedModule && selectedModules.length === 1}
+            onClose={() => setSelectedModule(undefined)}
           />
-        </DescriptionDrawer>
+        ) :
+          <DescriptionDrawer
+            lang={config.lang}
+            module={selectedModule}
+            open={!!selectedModule && selectedModules.length === 1}
+            onClose={() => setSelectedModule(undefined)}
+          >
+            <div
+              dangerouslySetInnerHTML={{ __html: selectedModule?.description }}
+            />
+          </DescriptionDrawer>}
         {showSearch ? (
           <Search
             currentVersion={currentVersion}
@@ -232,10 +291,18 @@ function Chart({ data, token }: { config: Config; data: GraphContent[]; token?: 
           />
         ) : null}
         {typeof window !== 'undefined' && auth?.isAuthenticated() && editMode ? (
-          <AddNewModule onClick={addNewModule} />
+          <AddNewModule
+            selectModule={selectModule}
+            onClick={addNewModule}
+            setInfoToCreateChild={setInfoToCreateChild}
+            infoToCreateChild={infoToCreateChild}
+            currentVersion={currentVersion}
+            setCurrentVersion={setCurrentVersion}
+          />
         ) : null}
       </div>
-    </HotKeys>
+    </HotKeys >
+
   );
 }
 
