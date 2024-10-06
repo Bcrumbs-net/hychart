@@ -26,6 +26,7 @@ export type CanvasProps = {
   editMode: boolean;
   focusNode: NodeType;
   setInfoToCreateChild: React.Dispatch<React.SetStateAction<NodeInformationType>>;
+  highlightedNodes: number[];
 };
 
 function Canvas({
@@ -39,7 +40,8 @@ function Canvas({
   changeZoomLevel,
   organizeModules,
   moveModule,
-  setInfoToCreateChild
+  setInfoToCreateChild,
+  highlightedNodes
 }: CanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -194,6 +196,7 @@ function Canvas({
             selectedModules={selectedModules}
             selectModule={selectModule}
             setInfoToCreateChild={setInfoToCreateChild}
+            highlightedNodes={highlightedNodes}
           />
           <ConnectionsCanvas
             currentVersion={currentVersion}

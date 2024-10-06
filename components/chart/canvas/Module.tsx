@@ -12,6 +12,7 @@ interface ModuleProps {
   isSelected: boolean;
   editMode: boolean;
   setInfoToCreateChild: React.Dispatch<React.SetStateAction<NodeInformationType>>;
+  highlighted: boolean;
 }
 
 interface ModuleContainerProps {
@@ -101,7 +102,7 @@ const IconContainer = styled.button`
   background-color: transparent;
   padding:0px;
 `
-function Module({ editMode, module, selectModule, setInfoToCreateChild, isSelected }: ModuleProps) {
+function Module({ editMode, module, highlighted, selectModule, setInfoToCreateChild, isSelected }: ModuleProps) {
   const moduleName = module.title || ModuleInfo.getModuleName(module.type);
   const onDragStart = useCallback((id, ev) => {
     ev.dataTransfer.setData('dragType', 'moveModule');
@@ -120,7 +121,7 @@ function Module({ editMode, module, selectModule, setInfoToCreateChild, isSelect
       parentY: module.y,
     })
   };
-
+  const opacityStyle = highlighted ? 1 : 0.2;
   return (
     <>
       {typeof window !== 'undefined' && auth?.isAuthenticated() && editMode ? (
@@ -136,7 +137,7 @@ function Module({ editMode, module, selectModule, setInfoToCreateChild, isSelect
         textColor={text_color}
         nodeColor={node_color}
         isIconModule={!!module.icon}
-        style={{ top: module.y, left: module.x, zIndex: module.id }}
+        style={{ top: module.y, left: module.x, zIndex: module.id, opacity: opacityStyle }}
         onDragStart={(ev) => onDragStart(module.id, ev)}
         onClick={(e) => {
           e.stopPropagation();

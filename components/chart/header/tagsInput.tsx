@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Multiselect from 'multiselect-react-dropdown';
 import styled from 'styled-components';
 import useTagsEnumValuesQuery from '../../../bootstrapers/hychart/utils/useTagsEnumValuesQuery';
@@ -6,17 +6,21 @@ import useTagsEnumValuesQuery from '../../../bootstrapers/hychart/utils/useTagsE
 const BCTagsInputWrapper = styled.div`
   display: flex;
   align-items: center;
-  height: 50px;
+  max-height: 50px;
   justify-content: flex-end;
 
   input {
-    height: 20px;
+    height: 25px;
     width: auto;
-    padding: 2px;
+    padding: 8px 2px 20px 5px;
     margin: 0;
     ::placeholder {
       color: #000;
       opacity: 1; /* Firefox */
+    }
+      /* Hide placeholder when input is focused or has value */
+    :focus::placeholder {
+      opacity: 0;
     }
   }
   .searchWrapper {
@@ -24,8 +28,10 @@ const BCTagsInputWrapper = styled.div`
     border: solid 1px var(--bc-secondary-light-hover);
     border-radius: 20px;
     min-height: auto;
+    max-height:30px;
     padding: 4px;
     width: auto; 
+    max-width:300px;
     color: var(--bc-secondary-light-hover);
     .chip {
       margin-bottom: 0;
@@ -36,7 +42,8 @@ const BCTagsInputWrapper = styled.div`
   .optionListContainer {
     position: fixed;
     z-index: 1000;
-    width: auto; 
+    width: 180px;
+    max-width:auto; 
     ul {
       border-radius: 10px;
       margin-top: -2px;
@@ -72,7 +79,7 @@ const BCTagsInputWrapper = styled.div`
     min-height: auto;
   }
 `;
-// Moved the URL management functions to a separate module
+
 const URLManager = {
   removeTagsFromURL: () => {
     const queryParams = new URLSearchParams(window.location.search);
@@ -86,8 +93,8 @@ const URLManager = {
 
     window.history.pushState({ path: updatedURL }, '', updatedURL);
   },
-  handleUpdateURL: (tags) => {
-    const tagNames = tags.map((tag) => tag.name);
+  handleUpdateURL: (selectedTags) => {
+    const tagNames = selectedTags.map((tag) => tag.name);
     const queryParams = new URLSearchParams(window.location.search);
     queryParams.set('tags', tagNames.join(', '));
     const currentURL = window.location.href;
@@ -97,35 +104,38 @@ const URLManager = {
 };
 
 const TagsInput = ({
+  setSelectedTags,
+  selectedTags
 }: {
-  }) => {
-  const [tags, setTags] = useState([]);
+  setSelectedTags: React.Dispatch<React.SetStateAction<any[]>>;
+  selectedTags: any;
+}) => {
   const { enumValues } = useTagsEnumValuesQuery(403027);
 
   const onAdd = useCallback(
     (selectedList, selectedItem) => {
       if (selectedList.length <= 3) {
-        const newTags = [...tags, selectedItem];
-        setTags(newTags);
+        const newTags = [...selectedTags, selectedItem];
+        setSelectedTags(newTags);
         URLManager.handleUpdateURL(newTags);
       } else {
         console.log('Maximum of 3 tags reached.');
       }
     },
-    [tags]
+    [selectedTags]
   );
 
   const onRemove = useCallback(
     (selectedList, selectedItem) => {
-      const newTags = tags.filter((m) => m !== selectedItem);
-      setTags(newTags);
+      const newTags = selectedTags.filter((m) => m !== selectedItem);
+      setSelectedTags(newTags);
       if (newTags.length === 0) {
         URLManager.removeTagsFromURL();
       } else {
         URLManager.handleUpdateURL(newTags);
       }
     },
-    [tags]
+    [selectedTags]
   );
 
   return (
