@@ -12,6 +12,7 @@ function ConnectionsCanvas({
   currentVersion,
   selectedModules,
 }: ConnectionsCanvasProps) {
+  console.log('ConnectionCanvas', currentVersion.nodes);
   const selectedModule = selectedModules[0];
   const connectionList = useMemo(() => {
     const connectionList = [];

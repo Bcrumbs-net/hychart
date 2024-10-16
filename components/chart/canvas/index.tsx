@@ -107,6 +107,7 @@ function Canvas({
     },
     [zoomLevel, moveModule]
   );
+  console.log('Canvas', currentVersion.nodes);
 
   const onMouseMove = useCallback(
     (event: MouseEvent) => {

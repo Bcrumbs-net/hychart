@@ -170,13 +170,37 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
     setCurrentVersion(originVersion);
   }, [data, setCurrentVersion]);
 
+  const handleNodeUpdate = (updatedNode: NodeType) => {
+    const nodeToUpdate = Object.values(currentVersion.nodes).find((node) => node.iId === updatedNode.iId);
+
+    if (nodeToUpdate) {
+      setCurrentVersion((prev) => ({
+        ...prev,
+        nodes: {
+          ...prev.nodes,
+          [nodeToUpdate.id]: {
+            ...nodeToUpdate,
+            ...updatedNode,
+          },
+        },
+      }));
+
+    } else {
+      console.log('Node not found for update:', updatedNode);
+    }
+  };
+  useEffect(() => {
+    console.log('Chart:', currentVersion.nodes)
+  }, [currentVersion]);
+
+
   useEffect(() => {
     const { editMode: queryEditMode } = router.query;
     auth.setContext(contextId);
     if (queryEditMode) {
       const isEditMode = Array.isArray(queryEditMode)
-        ? queryEditMode[0] === 'true' // Convert to boolean if it's an array
-        : queryEditMode === 'true'; // Convert to boolean if it's a string
+        ? queryEditMode[0] === 'true'
+        : queryEditMode === 'true';
 
       setEditMode(isEditMode);
       const { pathname, query, ...rest } = router;
@@ -249,6 +273,7 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
             module={selectedModule}
             open={!!selectedModule && selectedModules.length === 1}
             onClose={() => setSelectedModule(undefined)}
+            onNodeUpdate={handleNodeUpdate}
           />
         ) :
           <DescriptionDrawer
