@@ -1,10 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 // import { BCTooltip } from '@bcrumbs.net/bc-ui';
 import ModulesCanvas from './ModulesCanvas';
 import ConnectionsCanvas from './ConnectionsCanvas';
-import { NodeType, SelectModuleFunc } from '../types';
+import { NodeInformationType, NodeType, SelectModuleFunc } from '../types';
 //import './styles.scss';
 import Scrollbars from 'react-scrollbars-custom';
+import themeContext from '../../common/context/themeContext';
 
 export type ScrollPositionType = {
   scrollLeft?: number;
@@ -24,7 +25,8 @@ export type CanvasProps = {
   moveModule: (id: number, x: number, y: number) => void;
   editMode: boolean;
   focusNode: NodeType;
-  setParentIdToCreateChild: React.Dispatch<React.SetStateAction<number>>;
+  setInfoToCreateChild: React.Dispatch<React.SetStateAction<NodeInformationType>>;
+  highlightedNodes: number[];
 };
 
 function Canvas({
@@ -37,8 +39,9 @@ function Canvas({
   deselectModules,
   changeZoomLevel,
   organizeModules,
-  moveModule,
-  setParentIdToCreateChild,
+  moveModule
+  setInfoToCreateChild,
+  highlightedNodes
 }: CanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -49,6 +52,9 @@ function Canvas({
     clientX: 0,
     clientY: 0,
   });
+  const colorValues = useContext(themeContext);
+  const { background_color } = colorValues;
+  // const canvasColor = colorValues.find(item => item.Key === "background_color");
 
   const onMouseUp = useCallback(() => {
     const canvas = canvasRef.current;
@@ -178,7 +184,7 @@ function Canvas({
         <div
           ref={wrapperRef}
           id="designAreaInner"
-          style={{ zoom: `${zoomLevel}%` }}
+          style={{ zoom: `${zoomLevel}%`, background: `${background_color}` }}
           className="designAreaInner"
           onDragOver={(ev) => {
             ev.preventDefault();
@@ -190,7 +196,8 @@ function Canvas({
             currentVersion={currentVersion}
             selectedModules={selectedModules}
             selectModule={selectModule}
-            setParentIdToCreateChild={setParentIdToCreateChild}
+            setInfoToCreateChild={setInfoToCreateChild}
+            highlightedNodes={highlightedNodes}
           />
           <ConnectionsCanvas
             currentVersion={currentVersion}

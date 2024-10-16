@@ -1,22 +1,24 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import ModuleInfo from '../moduleBlocks/ModuleInfo';
-import { NodeType, SelectModuleFunc } from '../types';
+import { NodeInformationType, NodeType, SelectModuleFunc } from '../types';
 import styled, { css } from 'styled-components';
 import { FaPlusCircle } from 'react-icons/fa';
 import { auth } from '@bcrumbs.net/bc-api';
+import themeContext from '../../common/context/themeContext';
 
 interface ModuleProps {
   module: NodeType;
   selectModule: SelectModuleFunc;
   isSelected: boolean;
-  editMode: boolean;
-  setParentIdToCreateChild: React.Dispatch<React.SetStateAction<number>>;
-
-
+  editMode: boolean
+  setInfoToCreateChild: React.Dispatch<React.SetStateAction<NodeInformationType>>;
+  highlighted: boolean;
 }
 
 interface ModuleContainerProps {
   isIconModule: boolean;
+  nodeColor: string;
+  textColor: string;
 }
 
 const ModuleContainer = styled.div<ModuleContainerProps>`
@@ -49,21 +51,13 @@ const ModuleContainer = styled.div<ModuleContainerProps>`
       }
     `}
 
-  .moduleIcon {
-    text-align: center;
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    background-repeat: no-repeat;
-    background-position: center;
-  }
   .moduleNameCon{
     padding: 4px;
-    color: #fff;
+    color: ${({ textColor }) => textColor};
     position: relative;
     font-size: 15px;
     font-weight: 700;
-    background-color: #699041;
+    background-color: ${({ nodeColor }) => nodeColor};
     height: 76px;
     width: 76px;
     display: flex;
@@ -108,7 +102,7 @@ const IconContainer = styled.button`
   background-color: transparent;
   padding:0px;
 `
-function Module({ editMode, module, setParentIdToCreateChild, selectModule, isSelected }: ModuleProps) {
+function Module({ editMode, module, highlighted, selectModule, setInfoToCreateChild, isSelected }: ModuleProps) 
   const moduleName = module.title || ModuleInfo.getModuleName(module.type);
   const onDragStart = useCallback((id, ev) => {
     ev.dataTransfer.setData('dragType', 'moveModule');
@@ -116,11 +110,18 @@ function Module({ editMode, module, setParentIdToCreateChild, selectModule, isSe
     ev.dataTransfer.setData('clientX', ev.clientX);
     ev.dataTransfer.setData('clientY', ev.clientY);
   }, []);
+  const colorValues = useContext(themeContext);
+  const { node_color } = colorValues;
+  const { text_color } = colorValues;
 
   const handleAddChild = () => {
-    setParentIdToCreateChild(module.id);
+    setInfoToCreateChild({
+      parentId: module.id,
+      parentX: module.x,
+      parentY: module.y,
+    })
   };
-
+  const opacityStyle = highlighted ? 1 : 0.2;
   return (
     <>
       {typeof window !== 'undefined' && auth?.isAuthenticated() && editMode ? (
@@ -133,8 +134,10 @@ function Module({ editMode, module, setParentIdToCreateChild, selectModule, isSe
         </IconContainer>
       ) : null}
       <ModuleContainer
+        textColor={text_color}
+        nodeColor={node_color}
         isIconModule={!!module.icon}
-        style={{ top: module.y, left: module.x, zIndex: module.id }}
+        style={{ top: module.y, left: module.x, zIndex: module.id, opacity: opacityStyle }}
         onDragStart={(ev) => onDragStart(module.id, ev)}
         onClick={(e) => {
           e.stopPropagation();
@@ -151,7 +154,7 @@ function Module({ editMode, module, setParentIdToCreateChild, selectModule, isSe
         ) : (
           <>
             <p className="city">{module.city}</p>
-            <div className={`moduleNameCon ${isSelected ? 'active' : ''} `}>
+            <div className={`moduleNameCon ${isSelected ? 'active' : ''}`} draggable>
               {moduleName.length >= 34
                 ? moduleName.substring(0, 34) + '...'
                 : moduleName}

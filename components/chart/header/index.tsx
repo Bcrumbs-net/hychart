@@ -1,17 +1,18 @@
 import 'react-tagsinput/react-tagsinput.css';
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import TagsInput from './tagsInput';
 import Switch from "react-switch";
 import { auth } from '@bcrumbs.net/bc-api';
 import { useTokenChecker } from '../../../bootstrapers/hychart/utils';
+import themeContext from '../../common/context/themeContext';
 
-const HeaderWapper = styled.div`
+const HeaderWapper = styled.div<{ headerColor: string }>`
   width: 100%;
   height: 50px;
   z-index: 9999;
   position: relative;
-  background-color: #76665b;
+  background-color: ${({ headerColor }) => headerColor};
 
   .chartName {
     font-weight: 600;
@@ -118,14 +119,21 @@ export default function Header({
   showModulesSearch,
   chartName,
   setEditMode,
-  editMode
+  editMode,
+  setSelectedTags,
+  selectedTags
 }: {
   showModulesSearch: (state: boolean) => void;
   chartName: string;
   setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
+  setSelectedTags: React.Dispatch<React.SetStateAction<[]>>;
   editMode: boolean;
+  selectedTags: any;
 }) {
   const { setHasToken, hasToken } = useTokenChecker();
+  const colorValues = useContext(themeContext);
+  const { headers_color } = colorValues;
+
   const handleLogin = () => {
     if (typeof window !== 'undefined') {
       const loginUrl = {
@@ -150,7 +158,7 @@ export default function Header({
     }
   };
   return (
-    <HeaderWapper>
+    <HeaderWapper headerColor={headers_color}>
       <div className="chartName">{chartName}</div>
       <div className="search-btn">
         <button type="button" onClick={() => showModulesSearch(true)}>
@@ -160,7 +168,10 @@ export default function Header({
       </div>
       <LeftSide>
         <div className="tagsInput-container">
-          <TagsInput />
+          <TagsInput
+            setSelectedTags={setSelectedTags}
+            selectedTags={selectedTags}
+          />
         </div>
         <div className="login-logout-container">
           {hasToken ? (
