@@ -136,7 +136,7 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, infoToCreateChild,
           PlentyChildren: false,
           ContentType: 4,
           ContentInstances: [],
-          StageId: null
+          StageId: null,
           ParentId: infoToCreateChild.parentId,
         },
       },

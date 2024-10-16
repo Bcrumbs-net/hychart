@@ -16,7 +16,7 @@ function ModulesCanvas({
   currentVersion,
   editMode,
   selectedModules,
-  selectModule
+  selectModule,
   setInfoToCreateChild,
   highlightedNodes
 }: ModulesCanvasProps) {

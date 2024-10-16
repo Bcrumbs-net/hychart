@@ -9,7 +9,7 @@ function createBlankNode(
   const node: NodeType = {
     id: contentId,
     iId: contentInstanceId,
-    type: NodeVariant.Person
+    type: NodeVariant.Person,
     x: infoToCreateChild.parentX + DEFAULT_X_PADDING,
     y: infoToCreateChild.parentY + DEFAULT_Y_PADDING,
     connections: [],

@@ -182,7 +182,7 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
     const originVersion = parseContentsToNodes(data);
     setCurrentVersion(originVersion);
   }, [data, setCurrentVersion]);
-    
+
   const handleNodeUpdate = (updatedNode: NodeType) => {
     const nodeToUpdate = Object.values(currentVersion.nodes).find((node) => node.iId === updatedNode.iId);
     if (nodeToUpdate) {
@@ -201,15 +201,21 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
       console.log('Node not found for update:', updatedNode);
     }
   };
-  
+
+  const addNewModule = () => {
+    setInfoToCreateChild({
+      parentId: rootContent.id,
+    })
+  }
+
   useEffect(() => {
     console.log('Chart:', currentVersion.nodes)
   }, [currentVersion]);
-  
+
   useEffect(() => {
     auth.setContext(contextId);
   }, []);
-  
+
   useEffect(() => {
     const { editMode: queryEditMode } = router.query;
     auth.setContext(contextId);
@@ -264,12 +270,6 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
     }
 
   }, [focusModule]);
-
-  const addNewModule = () => {
-    setInfoToCreateChild({
-      parentId: rootContent.id,
-    })
-  }
 
   useEffect(() => {
     const queryParams = parse(window.location.search);
@@ -351,7 +351,6 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
         ) : null}
       </div>
     </HotKeys >
-
   );
 }
 

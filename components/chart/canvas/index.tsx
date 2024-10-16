@@ -39,7 +39,7 @@ function Canvas({
   deselectModules,
   changeZoomLevel,
   organizeModules,
-  moveModule
+  moveModule,
   setInfoToCreateChild,
   highlightedNodes
 }: CanvasProps) {
