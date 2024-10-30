@@ -46,7 +46,6 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
     acc[curr.Key as keyof ColorValues] = curr.Value;
     return acc;
   }, {} as ColorValues);
-
   const shortcutHandlers = {
     SEARCH: () => {
       setShowSearch(true);
@@ -183,8 +182,16 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
     setCurrentVersion(originVersion);
   }, [data, setCurrentVersion]);
 
-  const handleNodeUpdate = (updatedNode: NodeType) => {
-    const nodeToUpdate = Object.values(currentVersion.nodes).find((node) => node.iId === updatedNode.iId);
+  const handleNodeUpdate = (id: number, fieldName: string, value: string | number | []) => {
+    const fieldMapping = {
+      x_position: 'x',
+      y_position: 'y',
+      top_text: 'city',
+      bottom_text: 'sub_title',
+    };
+
+    const updatedFieldName = fieldMapping[fieldName] || fieldName
+    const nodeToUpdate = Object.values(currentVersion.nodes).find((node) => node.id === id);
     if (nodeToUpdate) {
       setCurrentVersion((prev) => ({
         ...prev,
@@ -192,13 +199,12 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
           ...prev.nodes,
           [nodeToUpdate.id]: {
             ...nodeToUpdate,
-            ...updatedNode,
+            [updatedFieldName]: value,
           },
         },
       }));
-
     } else {
-      console.log('Node not found for update:', updatedNode);
+      console.log('Node not found for update:', id);
     }
   };
 
@@ -209,16 +215,11 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
   }
 
   useEffect(() => {
-    console.log('Chart:', currentVersion.nodes)
-  }, [currentVersion]);
-
-  useEffect(() => {
     auth.setContext(contextId);
   }, []);
 
   useEffect(() => {
     const { editMode: queryEditMode } = router.query;
-    auth.setContext(contextId);
     if (queryEditMode) {
       const isEditMode = Array.isArray(queryEditMode)
         ? queryEditMode[0] === 'true'

@@ -15,12 +15,13 @@ import useTagsEnumValuesQuery from '../../../bootstrapers/hychart/utils/useTagsE
 import FieldRenderer from './FieldRenderer';
 import { ErrorToast, SuccessToast, ToastMessage } from '../../common/toasts';
 import { StyledDrawer } from '../../common/drawer';
+import { node } from 'prop-types';
 type DrawerProps = {
   module: NodeType;
   open: boolean;
   onClose: () => void;
   lang: string;
-  onNodeUpdate: (node: NodeType) => void;
+  onNodeUpdate: (id: number, fieldName: string, value: number | string | []) => void;
 };
 const Button = styled.button`
   display: block;
@@ -91,13 +92,8 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onNo
     }
   }, [data, targetModel]);
 
-  const handleFieldChange = (fieldId: string, value: any) => {
-    setValue(fieldId, value);
-    const updatedNode = {
-      iId: targetContentInstance?.Id,
-      ...getValues(),
-    };
-    onNodeUpdate(updatedNode);
+  const handleFieldChange = (fieldName: string, value: number | string | []) => {
+    onNodeUpdate(module.id, fieldName, value);
   };
 
   const onSubmit = (formData: FieldValues) => {
@@ -153,29 +149,35 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onNo
 
             <Offcanvas.Body ref={editPanelRef}>
               <form onSubmit={handleSubmit(onSubmit)}>
-                {targetModel?.ViewFields.map((field) => (
-                  <div key={field.Id}>
-                    <Controller
-                      control={control}
-                      name={`${field.Id}`}
-                      render={({ field: { onChange, value } }) => {
-                        return (
-                          <FieldRenderer
-                            field={field}
-                            enumValues={enumValues}
-                            register={register}
-                            getValues={getValues}
-                            setValue={setValue}
-                            onChange={(newValue) => {
-                              onChange(newValue);
-                              handleFieldChange(`${field.Id}`, newValue);
-                            }}
-                          />
-                        );
-                      }}
-                    />
-                  </div>
-                ))}
+                {targetModel?.ViewFields.map((field) => {
+                  const privateFields = field.Name.startsWith('_');
+                  if (!privateFields) {
+                    return (
+                      <div key={field.Id}>
+                        <Controller
+                          control={control}
+                          name={`${field.Id}`}
+                          render={({ field: { onChange, value } }) => {
+                            return (
+                              <FieldRenderer
+                                field={field}
+                                enumValues={enumValues}
+                                register={register}
+                                getValues={getValues}
+                                setValue={setValue}
+                                onChange={(newValue) => {
+                                  onChange(newValue);
+                                  handleFieldChange(`${field.Name}`, newValue);
+                                }}
+                              />
+                            );
+                          }}
+                        />
+                      </div>
+                    );
+                  }
+                  return null;
+                })}
                 <Button type="submit">Edit</Button>
               </form>
             </Offcanvas.Body>

@@ -1,6 +1,5 @@
 import { GraphContent } from "@bcrumbs.net/bc-api";
 import { ChartType, NodeType, NodeVariant } from "./types";
-import { DEFAULT_X_PADDING, DEFAULT_Y_PADDING } from "./Constants";
 
 function parseContentsToNodes(contents: GraphContent[]): ChartType {
   const root = contents[0];
@@ -32,8 +31,8 @@ function convertContentsToNodes(
       // @ts-ignore
       iId: content.iId,
       type: contentData.type as NodeVariant,
-      x: Number(contentData.x_position) + DEFAULT_X_PADDING,
-      y: Number(contentData.y_position) + DEFAULT_Y_PADDING,
+      x: Number(contentData.x_position),
+      y: Number(contentData.y_position),
       connections: connectionList,
       title: contentData.title,
       sub_title: contentData.sub_title,
@@ -66,14 +65,14 @@ function getNodeConnectionList(content, contentData) {
     ...(contentData.indirect_connections
       ? contentData.indirect_connections
 
-        .split(',')
-        .filter((id) => id && id !== ' ')
-        .map((id) => ({ id: +id }))
+          .split(",")
+          .filter((id) => id && id !== " ")
+          .map((id) => ({ id: +id }))
       : []),
     ...(content.children
       ? content.children.sort(compareNodesOnY).map((subContent) => ({
-        id: subContent.id,
-      }))
+          id: subContent.id,
+        }))
       : []),
   ];
 }
