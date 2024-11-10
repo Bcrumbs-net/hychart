@@ -25,7 +25,6 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
     parseContentsToNodes(data)
   );
   const [showSearch, setShowSearch] = useState(false);
-  const [parentIdToCreateChild, setParentIdToCreateChild] = useState<number>();
   const { hasToken } = useTokenChecker();
   const [search, setSearch] = useState<SearchType>({
     value: '',
@@ -190,7 +189,7 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
       bottom_text: 'sub_title',
     };
 
-    const updatedFieldName = fieldMapping[fieldName] || fieldName
+    const updatedFieldName = fieldMapping[fieldName] || fieldName;
     const nodeToUpdate = Object.values(currentVersion.nodes).find((node) => node.id === id);
     if (nodeToUpdate) {
       setCurrentVersion((prev) => ({

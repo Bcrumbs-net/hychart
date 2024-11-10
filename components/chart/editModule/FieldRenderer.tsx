@@ -72,13 +72,13 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ field, enumValues, onChan
                     />
                 </>
             );
-        case ModelFieldsTypes.ContentUrl:
+        case ModelFieldsTypes.Image:
             return (
                 <>
                     <Label>{field.Name}</Label>
                     <Input
-                        type="url"
                         {...register(`${field.Id}`)}
+                        type="text"
                         onChange={(e) => onChange(e.target.value)}
                         placeholder={field.Name} />
                 </>
