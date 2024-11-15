@@ -15,11 +15,13 @@ import useTagsEnumValuesQuery from '../../../bootstrapers/hychart/utils/useTagsE
 import FieldRenderer from './FieldRenderer';
 import { ErrorToast, SuccessToast, ToastMessage } from '../../common/toasts';
 import { StyledDrawer } from '../../common/drawer';
+import { node } from 'prop-types';
 type DrawerProps = {
   module: NodeType;
   open: boolean;
   onClose: () => void;
   lang: string;
+  onNodeUpdate: (id: number, fieldName: string, value: number | string | []) => void;
 };
 const Button = styled.button`
   display: block;
@@ -39,7 +41,7 @@ const Button = styled.button`
     background-color: #5a7736; /* Brown hover color */
   }
 `;
-const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onClose, module, children }) => {
+const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onNodeUpdate, onClose, module, children }) => {
   const drawerRef = useRef(null);
   const editPanelRef = useRef(null);
   const [successMessage, setSuccessMessage] = useState<string>('');
@@ -90,6 +92,10 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onCl
     }
   }, [data, targetModel]);
 
+  const handleFieldChange = (fieldName: string, value: number | string | []) => {
+    onNodeUpdate(module.id, fieldName, value);
+  };
+
   const onSubmit = (formData: FieldValues) => {
     const updatedFormData: FieldValues = { ...formData };
     if (targetModel && data?.contentInstances.length > 0) {
@@ -101,7 +107,6 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onCl
         }
       });
     }
-
     updateContentInstanceFieldValues({
       variables: {
         body: {
@@ -114,15 +119,15 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onCl
         },
       },
     })
-      .then(() => {
-        setSuccessMessage('Content instance updated successfully');
+      .then((response) => {
+        setSuccessMessage('Node updated successfully');
         setErrorMessage('');
         setTimeout(() => {
           setSuccessMessage('');
         }, 3000);
       })
       .catch((error) => {
-        setErrorMessage(`${error}: Error updating content instance`);
+        setErrorMessage(`${error}: Error updating node`);
         setSuccessMessage('');
         setTimeout(() => {
           setSuccessMessage('');
@@ -144,25 +149,35 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onCl
 
             <Offcanvas.Body ref={editPanelRef}>
               <form onSubmit={handleSubmit(onSubmit)}>
-                {targetModel?.ViewFields.map((field) => (
-                  <div key={field.Id}>
-                    <Controller
-                      control={control}
-                      name={`${field.Id}`}
-                      render={({ field: { onChange, value } }) => {
-                        return (
-                          <FieldRenderer
-                            field={field}
-                            enumValues={enumValues}
-                            register={register}
-                            getValues={getValues}
-                            setValue={setValue}
-                          />
-                        );
-                      }}
-                    />
-                  </div>
-                ))}
+                {targetModel?.ViewFields.map((field) => {
+                  const privateFields = field.Name.startsWith('_');
+                  if (!privateFields) {
+                    return (
+                      <div key={field.Id}>
+                        <Controller
+                          control={control}
+                          name={`${field.Id}`}
+                          render={({ field: { onChange, value } }) => {
+                            return (
+                              <FieldRenderer
+                                field={field}
+                                enumValues={enumValues}
+                                register={register}
+                                getValues={getValues}
+                                setValue={setValue}
+                                onChange={(newValue) => {
+                                  onChange(newValue);
+                                  handleFieldChange(`${field.Name}`, newValue);
+                                }}
+                              />
+                            );
+                          }}
+                        />
+                      </div>
+                    );
+                  }
+                  return null;
+                })}
                 <Button type="submit">Edit</Button>
               </form>
             </Offcanvas.Body>

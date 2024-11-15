@@ -45,7 +45,6 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
     acc[curr.Key as keyof ColorValues] = curr.Value;
     return acc;
   }, {} as ColorValues);
-
   const shortcutHandlers = {
     SEARCH: () => {
       setShowSearch(true);
@@ -182,13 +181,44 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
     setCurrentVersion(originVersion);
   }, [data, setCurrentVersion]);
 
+  const handleNodeUpdate = (id: number, fieldName: string, value: string | number | []) => {
+    const fieldMapping = {
+      x_position: 'x',
+      y_position: 'y',
+      top_text: 'city',
+      bottom_text: 'sub_title',
+    };
+
+    const updatedFieldName = fieldMapping[fieldName] || fieldName;
+    const nodeToUpdate = Object.values(currentVersion.nodes).find((node) => node.id === id);
+    if (nodeToUpdate) {
+      setCurrentVersion((prev) => ({
+        ...prev,
+        nodes: {
+          ...prev.nodes,
+          [nodeToUpdate.id]: {
+            ...nodeToUpdate,
+            [updatedFieldName]: value,
+          },
+        },
+      }));
+    } else {
+      console.log('Node not found for update:', id);
+    }
+  };
+
+  const addNewModule = () => {
+    setInfoToCreateChild({
+      parentId: rootContent.id,
+    })
+  }
+
   useEffect(() => {
     auth.setContext(contextId);
   }, []);
 
   useEffect(() => {
     const { editMode: queryEditMode } = router.query;
-
     if (queryEditMode) {
       const isEditMode = Array.isArray(queryEditMode)
         ? queryEditMode[0] === 'true'
@@ -241,12 +271,6 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
 
   }, [focusModule]);
 
-  const addNewModule = () => {
-    setInfoToCreateChild({
-      parentId: rootContent.id,
-    })
-  }
-
   useEffect(() => {
     const queryParams = parse(window.location.search);
     const nodeIdFromUrl = queryParams['?n']
@@ -293,6 +317,7 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
             module={selectedModule}
             open={!!selectedModule && selectedModules.length === 1}
             onClose={() => setSelectedModule(undefined)}
+            onNodeUpdate={handleNodeUpdate}
           />
         ) :
           <DescriptionDrawer
@@ -326,7 +351,6 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
         ) : null}
       </div>
     </HotKeys >
-
   );
 }
 

@@ -33,7 +33,7 @@ const Drawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onClose,
         }, 3000);
       })
       .catch((error) => {
-        console.error('Fai,errorled to save the share URL in clipboard:', error);
+        console.error('Failed to save the share URL in clipboard:', error);
         setErrorMessage('Failed to save the share URL in clipboard:' + '<' + error + '>');
         setTimeout(() => {
           setErrorMessage('');
