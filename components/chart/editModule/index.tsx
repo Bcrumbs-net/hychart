@@ -15,12 +15,12 @@ import useTagsEnumValuesQuery from '../../../bootstrapers/hychart/utils/useTagsE
 import FieldRenderer from './FieldRenderer';
 import { ErrorToast, SuccessToast, ToastMessage } from '../../common/toasts';
 import { StyledDrawer } from '../../common/drawer';
-import { node } from 'prop-types';
+import { useThemeContext } from '../../common/context/themeContext';
+
 type DrawerProps = {
   module: NodeType;
   open: boolean;
   onClose: () => void;
-  lang: string;
   onNodeUpdate: (id: number, fieldName: string, value: number | string | []) => void;
 };
 const Button = styled.button`
@@ -30,7 +30,7 @@ const Button = styled.button`
   padding: 10px;
   font-weight: bold;
   font-size: 16px;
-  margin: 10px 0;
+  margin: 10px 20px;
   background-color: #699041;
   border: solid 1px var(--bc-secondary-light-hover);
   border-radius: 20px;
@@ -38,10 +38,10 @@ const Button = styled.button`
   cursor: pointer;
   
   &:hover {
-    background-color: #5a7736; /* Brown hover color */
+    background-color: #5a7736; 
   }
 `;
-const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onNodeUpdate, onClose, module, children }) => {
+const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, onNodeUpdate, onClose, module, children }) => {
   const drawerRef = useRef(null);
   const editPanelRef = useRef(null);
   const [successMessage, setSuccessMessage] = useState<string>('');
@@ -59,6 +59,9 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onNo
     },
   ] = useUpdateContentInstanceFieldValuesMutation();
   const { control, handleSubmit, formState: { errors }, register, setValue, getValues } = useForm<any>();
+  const { lang, translationsMap } = useThemeContext();
+  const { rtl } = lang;
+  const edit = translationsMap.get('editForm')?.edit;
 
   const targetModel = useMemo(() => {
     if (modelsResult?.viewTypes) {
@@ -139,12 +142,12 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onNo
     <>
       <Offcanvas show={open} placement="end">
         <div ref={drawerRef}>
-          <StyledDrawer lang={lang} className={open ? 'show' : ''}>
+          <StyledDrawer rtl={rtl} className={open ? 'show' : ''}>
             <div className='header'>
-              <BsX onClick={onClose} className='closeIcon' />
               <div className='title'>
                 <h1>{targetContentInstance?.Name}</h1>
               </div>
+              <BsX onClick={onClose} className='closeIcon' />
             </div>
 
             <Offcanvas.Body ref={editPanelRef}>
@@ -178,7 +181,7 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onNo
                   }
                   return null;
                 })}
-                <Button type="submit">Edit</Button>
+                <Button type="submit">{edit}</Button>
               </form>
             </Offcanvas.Body>
           </StyledDrawer>

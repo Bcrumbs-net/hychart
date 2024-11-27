@@ -13,7 +13,7 @@ import AddNewModule from './editMode/AddNewModule';
 import EditDrawer from './editModule';
 import { useTokenChecker } from '../../bootstrapers/hychart/utils';
 import { useRouter } from 'next/router';
-import colorContext, { ColorValues } from '../common/context/themeContext';
+import { ThemeProvider } from '../common/context/themeContext';
 
 function Chart({ data, token, contextId, config }: { config: Config; contextId: string; data: GraphContent[]; token?: string }) {
   const rootContent = data[0];
@@ -41,10 +41,6 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
   const [highlightedNodes, setHighlightedNodes] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
 
-  const colorValues: ColorValues = rootContent.data.reduce((acc, curr) => {
-    acc[curr.Key as keyof ColorValues] = curr.Value;
-    return acc;
-  }, {} as ColorValues);
   const shortcutHandlers = {
     SEARCH: () => {
       setShowSearch(true);
@@ -284,8 +280,8 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
   return (
     //@ts-ignore
     <HotKeys keyMap={SHORTCUT_KEYS} handlers={shortcutHandlers}>
-      <div className="chart" id="chart">
-        <colorContext.Provider value={colorValues}>
+      <ThemeProvider rootContent={rootContent} lang={config.lang}>
+        <div className="chart" id="chart">
           <Header
             showModulesSearch={setShowSearch}
             chartName={rootContent.title}
@@ -310,46 +306,45 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
               highlightedNodes={highlightedNodes}
             />
           </div>
-        </colorContext.Provider>
-        {hasToken && editMode ? (
-          <EditDrawer
-            lang={config.lang}
-            module={selectedModule}
-            open={!!selectedModule && selectedModules.length === 1}
-            onClose={() => setSelectedModule(undefined)}
-            onNodeUpdate={handleNodeUpdate}
-          />
-        ) :
-          <DescriptionDrawer
-            lang={config.lang}
-            module={selectedModule}
-            open={!!selectedModule && selectedModules.length === 1}
-            onClose={() => setSelectedModule(undefined)}
-          >
-            <div
-              dangerouslySetInnerHTML={{ __html: selectedModule?.description }}
+          {hasToken && editMode ? (
+            <EditDrawer
+              module={selectedModule}
+              open={!!selectedModule && selectedModules.length === 1}
+              onClose={() => setSelectedModule(undefined)}
+              onNodeUpdate={handleNodeUpdate}
             />
-          </DescriptionDrawer>}
-        {showSearch ? (
-          <Search
-            currentVersion={currentVersion}
-            search={search}
-            focusModule={focusModule}
-            setSearch={setSearch}
-            setShowSearch={setShowSearch}
-          />
-        ) : null}
-        {typeof window !== 'undefined' && auth?.isAuthenticated() && editMode ? (
-          <AddNewModule
-            selectModule={selectModule}
-            onClick={addNewModule}
-            setInfoToCreateChild={setInfoToCreateChild}
-            infoToCreateChild={infoToCreateChild}
-            currentVersion={currentVersion}
-            setCurrentVersion={setCurrentVersion}
-          />
-        ) : null}
-      </div>
+          ) :
+            <DescriptionDrawer
+              module={selectedModule}
+              open={!!selectedModule && selectedModules.length === 1}
+              onClose={() => setSelectedModule(undefined)}
+            >
+              <div
+                dangerouslySetInnerHTML={{ __html: selectedModule?.description }}
+              />
+            </DescriptionDrawer>
+          }
+          {showSearch ? (
+            <Search
+              currentVersion={currentVersion}
+              search={search}
+              focusModule={focusModule}
+              setSearch={setSearch}
+              setShowSearch={setShowSearch}
+            />
+          ) : null}
+          {typeof window !== 'undefined' && auth?.isAuthenticated() && editMode ? (
+            <AddNewModule
+              selectModule={selectModule}
+              onClick={addNewModule}
+              setInfoToCreateChild={setInfoToCreateChild}
+              infoToCreateChild={infoToCreateChild}
+              currentVersion={currentVersion}
+              setCurrentVersion={setCurrentVersion}
+            />
+          ) : null}
+        </div>
+      </ThemeProvider>
     </HotKeys >
   );
 }

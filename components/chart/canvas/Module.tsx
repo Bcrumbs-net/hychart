@@ -4,7 +4,7 @@ import { NodeInformationType, NodeType, SelectModuleFunc } from '../types';
 import styled, { css } from 'styled-components';
 import { FaPlusCircle } from 'react-icons/fa';
 import { auth } from '@bcrumbs.net/bc-api';
-import themeContext from '../../common/context/themeContext';
+import { useThemeContext } from '../../common/context/themeContext';
 import { DEFAULT_X_PADDING, DEFAULT_Y_PADDING } from '../Constants';
 
 interface ModuleProps {
@@ -111,9 +111,9 @@ function Module({ editMode, module, highlighted, selectModule, setInfoToCreateCh
     ev.dataTransfer.setData('clientX', ev.clientX);
     ev.dataTransfer.setData('clientY', ev.clientY);
   }, []);
-  const colorValues = useContext(themeContext);
-  const { node_color } = colorValues;
-  const { text_color } = colorValues;
+  const { themeColors } = useThemeContext();
+  const { node_color } = themeColors;
+  const { text_color } = themeColors;
 
   const handleAddChild = () => {
     setInfoToCreateChild({

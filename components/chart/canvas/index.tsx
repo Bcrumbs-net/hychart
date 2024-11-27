@@ -1,11 +1,40 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
-// import { BCTooltip } from '@bcrumbs.net/bc-ui';
 import ModulesCanvas from './ModulesCanvas';
 import ConnectionsCanvas from './ConnectionsCanvas';
 import { NodeInformationType, NodeType, SelectModuleFunc } from '../types';
-//import './styles.scss';
 import Scrollbars from 'react-scrollbars-custom';
-import themeContext from '../../common/context/themeContext';
+import { useThemeContext } from '../../common/context/themeContext';
+import styled from 'styled-components';
+
+const DesignAreaHeader = styled.div<{ rtl: boolean }>`
+  background-color: var(--mb-module-background);
+  height: 50px;
+  position: absolute;
+  z-index: 500000;
+  top: 0;
+  left: 0;
+  width: 97%;
+
+  .zoomLevelSelector {
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    padding: 5px 10px 8px;
+    background-color: #fff;
+    position: absolute;
+    ${({ rtl }) => (rtl ? 'left:10px;' : 'right:10px;')};
+    bottom: 10px;
+    font-weight: 500;
+    line-height: 10px;
+    font-size: 14px;
+
+    i {
+      margin: 0 5px;
+      cursor: pointer;
+      margin-bottom: -10px;
+      font-size: 14px;
+    }
+  }
+`;
 
 export type ScrollPositionType = {
   scrollLeft?: number;
@@ -13,7 +42,6 @@ export type ScrollPositionType = {
   clientX?: number;
   clientY?: number;
 };
-
 export type CanvasProps = {
   zoomLevel: number;
   currentVersion: any;
@@ -29,7 +57,7 @@ export type CanvasProps = {
   highlightedNodes: number[];
 };
 
-function Canvas({
+const Canvas = ({
   editMode,
   zoomLevel,
   currentVersion,
@@ -42,9 +70,8 @@ function Canvas({
   moveModule,
   setInfoToCreateChild,
   highlightedNodes
-}: CanvasProps) {
+}: CanvasProps) => {
   const canvasRef = useRef<HTMLDivElement>(null);
-  const wrapperRef = useRef<HTMLDivElement>(null);
   const [isScrolling, setIsScrolling] = useState(false);
   const [scrollState, setScrollState] = useState<ScrollPositionType>({
     scrollLeft: 0,
@@ -52,142 +79,96 @@ function Canvas({
     clientX: 0,
     clientY: 0,
   });
-  const colorValues = useContext(themeContext);
-  const { background_color } = colorValues;
-  // const canvasColor = colorValues.find(item => item.Key === "background_color");
+
+  const { lang, themeColors } = useThemeContext();
+  const { background_color } = themeColors;
+  const { rtl } = lang;
 
   const onMouseUp = useCallback(() => {
     const canvas = canvasRef.current;
-    if (
-      Math.abs(canvas.scrollLeft - scrollState.scrollLeft) +
-      Math.abs(canvas.scrollTop - scrollState.scrollTop) <
-      10
-    ) {
+    if (canvas && Math.abs(canvas.scrollLeft - scrollState.scrollLeft) + Math.abs(canvas.scrollTop - scrollState.scrollTop) < 10) {
       deselectModules();
     }
     setIsScrolling(false);
-    setScrollState({
-      scrollLeft: 0,
-      scrollTop: 0,
-      clientX: 0,
-      clientY: 0,
-    });
-  }, [setIsScrolling, setScrollState, deselectModules, scrollState]);
+    setScrollState({ scrollLeft: 0, scrollTop: 0, clientX: 0, clientY: 0 });
+  }, [scrollState, deselectModules]);
 
-  const onMouseDown = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
-      if (canvasRef.current) {
-        const { scrollLeft, scrollTop } = canvasRef.current;
-        if (
-          event.target instanceof SVGElement &&
-          event.target.className.baseVal === 'SVG_SPACE'
-        ) {
-          setIsScrolling(true);
-          setScrollState({
-            scrollLeft,
-            scrollTop,
-            clientX: event.clientX,
-            clientY: event.clientY,
-          });
-        }
+  const onMouseDown = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
+    if (canvasRef.current) {
+      const { scrollLeft, scrollTop } = canvasRef.current;
+      if (event.target instanceof SVGElement && event.target.className.baseVal === 'SVG_SPACE') {
+        setIsScrolling(true);
+        setScrollState({ scrollLeft, scrollTop, clientX: event.clientX, clientY: event.clientY });
       }
-    },
-    [setIsScrolling, setScrollState]
-  );
+    }
+  }, []);
 
-  const onDrop = useCallback(
-    (ev) => {
-      if (
-        ev.dataTransfer.getData('clientX') +
-        ev.dataTransfer.getData('clientY') >
-        0
-      ) {
-        moveModule(
-          Number(ev.dataTransfer.getData('id')),
-          (ev.clientX - Number(ev.dataTransfer.getData('clientX'))) /
-          (zoomLevel / 100),
-          (ev.clientY - Number(ev.dataTransfer.getData('clientY'))) /
-          (zoomLevel / 100)
-        );
-      }
-    },
-    [zoomLevel, moveModule]
-  );
+  const onDrop = useCallback((ev: DragEvent) => {
+    const clientX = Number(ev.dataTransfer.getData('clientX'));
+    const clientY = Number(ev.dataTransfer.getData('clientY'));
+    const id = Number(ev.dataTransfer.getData('id'));
+    if (clientX + clientY > 0) {
+      moveModule(id, (ev.clientX - clientX) / (zoomLevel / 100), (ev.clientY - clientY) / (zoomLevel / 100));
+    }
+  }, [zoomLevel, moveModule]);
 
-  const onMouseMove = useCallback(
-    (event: MouseEvent) => {
-      const { clientX, scrollLeft, scrollTop, clientY } = scrollState;
-      if (canvasRef.current) {
-        const canvas = canvasRef.current;
-        canvas.scrollLeft = scrollLeft + clientX - event.clientX;
-        canvas.scrollTop = scrollTop + clientY - event.clientY;
-      }
-    },
-    [scrollState, canvasRef]
-  );
+  const onMouseMove = useCallback((event: MouseEvent) => {
+    if (canvasRef.current) {
+      const canvas = canvasRef.current;
+      canvas.scrollLeft = scrollState.scrollLeft + scrollState.clientX - event.clientX;
+      canvas.scrollTop = scrollState.scrollTop + scrollState.clientY - event.clientY;
+    }
+  }, [scrollState]);
 
-  const toggleScrolling = useCallback(
-    (isEnable: boolean) => {
+  useEffect(() => {
+    const toggleScrolling = (isEnable: boolean) => {
       if (isEnable) {
         window.addEventListener('mousemove', onMouseMove);
       } else {
         window.removeEventListener('mousemove', onMouseMove);
       }
-    },
-    [onMouseMove, deselectModules]
-  );
+    };
 
-  useEffect(() => {
     toggleScrolling(isScrolling);
-
     return () => {
       window.removeEventListener('mousemove', onMouseMove);
     };
-  }, [isScrolling, onMouseMove, toggleScrolling]);
+  }, [isScrolling, onMouseMove]);
 
   useEffect(() => {
     if (focusNode && canvasRef.current) {
       const { clientHeight, clientWidth } = canvasRef.current;
-      const newScrollTop = Math.max(0, focusNode.y - clientHeight / 2);
-      const newScrollLeft = Math.max(0, focusNode.x - clientWidth / 2);
-      canvasRef.current.scrollTop = newScrollTop;
-      canvasRef.current.scrollLeft = newScrollLeft;
+      canvasRef.current.scrollTop = Math.max(0, focusNode.y - clientHeight / 2);
+      canvasRef.current.scrollLeft = Math.max(0, focusNode.x - clientWidth / 2);
     }
-  }, [focusNode, canvasRef]);
+  }, [focusNode]);
 
   return (
     <>
-      <div className="designAreadHeader">
+      <DesignAreaHeader rtl={rtl}>
         <div className="zoomLevelSelector">
           <i className="flaticon-atom" onClick={organizeModules} />
           |
-          <i
-            className="flaticon-minus-symbol"
-            onClick={() => changeZoomLevel(-10)}
-          />
+          <i className="flaticon-minus-symbol" onClick={() => changeZoomLevel(-10)} />
           {zoomLevel + '%'}
-          <i
-            className="flaticon-plus-symbol"
-            onClick={() => changeZoomLevel(10)}
-          />
+          <i className="flaticon-plus-symbol" onClick={() => changeZoomLevel(10)} />
         </div>
-      </div>
+      </DesignAreaHeader>
       <Scrollbars
         style={{ width: '100%', height: '100%' }}
         className="designArea"
         id="canvas"
-        ref={canvasRef as any}
+        // @ts-ignore
+        ref={canvasRef}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
       >
         <div
-          ref={wrapperRef}
           id="designAreaInner"
-          style={{ zoom: `${zoomLevel}%`, background: `${background_color}` }}
+          style={{ zoom: `${zoomLevel}%`, background: background_color }}
           className="designAreaInner"
-          onDragOver={(ev) => {
-            ev.preventDefault();
-          }}
+          onDragOver={(ev) => ev.preventDefault()}
+          // @ts-ignore
           onDrop={onDrop}
         >
           <ModulesCanvas
@@ -206,6 +187,6 @@ function Canvas({
       </Scrollbars>
     </>
   );
-}
+};
 
 export default Canvas;

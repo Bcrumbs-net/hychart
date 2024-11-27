@@ -2,17 +2,19 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Multiselect from 'multiselect-react-dropdown';
 import styled from 'styled-components';
 import useTagsEnumValuesQuery from '../../../bootstrapers/hychart/utils/useTagsEnumValuesQuery';
+import { useThemeContext } from '../../common/context/themeContext';
 
-const BCTagsInputWrapper = styled.div`
+const BCTagsInputWrapper = styled.div<{ rtl: boolean }>`
   display: flex;
   align-items: center;
   max-height: 50px;
   justify-content: flex-end;
+  ${({ rtl }) => (rtl ? 'direction:rtl;' : 'direction: ltr;')};
 
   input {
     height: 25px;
     width: auto;
-    padding: 8px 2px 20px 5px;
+    padding: 8px 8px 20px 0px;
     margin: 0;
     ::placeholder {
       color: #000;
@@ -43,7 +45,7 @@ const BCTagsInputWrapper = styled.div`
     position: fixed;
     z-index: 1000;
     width: 180px;
-    max-width:auto; 
+    max-width:auto;
     ul {
       border-radius: 10px;
       margin-top: -2px;
@@ -57,8 +59,8 @@ const BCTagsInputWrapper = styled.div`
         color: #000;
         font-size: 13px;
         background-color: #f3eded;
-        width: 400px;
-        padding: 9px 4px 9px 40px;
+        ${({ rtl }) => (rtl ? 'text-align:right;' : 'text-align: left;')};
+        width: 180px;
         display: block;
         cursor: pointer;
         height: 45px;
@@ -111,6 +113,10 @@ const TagsInput = ({
   selectedTags: any;
 }) => {
   const { enumValues } = useTagsEnumValuesQuery(403027);
+  const { lang, translationsMap } = useThemeContext();
+  const selectTags = translationsMap.get('header')?.selectTags;
+  const { rtl } = lang;
+
 
   const onAdd = useCallback(
     (selectedList, selectedItem) => {
@@ -139,7 +145,7 @@ const TagsInput = ({
   );
 
   return (
-    <BCTagsInputWrapper>
+    <BCTagsInputWrapper rtl={rtl}>
       <Multiselect
         options={enumValues?.map((enumValue) => ({ name: enumValue.value, id: enumValue.id }))}
         displayValue="name"
@@ -147,7 +153,7 @@ const TagsInput = ({
         onSelect={onAdd}
         selectionLimit={3}
         onRemove={onRemove}
-        placeholder="Select tags"
+        placeholder={selectTags}
       />
     </BCTagsInputWrapper >
   );

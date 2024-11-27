@@ -1,3 +1,4 @@
+import { useThemeContext } from '../../common/context/themeContext';
 import ModuleInfo from '../moduleBlocks/ModuleInfo';
 import { ChartType } from '../types';
 import Textbox from './textbox';
@@ -21,6 +22,9 @@ export default function Search({
   setSearch: (search: SearchType) => void;
   setShowSearch: (value: boolean) => void;
 }) {
+  const { translationsMap } = useThemeContext();
+  const WriteNodeName = translationsMap.get('searchBox')?.WriteNodeName;
+
   return (
     <>
       <div
@@ -38,7 +42,7 @@ export default function Search({
           currentVersion.nodes &&
           Object.keys(currentVersion.nodes).map((k) => {
             const m = currentVersion.nodes[k];
-            return { "id": m.id, "name": m.title}
+            return { "id": m.id, "name": m.title }
           })
         }
         maxLength={50}
@@ -46,7 +50,7 @@ export default function Search({
         onChange={(targetValue) => {
           setSearch({ value: targetValue, isValid: true, message: '' });
         }}
-        placeholder="Write node name"
+        placeholder={WriteNodeName}
         value={search.value}
         onListItemClick={focusModule}
       />
