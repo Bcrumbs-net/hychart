@@ -29,6 +29,7 @@ export async function getServerSideProps({ req, query }) {
     }
     contextId = await fetchContextId(targetDomain);
     contents = await fetchWebsiteContents(config, newPath);
+    
     // Logging the visit
     logWebsiteVisit(domain);
   } catch (ex) {
@@ -79,6 +80,7 @@ export const TemplateRouter = ({
   if (invalid) {
     return <Error statusCode={400} />;
   }
+  
   if (data[0] == null) {
     return <Error statusCode={404} />;
   }

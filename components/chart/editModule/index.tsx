@@ -15,7 +15,7 @@ import useTagsEnumValuesQuery from '../../../bootstrapers/hychart/utils/useTagsE
 import FieldRenderer from './FieldRenderer';
 import { ErrorToast, SuccessToast, ToastMessage } from '../../common/toasts';
 import { StyledDrawer } from '../../common/drawer';
-import { node } from 'prop-types';
+
 type DrawerProps = {
   module: NodeType;
   open: boolean;
