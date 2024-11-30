@@ -119,12 +119,16 @@ export default function Header({
   showModulesSearch,
   chartName,
   setEditMode,
-  editMode
+  editMode,
+  setSelectedTags,
+  selectedTags
 }: {
   showModulesSearch: (state: boolean) => void;
   chartName: string;
   setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
+  setSelectedTags: React.Dispatch<React.SetStateAction<[]>>;
   editMode: boolean;
+  selectedTags: any;
 }) {
   const { setHasToken, hasToken } = useTokenChecker();
   const colorValues = useContext(themeContext);
@@ -140,9 +144,11 @@ export default function Header({
     }
   };
   const handleEditModeChange = () => {
+    if (!auth.isAuthenticated()) {
+      handleLogin();
+    }
     setEditMode(() => !editMode);
   };
-
 
   const handleLogout = () => {
     try {
@@ -164,7 +170,10 @@ export default function Header({
       </div>
       <LeftSide>
         <div className="tagsInput-container">
-          <TagsInput />
+          <TagsInput
+            setSelectedTags={setSelectedTags}
+            selectedTags={selectedTags}
+          />
         </div>
         <div className="login-logout-container">
           {hasToken ? (

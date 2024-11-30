@@ -11,11 +11,12 @@ interface FieldRendererProps {
     enumValues?: { value: string; label: string }[];
     register?: any;
     getValues?: any;
-    setValue?: any
+    setValue?: any;
+    onChange: (value: any) => void;
 }
 const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 
-const FieldRenderer: React.FC<FieldRendererProps> = ({ field, enumValues, register, getValues, setValue }) => {
+const FieldRenderer: React.FC<FieldRendererProps> = ({ field, enumValues, onChange, register, getValues, setValue }) => {
     switch (field.Type) {
         case ModelFieldsTypes.Boolean:
             const booleanInitialValue = getValues(`${field.Id}`);
@@ -26,6 +27,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ field, enumValues, regist
                         type="checkbox"
                         {...register(`${field.Id}`)}
                         defaultChecked={booleanInitialValue}
+                        onChange={(e) => onChange(e.target.checked)}
                     />
                 </>
             );
@@ -44,6 +46,12 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ field, enumValues, regist
                                         {...register(`${field.Id}`)}
                                         value={option.value}
                                         defaultChecked={initialValue ? initialValue?.includes(option.value) ? true : false : false}
+                                        onChange={(e) => {
+                                            const newValues = e.target.checked
+                                                ? [...(initialValue || []), option.value]
+                                                : (initialValue || []).filter((val) => val !== option.value);
+                                            onChange(newValues);
+                                        }}
                                     />
                                     {option.value}
                                 </CheckboxLabel>
@@ -56,28 +64,41 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ field, enumValues, regist
             return (
                 <>
                     <Label>{field.Name}</Label>
-                    <Input {...register(`${field.Id}`)} type="text" placeholder={field.Name} />
+                    <Input
+                        {...register(`${field.Id}`)}
+                        type="text"
+                        onChange={(e) => onChange(e.target.value)}
+                        placeholder={field.Name}
+                    />
                 </>
             );
-        case ModelFieldsTypes.ContentUrl:
+        case ModelFieldsTypes.Image:
             return (
                 <>
                     <Label>{field.Name}</Label>
-                    <Input type="url"  {...register(`${field.Id}`)} placeholder={field.Name} />
+                    <Input
+                        {...register(`${field.Id}`)}
+                        type="text"
+                        onChange={(e) => onChange(e.target.value)}
+                        placeholder={field.Name} />
                 </>
             );
         case ModelFieldsTypes.Number:
             return (
                 <>
                     <Label>{field.Name}</Label>
-                    <Input type="number"  {...register(`${field.Id}`)} placeholder={field.Name} />
+                    <Input
+                        type="number"
+                        {...register(`${field.Id}`)}
+                        onChange={(e) => onChange(Number(e.target.value))}
+                        placeholder={field.Name} />
                 </>
             );
         case ModelFieldsTypes.PredefinedList:
             return (
                 <>
                     <Label>{field.Name}</Label>
-                    <Select  {...register(`${field.Id}`)}>
+                    <Select  {...register(`${field.Id}`)} onChange={(e) => onChange(e.target.value)}>
                         <option key="Person" value="Person">
                             Person
                         </option>
@@ -109,10 +130,16 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ field, enumValues, regist
             return (
                 <>
                     <Label>{field.Name}</Label>
-                    <Input type={field.Type}  {...register(`${field.Id}`)} placeholder={field.Name} />
+                    <Input
+                        type={field.Type}
+                        onChange={(e) => onChange(e.target.value)}
+                        {...register(`${field.Id}`)}
+                        placeholder={field.Name} />
                 </>
             );
+
     }
+    return null;
 };
 
 export default FieldRenderer;

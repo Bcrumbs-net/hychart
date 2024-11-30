@@ -8,6 +8,7 @@ export type ModulesCanvasProps = {
   selectModule: SelectModuleFunc;
   editMode: boolean;
   setInfoToCreateChild: React.Dispatch<React.SetStateAction<NodeInformationType>>;
+  highlightedNodes: number[]
 
 };
 
@@ -16,7 +17,8 @@ function ModulesCanvas({
   editMode,
   selectedModules,
   selectModule,
-  setInfoToCreateChild
+  setInfoToCreateChild,
+  highlightedNodes
 }: ModulesCanvasProps) {
   if (currentVersion === undefined || currentVersion.nodes === undefined)
     return null;
@@ -34,6 +36,7 @@ function ModulesCanvas({
             module={m}
             selectModule={selectModule}
             setInfoToCreateChild={setInfoToCreateChild}
+            highlighted={highlightedNodes?.length == 0 || highlightedNodes?.includes(m.id)}
           />
         );
       })}

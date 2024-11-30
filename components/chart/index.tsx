@@ -38,12 +38,13 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
     parentX: 0,
     parentY: 0,
   });
+  const [highlightedNodes, setHighlightedNodes] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
 
   const colorValues: ColorValues = rootContent.data.reduce((acc, curr) => {
     acc[curr.Key as keyof ColorValues] = curr.Value;
     return acc;
   }, {} as ColorValues);
-
   const shortcutHandlers = {
     SEARCH: () => {
       setShowSearch(true);
@@ -180,13 +181,44 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
     setCurrentVersion(originVersion);
   }, [data, setCurrentVersion]);
 
+  const handleNodeUpdate = (id: number, fieldName: string, value: string | number | []) => {
+    const fieldMapping = {
+      x_position: 'x',
+      y_position: 'y',
+      top_text: 'city',
+      bottom_text: 'sub_title',
+    };
+
+    const updatedFieldName = fieldMapping[fieldName] || fieldName;
+    const nodeToUpdate = Object.values(currentVersion.nodes).find((node) => node.id === id);
+    if (nodeToUpdate) {
+      setCurrentVersion((prev) => ({
+        ...prev,
+        nodes: {
+          ...prev.nodes,
+          [nodeToUpdate.id]: {
+            ...nodeToUpdate,
+            [updatedFieldName]: value,
+          },
+        },
+      }));
+    } else {
+      console.log('Node not found for update:', id);
+    }
+  };
+
+  const addNewModule = () => {
+    setInfoToCreateChild({
+      parentId: rootContent.id,
+    })
+  }
+
   useEffect(() => {
     auth.setContext(contextId);
   }, []);
 
   useEffect(() => {
     const { editMode: queryEditMode } = router.query;
-
     if (queryEditMode) {
       const isEditMode = Array.isArray(queryEditMode)
         ? queryEditMode[0] === 'true'
@@ -208,6 +240,25 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
       );
     }
   }, [router.query]);
+  useEffect(() => {
+    if (selectedTags.length > 0) {
+      const arrayOfNodes = Object.keys(currentVersion.nodes).map(
+        (key) => currentVersion.nodes[key]
+      );
+      const matchedNodes = arrayOfNodes.filter(node => {
+        if (node.tags) {
+          const nodeTagsArray = node.tags.split(',').map(tag => tag.trim());
+          return selectedTags.some(tag => nodeTagsArray.includes(tag.name));
+        }
+        return false;
+      });
+      const matchedNodeIds = matchedNodes.map(node => node.id);
+      setHighlightedNodes(matchedNodeIds);
+    }
+    else {
+      setHighlightedNodes([]);
+    }
+  }, [selectedTags, currentVersion.nodes]);
 
   useEffect(() => {
     const queryParams = parse(window.location.search);
@@ -219,12 +270,6 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
     }
 
   }, [focusModule]);
-
-  const addNewModule = () => {
-    setInfoToCreateChild({
-      parentId: rootContent.id,
-    })
-  }
 
   useEffect(() => {
     const queryParams = parse(window.location.search);
@@ -246,6 +291,8 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
             chartName={rootContent.title}
             editMode={editMode}
             setEditMode={setEditMode}
+            setSelectedTags={setSelectedTags}
+            selectedTags={selectedTags}
           />
           <div className="designer">
             <Canvas
@@ -260,6 +307,7 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
               organizeModules={organizeModules}
               changeZoomLevel={changeZoomLevel}
               setInfoToCreateChild={setInfoToCreateChild}
+              highlightedNodes={highlightedNodes}
             />
           </div>
         </colorContext.Provider>
@@ -269,6 +317,7 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
             module={selectedModule}
             open={!!selectedModule && selectedModules.length === 1}
             onClose={() => setSelectedModule(undefined)}
+            onNodeUpdate={handleNodeUpdate}
           />
         ) :
           <DescriptionDrawer
@@ -302,7 +351,6 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
         ) : null}
       </div>
     </HotKeys >
-
   );
 }
 

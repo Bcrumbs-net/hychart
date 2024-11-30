@@ -5,13 +5,15 @@ import styled, { css } from 'styled-components';
 import { FaPlusCircle } from 'react-icons/fa';
 import { auth } from '@bcrumbs.net/bc-api';
 import themeContext from '../../common/context/themeContext';
+import { DEFAULT_X_PADDING, DEFAULT_Y_PADDING } from '../Constants';
 
 interface ModuleProps {
   module: NodeType;
   selectModule: SelectModuleFunc;
   isSelected: boolean;
-  editMode: boolean;
+  editMode: boolean
   setInfoToCreateChild: React.Dispatch<React.SetStateAction<NodeInformationType>>;
+  highlighted: boolean;
 }
 
 interface ModuleContainerProps {
@@ -101,7 +103,7 @@ const IconContainer = styled.button`
   background-color: transparent;
   padding:0px;
 `
-function Module({ editMode, module, selectModule, setInfoToCreateChild, isSelected }: ModuleProps) {
+function Module({ editMode, module, highlighted, selectModule, setInfoToCreateChild, isSelected }: ModuleProps) {
   const moduleName = module.title || ModuleInfo.getModuleName(module.type);
   const onDragStart = useCallback((id, ev) => {
     ev.dataTransfer.setData('dragType', 'moveModule');
@@ -120,13 +122,13 @@ function Module({ editMode, module, selectModule, setInfoToCreateChild, isSelect
       parentY: module.y,
     })
   };
-
+  const opacityStyle = highlighted ? 1 : 0.2;
   return (
     <>
       {typeof window !== 'undefined' && auth?.isAuthenticated() && editMode ? (
         <IconContainer
           className="custom-icon-class"
-          style={{ top: module.y + 50, left: module.x + 75, zIndex: module.id }}
+          style={{ top: module.y + DEFAULT_Y_PADDING + 50, left: module.x + DEFAULT_X_PADDING + 75, zIndex: module.id }}
           onDragStart={(ev) => onDragStart(module.id, ev)}
           onClick={handleAddChild}>
           <FaPlusCircle color="#699041" />
@@ -136,7 +138,7 @@ function Module({ editMode, module, selectModule, setInfoToCreateChild, isSelect
         textColor={text_color}
         nodeColor={node_color}
         isIconModule={!!module.icon}
-        style={{ top: module.y, left: module.x, zIndex: module.id }}
+        style={{ top: module.y + DEFAULT_Y_PADDING, left: module.x + DEFAULT_X_PADDING, zIndex: module.id, opacity: opacityStyle }}
         onDragStart={(ev) => onDragStart(module.id, ev)}
         onClick={(e) => {
           e.stopPropagation();
