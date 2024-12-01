@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { HotKeys } from 'react-hotkeys';
 import { Config, GraphContent, auth } from '@bcrumbs.net/bc-api';
-import { DEFAULT_X_PADDING, DEFAULT_Y_PADDING, SHORTCUT_KEYS } from './Constants';
+import { SHORTCUT_KEYS } from './Constants';
 import Canvas from './canvas';
 import Header from './header';
 import Search, { SearchType } from './search';

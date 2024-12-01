@@ -16,6 +16,7 @@ import FieldRenderer from './FieldRenderer';
 import { ErrorToast, SuccessToast, ToastMessage } from '../../common/toasts';
 import { StyledDrawer } from '../../common/drawer';
 import { useThemeContext } from '../../common/context/themeContext';
+import { fetchTranslations } from '../../../bootstrapers/hychart/utils/fetchTranslations';
 
 type DrawerProps = {
   module: NodeType;
@@ -59,9 +60,10 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, onNodeUpda
     },
   ] = useUpdateContentInstanceFieldValuesMutation();
   const { control, handleSubmit, formState: { errors }, register, setValue, getValues } = useForm<any>();
-  const { lang, translationsMap } = useThemeContext();
-  const { rtl } = lang;
-  const edit = translationsMap.get('editForm')?.edit;
+  const { lang } = useThemeContext();
+  const rtl = lang.rtl;
+  const [translations, setTranslations] = useState<Record<string, string | Record<string, string>> | null>(null);
+
 
   const targetModel = useMemo(() => {
     if (modelsResult?.viewTypes) {
@@ -94,6 +96,20 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, onNodeUpda
       });
     }
   }, [data, targetModel]);
+
+  useEffect(() => {
+    const loadTranslations = async () => {
+      const fetchedTranslations = await fetchTranslations(lang.Name);
+      setTranslations(fetchedTranslations);
+    };
+    loadTranslations();
+  }, [lang.Name]);
+
+  if (!translations) {
+    return <div>Loading...</div>;
+  }
+  const editTranslations = translations['editForm'] as Record<string, string>;
+  const edit = editTranslations.edit;
 
   const handleFieldChange = (fieldName: string, value: number | string | []) => {
     onNodeUpdate(module.id, fieldName, value);

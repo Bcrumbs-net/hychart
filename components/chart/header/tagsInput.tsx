@@ -3,6 +3,7 @@ import Multiselect from 'multiselect-react-dropdown';
 import styled from 'styled-components';
 import useTagsEnumValuesQuery from '../../../bootstrapers/hychart/utils/useTagsEnumValuesQuery';
 import { useThemeContext } from '../../common/context/themeContext';
+import { fetchTranslations } from '../../../bootstrapers/hychart/utils/fetchTranslations';
 
 const BCTagsInputWrapper = styled.div<{ rtl: boolean }>`
   display: flex;
@@ -113,10 +114,9 @@ const TagsInput = ({
   selectedTags: any;
 }) => {
   const { enumValues } = useTagsEnumValuesQuery(403027);
-  const { lang, translationsMap } = useThemeContext();
-  const selectTags = translationsMap.get('header')?.selectTags;
+  const { lang } = useThemeContext();
+  const [translations, setTranslations] = useState<Record<string, string | Record<string, string>> | null>(null);
   const { rtl } = lang;
-
 
   const onAdd = useCallback(
     (selectedList, selectedItem) => {
@@ -143,6 +143,20 @@ const TagsInput = ({
     },
     [selectedTags]
   );
+
+  useEffect(() => {
+    const loadTranslations = async () => {
+      const fetchedTranslations = await fetchTranslations(lang.Name);
+      setTranslations(fetchedTranslations);
+    };
+    loadTranslations();
+  }, [lang.Name]);
+
+  if (!translations) {
+    return <div>Loading...</div>;
+  }
+  const headerTranslations = translations['header'] as Record<string, string>;
+  const selectTags = headerTranslations.selectTags;
 
   return (
     <BCTagsInputWrapper rtl={rtl}>

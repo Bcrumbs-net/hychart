@@ -1,11 +1,12 @@
 import 'react-tagsinput/react-tagsinput.css';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import TagsInput from './tagsInput';
 import Switch from "react-switch";
 import { auth } from '@bcrumbs.net/bc-api';
 import { useTokenChecker } from '../../../bootstrapers/hychart/utils';
 import { useThemeContext } from '../../common/context/themeContext';
+import { fetchTranslations } from '../../../bootstrapers/hychart/utils/fetchTranslations';
 
 const HeaderWapper = styled.div<{ headerColor: string, rtl: boolean }>`
   width: 100%;
@@ -114,14 +115,27 @@ export default function Header({
   selectedTags: any;
 }) {
   const { setHasToken, hasToken } = useTokenChecker();
-  const { lang, themeColors, translationsMap } = useThemeContext();
+  const { lang, themeColors } = useThemeContext();
   const { headers_color } = themeColors;
-  const { rtl } = lang;
-  const login = translationsMap.get('header')?.login;
-  const logout = translationsMap.get('header')?.logout;
-  const SearchNodes = translationsMap.get('header')?.SearchNodes;
+  const rtl = lang.rtl;
+  const [translations, setTranslations] = useState<Record<string, string | Record<string, string>> | null>(null);
 
+  useEffect(() => {
+    const loadTranslations = async () => {
+      const fetchedTranslations = await fetchTranslations(lang.Name);
+      setTranslations(fetchedTranslations);
+    };
+    loadTranslations();
+  }, [lang.Name]);
 
+  if (!translations) {
+    return <div>Loading...</div>;
+  }
+  const headerTranslations = translations['header'] as Record<string, string>;
+  const login = headerTranslations.login;
+  const logout = headerTranslations.logout;
+  const searchNodes = headerTranslations.SearchNodes;
+  const selectTags = headerTranslations.selectTags;
 
   const handleLogin = () => {
     if (typeof window !== 'undefined') {
@@ -154,7 +168,7 @@ export default function Header({
       <div className="search-btn">
         <button type="button" onClick={() => showModulesSearch(true)}>
           <i className="flaticon-magnifying-glass"></i>{' '}
-          <span className="translate">{SearchNodes}</span>
+          <span className="translate">{searchNodes}</span>
         </button>
       </div>
       <LeftSide rtl={rtl}>
