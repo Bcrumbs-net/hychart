@@ -4,7 +4,10 @@ export const fetchTranslations = async (
   let translations: Record<string, string | Record<string, string>> = {};
 
   try {
-    const response = await fetch(`/assets/locales/${lang}.json`);
+    const baseUrl = "http://localhost:3000";
+    const url = `${baseUrl}/assets/locales/${lang}.json`;
+
+    const response = await fetch(url);
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }

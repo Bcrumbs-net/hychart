@@ -114,8 +114,7 @@ const TagsInput = ({
   selectedTags: any;
 }) => {
   const { enumValues } = useTagsEnumValuesQuery(403027);
-  const { lang } = useThemeContext();
-  const [translations, setTranslations] = useState<Record<string, string | Record<string, string>> | null>(null);
+  const { lang, translations } = useThemeContext();
   const { rtl } = lang;
 
   const onAdd = useCallback(
@@ -143,18 +142,6 @@ const TagsInput = ({
     },
     [selectedTags]
   );
-
-  useEffect(() => {
-    const loadTranslations = async () => {
-      const fetchedTranslations = await fetchTranslations(lang.Name);
-      setTranslations(fetchedTranslations);
-    };
-    loadTranslations();
-  }, [lang.Name]);
-
-  if (!translations) {
-    return <div>Loading...</div>;
-  }
   const headerTranslations = translations['header'] as Record<string, string>;
   const selectTags = headerTranslations.selectTags;
 

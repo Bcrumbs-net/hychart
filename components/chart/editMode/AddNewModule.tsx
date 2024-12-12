@@ -8,7 +8,6 @@ import { SuccessToast, ToastMessage, ErrorToast } from '../../common/toasts';
 import { ChartType, NodeInformationType, NodeType, SelectModuleFunc } from '../types';
 import createBlankNode from '../createBlankNode';
 import { useThemeContext } from '../../common/context/themeContext';
-import { fetchTranslations } from '../../../bootstrapers/hychart/utils/fetchTranslations';
 
 interface AddNewModuleProps {
   onClick?: () => void;
@@ -122,26 +121,14 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, infoToCreateChild,
     createContentMutation,
     { data: createContentData, error: createContentError, loading: creatingContentLoading },
   ] = useCreateContentMutation();
-  const { lang } = useThemeContext();
+  const { lang, translations } = useThemeContext();
   const rtl = lang.rtl;
-  const [translations, setTranslations] = useState<Record<string, string | Record<string, string>> | null>(null);
   const [
     createContentInstanceMutation,
     { data: createContentInstanceData, error: createContentInstanceError, loading: creatingContentInsLoading },
   ] = useCreateContentInstanceMutation();
   const { control, handleSubmit, register, setValue } = useForm<any>();
 
-  useEffect(() => {
-    const loadTranslations = async () => {
-      const fetchedTranslations = await fetchTranslations(lang.Name);
-      setTranslations(fetchedTranslations);
-    };
-    loadTranslations();
-  }, [lang.Name]);
-
-  if (!translations) {
-    return <div>Loading...</div>;
-  }
   const createTranslations = translations['createForm'] as Record<string, string>;
   const createNewNode = createTranslations.createNewNode;
   const name = createTranslations.name;

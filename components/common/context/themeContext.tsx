@@ -1,4 +1,3 @@
-import path from 'path';
 import React, { createContext, useContext, useState } from 'react';
 
 type ColorValues = {
@@ -12,13 +11,13 @@ type ColorValues = {
 };
 
 type LangValues = {
-  Name: string; // Language name (e.g., "English", "Arabic")
-  rtl: boolean; // Indicates if the language is right-to-left
+  rtl: boolean;
 };
 
 type ThemeContextValues = {
   themeColors?: ColorValues;
   lang: LangValues;
+  translations: Record<string, string | Record<string, string>> | null;
 };
 
 const themeContext = createContext<ThemeContextValues | undefined>(undefined);
@@ -31,10 +30,11 @@ export function useThemeContext() {
   return context;
 }
 
-export function ThemeProvider({ children, rootContent, lang }: {
+export function ThemeProvider({ children, rootContent, lang, translations }: {
   children: React.ReactNode;
   rootContent: { data: Array<{ Key: string; Value: string }> };
   lang: string;
+  translations: Record<string, string | Record<string, string>> | null;
 }) {
   const colorValues: ColorValues = rootContent.data.reduce((acc, curr) => {
     acc[curr.Key as keyof ColorValues] = curr.Value;
@@ -42,11 +42,11 @@ export function ThemeProvider({ children, rootContent, lang }: {
   }, {} as ColorValues);
 
   const [rtl] = useState(lang === 'AR');
-  const langName = lang === 'AR' ? 'ar' : 'en';
 
   const value = {
     themeColors: colorValues,
-    lang: { rtl, Name: langName },
+    lang: { rtl },
+    translations,
   };
 
   return <themeContext.Provider value={value}>{children}</themeContext.Provider>;

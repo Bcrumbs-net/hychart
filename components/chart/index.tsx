@@ -280,71 +280,69 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
   return (
     //@ts-ignore
     <HotKeys keyMap={SHORTCUT_KEYS} handlers={shortcutHandlers}>
-      <ThemeProvider rootContent={rootContent} lang={config.lang}>
-        <div className="chart" id="chart">
-          <Header
-            showModulesSearch={setShowSearch}
-            chartName={rootContent.title}
+      <div className="chart" id="chart">
+        <Header
+          showModulesSearch={setShowSearch}
+          chartName={rootContent.title}
+          editMode={editMode}
+          setEditMode={setEditMode}
+          setSelectedTags={setSelectedTags}
+          selectedTags={selectedTags}
+        />
+        <div className="designer">
+          <Canvas
             editMode={editMode}
-            setEditMode={setEditMode}
-            setSelectedTags={setSelectedTags}
-            selectedTags={selectedTags}
+            zoomLevel={zoomLevel}
+            moveModule={moveModule}
+            selectModule={selectModule}
+            currentVersion={currentVersion}
+            selectedModules={selectedModules}
+            focusNode={focusNode}
+            deselectModules={deselectModules}
+            organizeModules={organizeModules}
+            changeZoomLevel={changeZoomLevel}
+            setInfoToCreateChild={setInfoToCreateChild}
+            highlightedNodes={highlightedNodes}
           />
-          <div className="designer">
-            <Canvas
-              editMode={editMode}
-              zoomLevel={zoomLevel}
-              moveModule={moveModule}
-              selectModule={selectModule}
-              currentVersion={currentVersion}
-              selectedModules={selectedModules}
-              focusNode={focusNode}
-              deselectModules={deselectModules}
-              organizeModules={organizeModules}
-              changeZoomLevel={changeZoomLevel}
-              setInfoToCreateChild={setInfoToCreateChild}
-              highlightedNodes={highlightedNodes}
-            />
-          </div>
-          {hasToken && editMode ? (
-            <EditDrawer
-              module={selectedModule}
-              open={!!selectedModule && selectedModules.length === 1}
-              onClose={() => setSelectedModule(undefined)}
-              onNodeUpdate={handleNodeUpdate}
-            />
-          ) :
-            <DescriptionDrawer
-              module={selectedModule}
-              open={!!selectedModule && selectedModules.length === 1}
-              onClose={() => setSelectedModule(undefined)}
-            >
-              <div
-                dangerouslySetInnerHTML={{ __html: selectedModule?.description }}
-              />
-            </DescriptionDrawer>
-          }
-          {showSearch ? (
-            <Search
-              currentVersion={currentVersion}
-              search={search}
-              focusModule={focusModule}
-              setSearch={setSearch}
-              setShowSearch={setShowSearch}
-            />
-          ) : null}
-          {typeof window !== 'undefined' && auth?.isAuthenticated() && editMode ? (
-            <AddNewModule
-              selectModule={selectModule}
-              onClick={addNewModule}
-              setInfoToCreateChild={setInfoToCreateChild}
-              infoToCreateChild={infoToCreateChild}
-              currentVersion={currentVersion}
-              setCurrentVersion={setCurrentVersion}
-            />
-          ) : null}
         </div>
-      </ThemeProvider>
+        {hasToken && editMode ? (
+          <EditDrawer
+            module={selectedModule}
+            open={!!selectedModule && selectedModules.length === 1}
+            onClose={() => setSelectedModule(undefined)}
+            onNodeUpdate={handleNodeUpdate}
+          />
+        ) :
+          <DescriptionDrawer
+            module={selectedModule}
+            open={!!selectedModule && selectedModules.length === 1}
+            onClose={() => setSelectedModule(undefined)}
+          >
+            <div
+              dangerouslySetInnerHTML={{ __html: selectedModule?.description }}
+            />
+          </DescriptionDrawer>
+        }
+        {showSearch ? (
+          <Search
+            currentVersion={currentVersion}
+            search={search}
+            focusModule={focusModule}
+            setSearch={setSearch}
+            setShowSearch={setShowSearch}
+          />
+        ) : null}
+        {typeof window !== 'undefined' && auth?.isAuthenticated() && editMode ? (
+          <AddNewModule
+            selectModule={selectModule}
+            onClick={addNewModule}
+            setInfoToCreateChild={setInfoToCreateChild}
+            infoToCreateChild={infoToCreateChild}
+            currentVersion={currentVersion}
+            setCurrentVersion={setCurrentVersion}
+          />
+        ) : null}
+      </div>
     </HotKeys >
   );
 }

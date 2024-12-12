@@ -1,7 +1,4 @@
-import { useEffect, useState } from 'react';
-import { fetchTranslations } from '../../../bootstrapers/hychart/utils/fetchTranslations';
 import { useThemeContext } from '../../common/context/themeContext';
-import ModuleInfo from '../moduleBlocks/ModuleInfo';
 import { ChartType } from '../types';
 import Textbox from './textbox';
 
@@ -24,20 +21,7 @@ export default function Search({
   setSearch: (search: SearchType) => void;
   setShowSearch: (value: boolean) => void;
 }) {
-  const { lang } = useThemeContext();
-  const [translations, setTranslations] = useState<Record<string, string | Record<string, string>> | null>(null);
-
-  useEffect(() => {
-    const loadTranslations = async () => {
-      const fetchedTranslations = await fetchTranslations(lang.Name);
-      setTranslations(fetchedTranslations);
-    };
-    loadTranslations();
-  }, [lang.Name]);
-
-  if (!translations) {
-    return <div>Loading...</div>;
-  }
+  const { translations } = useThemeContext();
   const searchTranslations = translations['searchBox'] as Record<string, string>;
   const WriteNodeName = searchTranslations.WriteNodeName;
 

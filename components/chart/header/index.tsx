@@ -6,7 +6,6 @@ import Switch from "react-switch";
 import { auth } from '@bcrumbs.net/bc-api';
 import { useTokenChecker } from '../../../bootstrapers/hychart/utils';
 import { useThemeContext } from '../../common/context/themeContext';
-import { fetchTranslations } from '../../../bootstrapers/hychart/utils/fetchTranslations';
 
 const HeaderWapper = styled.div<{ headerColor: string, rtl: boolean }>`
   width: 100%;
@@ -43,7 +42,7 @@ const HeaderWapper = styled.div<{ headerColor: string, rtl: boolean }>`
         color: var(--bc-secondary-light-hover);
         position: absolute;
         left: 10px;
-        top: 5px;
+        top: 17px;
       }
     }
     position: absolute;
@@ -115,22 +114,10 @@ export default function Header({
   selectedTags: any;
 }) {
   const { setHasToken, hasToken } = useTokenChecker();
-  const { lang, themeColors } = useThemeContext();
+  const { lang, themeColors, translations } = useThemeContext();
   const { headers_color } = themeColors;
   const rtl = lang.rtl;
-  const [translations, setTranslations] = useState<Record<string, string | Record<string, string>> | null>(null);
 
-  useEffect(() => {
-    const loadTranslations = async () => {
-      const fetchedTranslations = await fetchTranslations(lang.Name);
-      setTranslations(fetchedTranslations);
-    };
-    loadTranslations();
-  }, [lang.Name]);
-
-  if (!translations) {
-    return <div>Loading...</div>;
-  }
   const headerTranslations = translations['header'] as Record<string, string>;
   const login = headerTranslations.login;
   const logout = headerTranslations.logout;
@@ -168,7 +155,7 @@ export default function Header({
       <div className="search-btn">
         <button type="button" onClick={() => showModulesSearch(true)}>
           <i className="flaticon-magnifying-glass"></i>{' '}
-          <span className="translate">{searchNodes}</span>
+          <span>{searchNodes}</span>
         </button>
       </div>
       <LeftSide rtl={rtl}>
