@@ -1,17 +1,20 @@
+import path from "path";
+import fs from "fs";
+
 export const fetchTranslations = async (
   lang: string
 ): Promise<Record<string, string | Record<string, string>>> => {
   let translations: Record<string, string | Record<string, string>> = {};
 
   try {
-    const baseUrl = "http://localhost:3000";
-    const url = `${baseUrl}/assets/locales/${lang}.json`;
+    const filePath = path.join(
+      process.cwd(),
+      `public/assets/locales/${lang}.json`
+    );
 
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    translations = await response.json();
+    const fileContents = fs.readFileSync(filePath, "utf8");
+
+    translations = JSON.parse(fileContents);
   } catch (error) {
     console.error("Error fetching translations:", error);
   }
