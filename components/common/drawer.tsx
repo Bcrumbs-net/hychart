@@ -1,12 +1,22 @@
 import styled from "styled-components";
 
-export const StyledDrawer = styled.div`
+export const StyledDrawer = styled.div<{ rtl?: boolean }>`
   position: fixed;
   padding-left: 20px;
   padding-right: 20px;
   top: 38px;
-  bottom: 0;
-  right: 0;
+  bottom: 0; 
+  ${({ rtl }) => (
+    rtl
+      ? `
+          direction: rtl;
+          left: 0;
+        `
+      : `
+          direction: ltr;
+          right: 0;
+        `
+  )};
   max-width: 50vw;
   width: 25vw;
   background-color: #eee6dbf7;
@@ -15,8 +25,6 @@ export const StyledDrawer = styled.div`
   transition: transform 0.3s ease-in-out, overflow-y 0.3s ease-in-out,
     max-height 0.3s ease-in-out, padding-bottom 0.3s ease-in-out;
   z-index: 1050;
-  direction: ${({ lang }) =>
-        lang === null || lang === 'en' ? 'ltr' : 'rtl'};
 
   .header {
     display: flex;
@@ -31,8 +39,17 @@ export const StyledDrawer = styled.div`
           width: 20px;
           height: 20px;
           cursor: pointer;
-          margin-left: ${({ lang }) => (lang === null || lang === 'en' ? '20px' : '0')};
-          margin-right: ${({ lang }) => (lang === null || lang === 'en' ? '0' : '10px')};
+      ${({ rtl }) => (
+    rtl
+      ? `
+              margin-right: 10px;
+              margin-left: 120px;
+            `
+      : `
+              margin-left: 20px;
+              margin-right: 10px;
+            `
+  )};
       }
     .closeIcon {
       width: 40px;
@@ -42,7 +59,6 @@ export const StyledDrawer = styled.div`
     }
   }
   
- 
   .sub_title {
     margin-top:-5px;
     font-size: 18px;
@@ -64,8 +80,6 @@ export const StyledDrawer = styled.div`
     border-radius: 20px;
   }
   &.show {
-    direction: ${({ lang }) =>
-        lang === null || lang === 'en' ? 'ltr' : 'rtl'};
     transform: translateX(0);
     overflow-y: auto;
     max-height: 100%;

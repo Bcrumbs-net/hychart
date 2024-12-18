@@ -1,6 +1,6 @@
 body {
-  margin: 0;
-  padding: 0;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 .chart {
@@ -12,6 +12,7 @@ body {
     height: calc(100vh - 50px);
     position: relative;
     z-index: 5;
+    margin-bottom: 0px !important;
   }
 
   .floatingModulesSearchBoxCon {
@@ -114,35 +115,6 @@ body {
 
   .hideCom {
     display: none;
-  }
-}
-
-.designAreadHeader {
-  background-color: var(--mb-module-background);
-  height: 50px;
-  position: absolute;
-  z-index: 500000;
-  top: 0;
-  left: 0;
-  width: 97%;
-
-  .zoomLevelSelector {
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    padding: 5px 10px 8px;
-    background-color: #fff;
-    position: absolute;
-    right: 10px;
-    bottom: 10px;
-    font-weight: 500;
-    line-height: 10px;
-    font-size: 14px;
-    i {
-      margin: 0 5px;
-      cursor: pointer;
-      margin-bottom: -10px;
-      font-size: 14px;
-    }
   }
 }
 

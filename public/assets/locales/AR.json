@@ -1,0 +1,21 @@
+{
+  "header": {
+    "SearchNodes": "البحث عن العقد",
+    "selectTags": "اختيار العلامات",
+    "IslamicScholars": "علماء الإسلام",
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج"
+  },
+  "searchBox": {
+    "WriteNodeName": "اكتب اسم العقدة"
+  },
+  "createForm": {
+    "createNewNode": "إنشاء عقدة جديد",
+    "name": "الاسم",
+    "nameOfNode": "اسم العقدة",
+    "create": "إنشاء"
+  },
+  "editForm": {
+    "edit": "تعديل"
+  }
+}
