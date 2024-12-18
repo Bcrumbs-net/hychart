@@ -3,8 +3,8 @@
     "SearchNodes": "Search Nodes",
     "selectTags": "select tags",
     "IslamicScholars": "Islamic scholars",
-    "Login": "login",
-    "Logout": "logout"
+    "login": "login",
+    "logout": "logout"
   },
   "searchBox": {
     "WriteNodeName": "write node name"
