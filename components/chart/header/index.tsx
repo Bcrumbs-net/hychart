@@ -134,9 +134,6 @@ export default function Header({
     }
   };
   const handleEditModeChange = () => {
-    if (!auth.isAuthenticated()) {
-      handleLogin();
-    }
     setEditMode(() => !editMode);
   };
 
