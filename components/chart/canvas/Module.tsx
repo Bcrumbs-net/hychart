@@ -4,13 +4,14 @@ import { NodeInformationType, NodeType, SelectModuleFunc } from '../types';
 import styled, { css } from 'styled-components';
 import { FaPlusCircle } from 'react-icons/fa';
 import { auth } from '@bcrumbs.net/bc-api';
-import themeContext from '../../common/context/themeContext';
+import { useThemeContext } from '../../common/context/themeContext';
+import { DEFAULT_X_PADDING, DEFAULT_Y_PADDING } from '../Constants';
 
 interface ModuleProps {
   module: NodeType;
   selectModule: SelectModuleFunc;
   isSelected: boolean;
-  editMode: boolean;
+  editMode: boolean
   setInfoToCreateChild: React.Dispatch<React.SetStateAction<NodeInformationType>>;
   highlighted: boolean;
 }
@@ -110,9 +111,9 @@ function Module({ editMode, module, highlighted, selectModule, setInfoToCreateCh
     ev.dataTransfer.setData('clientX', ev.clientX);
     ev.dataTransfer.setData('clientY', ev.clientY);
   }, []);
-  const colorValues = useContext(themeContext);
-  const { node_color } = colorValues;
-  const { text_color } = colorValues;
+  const { themeColors } = useThemeContext();
+  const { node_color } = themeColors;
+  const { text_color } = themeColors;
 
   const handleAddChild = () => {
     setInfoToCreateChild({
@@ -127,7 +128,7 @@ function Module({ editMode, module, highlighted, selectModule, setInfoToCreateCh
       {typeof window !== 'undefined' && auth?.isAuthenticated() && editMode ? (
         <IconContainer
           className="custom-icon-class"
-          style={{ top: module.y + 50, left: module.x + 75, zIndex: module.id }}
+          style={{ top: module.y + DEFAULT_Y_PADDING + 50, left: module.x + DEFAULT_X_PADDING + 75, zIndex: module.id }}
           onDragStart={(ev) => onDragStart(module.id, ev)}
           onClick={handleAddChild}>
           <FaPlusCircle color="#699041" />
@@ -137,7 +138,7 @@ function Module({ editMode, module, highlighted, selectModule, setInfoToCreateCh
         textColor={text_color}
         nodeColor={node_color}
         isIconModule={!!module.icon}
-        style={{ top: module.y, left: module.x, zIndex: module.id, opacity: opacityStyle }}
+        style={{ top: module.y + DEFAULT_Y_PADDING, left: module.x + DEFAULT_X_PADDING, zIndex: module.id, opacity: opacityStyle }}
         onDragStart={(ev) => onDragStart(module.id, ev)}
         onClick={(e) => {
           e.stopPropagation();

@@ -1,8 +1,8 @@
-import React, { useContext, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import ModuleConnection from './Connection';
-import { BLOCK_HEIGHT, BLOCK_WIDTH } from '../Constants';
+import { BLOCK_HEIGHT, BLOCK_WIDTH, DEFAULT_X_PADDING, DEFAULT_Y_PADDING } from '../Constants';
 import { ChartType } from '../types';
-import themeContext from '../../common/context/themeContext';
+import { useThemeContext } from '../../common/context/themeContext';
 
 export type ConnectionsCanvasProps = {
   currentVersion: ChartType;
@@ -13,10 +13,11 @@ function ConnectionsCanvas({
   currentVersion,
   selectedModules,
 }: ConnectionsCanvasProps) {
+
   const selectedModule = selectedModules[0];
-  const colorValues = useContext(themeContext);
-  const { child_active_connection_color } = colorValues;
-  const { parent_active_connection_color } = colorValues;
+  const { themeColors } = useThemeContext();
+  const { child_active_connection_color } = themeColors;
+  const { parent_active_connection_color } = themeColors;
 
   const connectionList = useMemo(() => {
     const connectionList = [];
@@ -39,10 +40,10 @@ function ConnectionsCanvas({
         connectionList.push({
           fromID: fromID,
           toID: toID,
-          fromX: fromNode.x + BLOCK_WIDTH - 8, // x coordinate of origin of arrow
-          fromY: fromNode.y + (i + 1) * (BLOCK_HEIGHT * 0.6 / (numberOfFromConn + 1)) + 20, // y coordinate of origin of arrow
-          toX: toNode.x, // x coordinate of target of arrow
-          toY: toNode.y + BLOCK_HEIGHT / 2, // y coordinate of target of arrow
+          fromX: fromNode.x + DEFAULT_X_PADDING + BLOCK_WIDTH - 8, // x coordinate of origin of arrow
+          fromY: fromNode.y + DEFAULT_Y_PADDING + (i + 1) * (BLOCK_HEIGHT * 0.6 / (numberOfFromConn + 1)) + 20, // y coordinate of origin of arrow
+          toX: toNode.x + DEFAULT_X_PADDING, // x coordinate of target of arrow
+          toY: toNode.y + DEFAULT_Y_PADDING + BLOCK_HEIGHT / 2, // y coordinate of target of arrow
           // fromColor: ModuleInfo.getColor(fromNode.type),
           // toColor: ModuleInfo.getColor(toNode.type),
           fromColor: child_active_connection_color,

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { HotKeys } from 'react-hotkeys';
 import { Config, GraphContent, auth } from '@bcrumbs.net/bc-api';
-import { DEFAULT_X_PADDING, DEFAULT_Y_PADDING, SHORTCUT_KEYS } from './Constants';
+import { SHORTCUT_KEYS } from './Constants';
 import Canvas from './canvas';
 import Header from './header';
 import Search, { SearchType } from './search';
@@ -13,7 +13,7 @@ import AddNewModule from './editMode/AddNewModule';
 import EditDrawer from './editModule';
 import { useTokenChecker } from '../../bootstrapers/hychart/utils';
 import { useRouter } from 'next/router';
-import colorContext, { ColorValues } from '../common/context/themeContext';
+import { ThemeProvider } from '../common/context/themeContext';
 
 function Chart({ data, token, contextId, config }: { config: Config; contextId: string; data: GraphContent[]; token?: string }) {
   const rootContent = data[0];
@@ -40,11 +40,6 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
   });
   const [highlightedNodes, setHighlightedNodes] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
-
-  const colorValues: ColorValues = rootContent.data.reduce((acc, curr) => {
-    acc[curr.Key as keyof ColorValues] = curr.Value;
-    return acc;
-  }, {} as ColorValues);
 
   const shortcutHandlers = {
     SEARCH: () => {
@@ -182,13 +177,44 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
     setCurrentVersion(originVersion);
   }, [data, setCurrentVersion]);
 
+  const handleNodeUpdate = (id: number, fieldName: string, value: string | number | []) => {
+    const fieldMapping = {
+      x_position: 'x',
+      y_position: 'y',
+      top_text: 'city',
+      bottom_text: 'sub_title',
+    };
+
+    const updatedFieldName = fieldMapping[fieldName] || fieldName;
+    const nodeToUpdate = Object.values(currentVersion.nodes).find((node) => node.id === id);
+    if (nodeToUpdate) {
+      setCurrentVersion((prev) => ({
+        ...prev,
+        nodes: {
+          ...prev.nodes,
+          [nodeToUpdate.id]: {
+            ...nodeToUpdate,
+            [updatedFieldName]: value,
+          },
+        },
+      }));
+    } else {
+      console.log('Node not found for update:', id);
+    }
+  };
+
+  const addNewModule = () => {
+    setInfoToCreateChild({
+      parentId: rootContent.id,
+    })
+  }
+
   useEffect(() => {
     auth.setContext(contextId);
   }, []);
 
   useEffect(() => {
     const { editMode: queryEditMode } = router.query;
-
     if (queryEditMode) {
       const isEditMode = Array.isArray(queryEditMode)
         ? queryEditMode[0] === 'true'
@@ -241,12 +267,6 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
 
   }, [focusModule]);
 
-  const addNewModule = () => {
-    setInfoToCreateChild({
-      parentId: rootContent.id,
-    })
-  }
-
   useEffect(() => {
     const queryParams = parse(window.location.search);
     const nodeIdFromUrl = queryParams['?n']
@@ -261,42 +281,39 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
     //@ts-ignore
     <HotKeys keyMap={SHORTCUT_KEYS} handlers={shortcutHandlers}>
       <div className="chart" id="chart">
-        <colorContext.Provider value={colorValues}>
-          <Header
-            showModulesSearch={setShowSearch}
-            chartName={rootContent.title}
+        <Header
+          showModulesSearch={setShowSearch}
+          chartName={rootContent.title}
+          editMode={editMode}
+          setEditMode={setEditMode}
+          setSelectedTags={setSelectedTags}
+          selectedTags={selectedTags}
+        />
+        <div className="designer">
+          <Canvas
             editMode={editMode}
-            setEditMode={setEditMode}
-            setSelectedTags={setSelectedTags}
-            selectedTags={selectedTags}
+            zoomLevel={zoomLevel}
+            moveModule={moveModule}
+            selectModule={selectModule}
+            currentVersion={currentVersion}
+            selectedModules={selectedModules}
+            focusNode={focusNode}
+            deselectModules={deselectModules}
+            organizeModules={organizeModules}
+            changeZoomLevel={changeZoomLevel}
+            setInfoToCreateChild={setInfoToCreateChild}
+            highlightedNodes={highlightedNodes}
           />
-          <div className="designer">
-            <Canvas
-              editMode={editMode}
-              zoomLevel={zoomLevel}
-              moveModule={moveModule}
-              selectModule={selectModule}
-              currentVersion={currentVersion}
-              selectedModules={selectedModules}
-              focusNode={focusNode}
-              deselectModules={deselectModules}
-              organizeModules={organizeModules}
-              changeZoomLevel={changeZoomLevel}
-              setInfoToCreateChild={setInfoToCreateChild}
-              highlightedNodes={highlightedNodes}
-            />
-          </div>
-        </colorContext.Provider>
+        </div>
         {hasToken && editMode ? (
           <EditDrawer
-            lang={config.lang}
             module={selectedModule}
             open={!!selectedModule && selectedModules.length === 1}
             onClose={() => setSelectedModule(undefined)}
+            onNodeUpdate={handleNodeUpdate}
           />
         ) :
           <DescriptionDrawer
-            lang={config.lang}
             module={selectedModule}
             open={!!selectedModule && selectedModules.length === 1}
             onClose={() => setSelectedModule(undefined)}
@@ -304,7 +321,8 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
             <div
               dangerouslySetInnerHTML={{ __html: selectedModule?.description }}
             />
-          </DescriptionDrawer>}
+          </DescriptionDrawer>
+        }
         {showSearch ? (
           <Search
             currentVersion={currentVersion}
@@ -326,7 +344,6 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
         ) : null}
       </div>
     </HotKeys >
-
   );
 }
 

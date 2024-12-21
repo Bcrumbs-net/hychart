@@ -1,18 +1,19 @@
 import 'react-tagsinput/react-tagsinput.css';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import TagsInput from './tagsInput';
 import Switch from "react-switch";
 import { auth } from '@bcrumbs.net/bc-api';
 import { useTokenChecker } from '../../../bootstrapers/hychart/utils';
-import themeContext from '../../common/context/themeContext';
+import { useThemeContext } from '../../common/context/themeContext';
 
-const HeaderWapper = styled.div<{ headerColor: string }>`
+const HeaderWapper = styled.div<{ headerColor: string, rtl: boolean }>`
   width: 100%;
   height: 50px;
   z-index: 9999;
   position: relative;
   background-color: ${({ headerColor }) => headerColor};
+  ${({ rtl }) => (rtl ? 'direction:rtl;' : 'direction:ltr;')};
 
   .chartName {
     font-weight: 600;
@@ -20,7 +21,7 @@ const HeaderWapper = styled.div<{ headerColor: string }>`
     display: inline-block;
     margin: 12px;
     position: relative;
-    text-align: left;
+    ${({ rtl }) => (rtl ? 'text-align: right;' : 'text-align: left;')};
     color: #fff;
     height: 25px;
     font-size: 20px;
@@ -41,21 +42,20 @@ const HeaderWapper = styled.div<{ headerColor: string }>`
         color: var(--bc-secondary-light-hover);
         position: absolute;
         left: 10px;
-        top: 5px;
+        top: 17px;
       }
     }
     position: absolute;
     top: 0px;
     left: 50%;
-    margin-left: -60px;
     width: 120px;
     height: 25px;
   }
 `;
 
-const LeftSide = styled.div`
+const LeftSide = styled.div<{ rtl: boolean }>`
   position: fixed;
-  right: 10px;
+  ${({ rtl }) => (rtl ? 'left:10px;' : 'right:10px;')};
   top: 0px;
   width: 450px;
   max-width: 500px;
@@ -64,10 +64,9 @@ const LeftSide = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   .tagsInput-container {
     flex-grow: 1;
-    margin-right: 10px;
+    ${({ rtl }) => (rtl ? 'left:10px;' : 'right:10px;')};
   }
 
   .login-logout-container {
@@ -92,28 +91,12 @@ const LeftSide = styled.div`
   }
 
   .switch {
-    margin-left: 8px;
+    margin-left: 6px;
     margin-right: 6px;
     border: solid 1px var(--bc-secondary-light-hover);
   }
 
-  .profile-nav {
-    border-bottom: none;
-    display: inline-block;
-
-    li {
-      margin-left: 20px;
-      text-align: center;
-      color: var(--mb-primary-darker);
-
-      a {
-        color: var(--mb-primary-darker);
-        padding: 0 4px 6px;
-        margin: 0;
-        color: var(--mb-primary-darker);
-      }
-    }
-  }
+}
 `;
 export default function Header({
   showModulesSearch,
@@ -131,8 +114,15 @@ export default function Header({
   selectedTags: any;
 }) {
   const { setHasToken, hasToken } = useTokenChecker();
-  const colorValues = useContext(themeContext);
-  const { headers_color } = colorValues;
+  const { lang, themeColors, translations } = useThemeContext();
+  const { headers_color } = themeColors;
+  const rtl = lang.rtl;
+
+  const headerTranslations = translations['header'] as Record<string, string>;
+  const login = headerTranslations.login;
+  const logout = headerTranslations.logout;
+  const searchNodes = headerTranslations.SearchNodes;
+  const selectTags = headerTranslations.selectTags;
 
   const handleLogin = () => {
     if (typeof window !== 'undefined') {
@@ -160,15 +150,15 @@ export default function Header({
     }
   };
   return (
-    <HeaderWapper headerColor={headers_color}>
+    <HeaderWapper headerColor={headers_color} rtl={rtl}>
       <div className="chartName">{chartName}</div>
       <div className="search-btn">
         <button type="button" onClick={() => showModulesSearch(true)}>
           <i className="flaticon-magnifying-glass"></i>{' '}
-          <span className="translate">Search Nodes</span>
+          <span>{searchNodes}</span>
         </button>
       </div>
-      <LeftSide>
+      <LeftSide rtl={rtl}>
         <div className="tagsInput-container">
           <TagsInput
             setSelectedTags={setSelectedTags}
@@ -194,10 +184,14 @@ export default function Header({
                 height={20}
                 width={40}
               />
-              <button className='AuthButton' onClick={handleLogout}>logout</button>
+              <button className='AuthButton' onClick={handleLogout}>
+                {logout}
+              </button>
             </>
           ) : (
-            <button className='AuthButton' onClick={handleLogin}>login</button>
+            <button className='AuthButton' onClick={handleLogin}>
+              {login}
+            </button>
           )}
         </div>
       </LeftSide>

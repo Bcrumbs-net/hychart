@@ -15,11 +15,13 @@ import useTagsEnumValuesQuery from '../../../bootstrapers/hychart/utils/useTagsE
 import FieldRenderer from './FieldRenderer';
 import { ErrorToast, SuccessToast, ToastMessage } from '../../common/toasts';
 import { StyledDrawer } from '../../common/drawer';
+import { useThemeContext } from '../../common/context/themeContext';
+
 type DrawerProps = {
   module: NodeType;
   open: boolean;
   onClose: () => void;
-  lang: string;
+  onNodeUpdate: (id: number, fieldName: string, value: number | string | []) => void;
 };
 const Button = styled.button`
   display: block;
@@ -28,7 +30,7 @@ const Button = styled.button`
   padding: 10px;
   font-weight: bold;
   font-size: 16px;
-  margin: 10px 0;
+  margin: 10px 20px;
   background-color: #699041;
   border: solid 1px var(--bc-secondary-light-hover);
   border-radius: 20px;
@@ -36,10 +38,10 @@ const Button = styled.button`
   cursor: pointer;
   
   &:hover {
-    background-color: #5a7736; /* Brown hover color */
+    background-color: #5a7736; 
   }
 `;
-const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onClose, module, children }) => {
+const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, onNodeUpdate, onClose, module, children }) => {
   const drawerRef = useRef(null);
   const editPanelRef = useRef(null);
   const [successMessage, setSuccessMessage] = useState<string>('');
@@ -57,6 +59,9 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onCl
     },
   ] = useUpdateContentInstanceFieldValuesMutation();
   const { control, handleSubmit, formState: { errors }, register, setValue, getValues } = useForm<any>();
+  const { lang, translations } = useThemeContext();
+  const rtl = lang.rtl;
+
 
   const targetModel = useMemo(() => {
     if (modelsResult?.viewTypes) {
@@ -89,6 +94,12 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onCl
       });
     }
   }, [data, targetModel]);
+  const editTranslations = translations['editForm'] as Record<string, string>;
+  const edit = editTranslations.edit;
+
+  const handleFieldChange = (fieldName: string, value: number | string | []) => {
+    onNodeUpdate(module.id, fieldName, value);
+  };
 
   const onSubmit = (formData: FieldValues) => {
     const updatedFormData: FieldValues = { ...formData };
@@ -101,7 +112,6 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onCl
         }
       });
     }
-
     updateContentInstanceFieldValues({
       variables: {
         body: {
@@ -114,15 +124,15 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onCl
         },
       },
     })
-      .then(() => {
-        setSuccessMessage('Content instance updated successfully');
+      .then((response) => {
+        setSuccessMessage('Node updated successfully');
         setErrorMessage('');
         setTimeout(() => {
           setSuccessMessage('');
         }, 3000);
       })
       .catch((error) => {
-        setErrorMessage(`${error}: Error updating content instance`);
+        setErrorMessage(`${error}: Error updating node`);
         setSuccessMessage('');
         setTimeout(() => {
           setSuccessMessage('');
@@ -134,36 +144,46 @@ const EditDrawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onCl
     <>
       <Offcanvas show={open} placement="end">
         <div ref={drawerRef}>
-          <StyledDrawer lang={lang} className={open ? 'show' : ''}>
+          <StyledDrawer rtl={rtl} className={open ? 'show' : ''}>
             <div className='header'>
-              <BsX onClick={onClose} className='closeIcon' />
               <div className='title'>
                 <h1>{targetContentInstance?.Name}</h1>
               </div>
+              <BsX onClick={onClose} className='closeIcon' />
             </div>
 
             <Offcanvas.Body ref={editPanelRef}>
               <form onSubmit={handleSubmit(onSubmit)}>
-                {targetModel?.ViewFields.map((field) => (
-                  <div key={field.Id}>
-                    <Controller
-                      control={control}
-                      name={`${field.Id}`}
-                      render={({ field: { onChange, value } }) => {
-                        return (
-                          <FieldRenderer
-                            field={field}
-                            enumValues={enumValues}
-                            register={register}
-                            getValues={getValues}
-                            setValue={setValue}
-                          />
-                        );
-                      }}
-                    />
-                  </div>
-                ))}
-                <Button type="submit">Edit</Button>
+                {targetModel?.ViewFields.map((field) => {
+                  const privateFields = field.Name.startsWith('_');
+                  if (!privateFields) {
+                    return (
+                      <div key={field.Id}>
+                        <Controller
+                          control={control}
+                          name={`${field.Id}`}
+                          render={({ field: { onChange, value } }) => {
+                            return (
+                              <FieldRenderer
+                                field={field}
+                                enumValues={enumValues}
+                                register={register}
+                                getValues={getValues}
+                                setValue={setValue}
+                                onChange={(newValue) => {
+                                  onChange(newValue);
+                                  handleFieldChange(`${field.Name}`, newValue);
+                                }}
+                              />
+                            );
+                          }}
+                        />
+                      </div>
+                    );
+                  }
+                  return null;
+                })}
+                <Button type="submit">{edit}</Button>
               </form>
             </Offcanvas.Body>
           </StyledDrawer>

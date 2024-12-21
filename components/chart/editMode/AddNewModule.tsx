@@ -1,5 +1,5 @@
 import { auth, useCreateContentInstanceMutation, useCreateContentMutation } from '@bcrumbs.net/bc-api';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { BsX } from 'react-icons/bs';
 import styled from 'styled-components';
@@ -7,6 +7,7 @@ import { HYCHART_VIEW_TYPE_ID } from '../Constants';
 import { SuccessToast, ToastMessage, ErrorToast } from '../../common/toasts';
 import { ChartType, NodeInformationType, NodeType, SelectModuleFunc } from '../types';
 import createBlankNode from '../createBlankNode';
+import { useThemeContext } from '../../common/context/themeContext';
 
 interface AddNewModuleProps {
   onClick?: () => void;
@@ -17,10 +18,10 @@ interface AddNewModuleProps {
   infoToCreateChild?: NodeInformationType;
 }
 
-const StyledAddNewModule = styled.div<AddNewModuleProps>`
+const StyledAddNewModule = styled.div<{ rtl?: boolean }>`
   position: fixed;
+  ${({ rtl }) => (rtl ? 'left:20px;' : 'right:20px;')};
   bottom: 20px;
-  right: 20px;
   background-color: #699041;
   color: white;
   padding: 7px 14px;
@@ -28,7 +29,6 @@ const StyledAddNewModule = styled.div<AddNewModuleProps>`
   border-radius: 100%;
   cursor: pointer;
   z-index: 999;
-
   span {
     font-size: 24px;
   }
@@ -40,16 +40,16 @@ const BackgroundStyle = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  background: rgba(0, 0, 0, 0.5); 
   z-index: 9999;
 `;
 
-const CreateFormStyle = styled.div`
+const CreateFormStyle = styled.div<{ rtl: boolean }>`
   position: absolute;
   top: 50%;
   left: 50%;
   width: 400px;
-  height: auto; /* Allow height to adjust based on content */
+  height: auto; 
   margin-left: -200px;
   margin-top: -200px; /* Center vertically */
   z-index: 10000;
@@ -59,6 +59,8 @@ const CreateFormStyle = styled.div`
   box-shadow: 2px 2px 2px 2px rgb(100, 57, 0);
   padding: 20px; /* Added padding for better spacing */
   color: #699041;
+  ${({ rtl }) => (rtl ? 'direction:rtl;' : 'direction: ltr;')};
+
 
   .header {
     display: flex;
@@ -75,9 +77,9 @@ const CreateFormStyle = styled.div`
 
 const Label = styled.label`
   display: block;
-  font-size: 12px;
+  font-size: 14px;
   color: black;
-  margin: 20px 0 15px 5px;
+  margin: 20px 20px 15px 5px;
 `;
 
 const InputStyle = styled.input`
@@ -87,7 +89,7 @@ const InputStyle = styled.input`
   background-color: white;
   border: 1px solid var(--bc-primary-color);
   border-radius: var(--bc-radius);
-  margin: 10px 0;
+  margin: 10px 10px;
   display: block;
   font-size: 13px;
 `;
@@ -119,12 +121,20 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, infoToCreateChild,
     createContentMutation,
     { data: createContentData, error: createContentError, loading: creatingContentLoading },
   ] = useCreateContentMutation();
-
+  const { lang, translations } = useThemeContext();
+  const rtl = lang.rtl;
   const [
     createContentInstanceMutation,
     { data: createContentInstanceData, error: createContentInstanceError, loading: creatingContentInsLoading },
   ] = useCreateContentInstanceMutation();
   const { control, handleSubmit, register, setValue } = useForm<any>();
+
+  const createTranslations = translations['createForm'] as Record<string, string>;
+  const createNewNode = createTranslations.createNewNode;
+  const name = createTranslations.name;
+  const nameOfNode = createTranslations.nameOfNode;
+  const create = createTranslations.create;
+
   const onSubmit = (formData: any) => {
     createContentMutation({
       variables: {
@@ -206,25 +216,25 @@ const AddNewModule: React.FC<AddNewModuleProps> = ({ onClick, infoToCreateChild,
   }
   return (
     <>
-      <StyledAddNewModule onClick={onClick}>
+      <StyledAddNewModule onClick={onClick} rtl={rtl}>
         <span>+</span>
       </StyledAddNewModule>
       {infoToCreateChild?.parentId && (
         <BackgroundStyle>
-          <CreateFormStyle>
+          <CreateFormStyle rtl={rtl}>
             <div className='header'>
-              <h1>Create New Node</h1>
+              <h1>{createNewNode}</h1>
               <BsX onClick={() => setInfoToCreateChild(undefined)} className='closeIcon' />
             </div>
             <form onSubmit={handleSubmit(onSubmit)} className='form-input-style'>
-              <Label>Name</Label>
+              <Label>{name}</Label>
               <InputStyle
                 type='text'
                 required
                 {...register('name')}
-                placeholder='Name of node'
+                placeholder={nameOfNode}
               />
-              <Button type="submit">Create</Button>
+              <Button type="submit">{create}</Button>
             </form>
           </CreateFormStyle>
         </BackgroundStyle>

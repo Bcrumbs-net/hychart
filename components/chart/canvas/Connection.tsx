@@ -1,5 +1,4 @@
-import { useContext } from "react";
-import themeContext from "../../common/context/themeContext";
+import { useThemeContext } from "../../common/context/themeContext";
 
 export type ModuleConnectionProps = {
   fromID: number;
@@ -30,8 +29,8 @@ function ModuleConnection({
   const middleX = (fromX + toX) / 2;
   const middleY = (fromY + toY) / 2;
   const spaceFromX = 20;
-  const colorValues = useContext(themeContext);
-  const { connection_color } = colorValues;
+  const { themeColors } = useThemeContext();
+  const { connection_color } = themeColors;
 
   if (fromX >= toX) {
     coordinateList.push(`L ${fromX + spaceFromX} ${fromY},`);
