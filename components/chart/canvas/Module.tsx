@@ -128,7 +128,7 @@ function Module({ editMode, module, highlighted, selectModule, setInfoToCreateCh
       {typeof window !== 'undefined' && auth?.isAuthenticated() && editMode ? (
         <IconContainer
           className="custom-icon-class"
-          style={{ top: module.y + DEFAULT_Y_PADDING + 50, left: module.x + DEFAULT_X_PADDING + 75, zIndex: module.id }}
+          style={{ top: module.y + DEFAULT_Y_PADDING + 58, left: module.x + DEFAULT_X_PADDING + 78, zIndex: module.id }}
           onDragStart={(ev) => onDragStart(module.id, ev)}
           onClick={handleAddChild}>
           <FaPlusCircle color="#699041" />

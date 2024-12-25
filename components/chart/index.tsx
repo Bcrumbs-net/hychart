@@ -304,6 +304,16 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
             setInfoToCreateChild={setInfoToCreateChild}
             highlightedNodes={highlightedNodes}
           />
+          {typeof window !== 'undefined' && auth?.isAuthenticated() && editMode ? (
+            <AddNewModule
+              selectModule={selectModule}
+              onClick={addNewModule}
+              setInfoToCreateChild={setInfoToCreateChild}
+              infoToCreateChild={infoToCreateChild}
+              currentVersion={currentVersion}
+              setCurrentVersion={setCurrentVersion}
+            />
+          ) : null}
         </div>
         {hasToken && editMode ? (
           <EditDrawer
@@ -330,16 +340,6 @@ function Chart({ data, token, contextId, config }: { config: Config; contextId: 
             focusModule={focusModule}
             setSearch={setSearch}
             setShowSearch={setShowSearch}
-          />
-        ) : null}
-        {typeof window !== 'undefined' && auth?.isAuthenticated() && editMode ? (
-          <AddNewModule
-            selectModule={selectModule}
-            onClick={addNewModule}
-            setInfoToCreateChild={setInfoToCreateChild}
-            infoToCreateChild={infoToCreateChild}
-            currentVersion={currentVersion}
-            setCurrentVersion={setCurrentVersion}
           />
         ) : null}
       </div>
