@@ -122,7 +122,6 @@ export default function Header({
   const login = headerTranslations.login;
   const logout = headerTranslations.logout;
   const searchNodes = headerTranslations.SearchNodes;
-  const selectTags = headerTranslations.selectTags;
 
   const handleLogin = () => {
     if (typeof window !== 'undefined') {
