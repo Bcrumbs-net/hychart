@@ -27,14 +27,13 @@ export async function getServerSideProps({ req, query }) {
   try {
     // Getting needed data
     config = await fetchWebsiteConfig(targetDomain);
-    // setTranslations(fetchedTranslations);
     if (!path) {
       newPath = `/${config.mainChart}`;
     }
     contextId = await fetchContextId(targetDomain);
     translations = await fetchTranslations(config.lang);
     contents = await fetchWebsiteContents(config, newPath);
-    
+
     // Logging the visit
     logWebsiteVisit(domain);
   } catch (ex) {
@@ -88,7 +87,7 @@ export const TemplateRouter = ({
   if (invalid) {
     return <Error statusCode={400} />;
   }
-  
+
   if (data[0] == null) {
     return <Error statusCode={404} />;
   }
