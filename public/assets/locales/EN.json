@@ -1,0 +1,21 @@
+{
+  "header": {
+    "SearchNodes": "Search Nodes",
+    "selectTags": "select tags",
+    "IslamicScholars": "Islamic scholars",
+    "login": "login",
+    "logout": "logout"
+  },
+  "searchBox": {
+    "WriteNodeName": "write node name"
+  },
+  "createForm": {
+    "createNewNode": "Create New Node",
+    "name": "Name",
+    "nameOfNode": "Name of node",
+    "create": "Create"
+  },
+  "editForm": {
+    "edit": "Edit"
+  }
+}

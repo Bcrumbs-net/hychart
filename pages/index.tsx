@@ -9,6 +9,8 @@ import {
 } from '../bootstrapers/hychart/utils';
 import Chart from '../components/chart';
 import Error from './_error';
+import { fetchTranslations } from '../bootstrapers/hychart/utils/fetchTranslations';
+import { ThemeProvider } from '../components/common/context/themeContext';
 
 export async function getServerSideProps({ req, query }) {
   query.host = 'islamic-scholars.hy';
@@ -20,6 +22,7 @@ export async function getServerSideProps({ req, query }) {
   let config = undefined;
   let contents = undefined;
   let contextId = undefined;
+  let translations = undefined;
   let newPath = path || null;
   try {
     // Getting needed data
@@ -28,8 +31,9 @@ export async function getServerSideProps({ req, query }) {
       newPath = `/${config.mainChart}`;
     }
     contextId = await fetchContextId(targetDomain);
+    translations = await fetchTranslations(config.lang);
     contents = await fetchWebsiteContents(config, newPath);
-    
+
     // Logging the visit
     logWebsiteVisit(domain);
   } catch (ex) {
@@ -54,6 +58,7 @@ export async function getServerSideProps({ req, query }) {
       config,
       contextId,
       data: contents,
+      translations
     },
   };
 }
@@ -65,6 +70,7 @@ export const TemplateRouter = ({
   errorCode,
   error,
   invalid,
+  translations,
 }: {
   errorCode?: number;
   error?: string;
@@ -76,6 +82,7 @@ export const TemplateRouter = ({
   };
   data?: GraphContent[];
   invalid?: boolean;
+  translations: Record<string, string | Record<string, string>> | null;
 }) => {
   if (invalid) {
     return <Error statusCode={400} />;
@@ -85,9 +92,17 @@ export const TemplateRouter = ({
     return <Error statusCode={404} />;
   }
 
+  if (data[0] == null) {
+    return <Error statusCode={404} />;
+  }
+
   // Call the useTokenChecker hook here
   useTokenChecker();
-  return <Chart config={config} contextId={contextId} data={data} />;
+  return (
+    <ThemeProvider rootContent={data[0]} lang={config.lang} translations={translations}>
+      <Chart config={config} contextId={contextId} data={data} />
+    </ThemeProvider>
+  );
 };
 
 export default TemplateRouter;

@@ -6,18 +6,20 @@ import { stringify, parse } from 'query-string';
 import { NodeType } from '../types';
 import { SuccessToast, ToastMessage, ErrorToast } from '../../common/toasts';
 import { StyledDrawer } from '../../common/drawer';
+import { useThemeContext } from '../../common/context/themeContext';
 
 type DrawerProps = {
   module: NodeType;
   open: boolean;
   onClose: () => void;
-  lang: string;
 };
 
-const Drawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onClose, module, children }) => {
+const Drawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, onClose, module, children }) => {
   const tags = module?.tags?.split(",");
   const drawerRef = useRef(null);
   const descriptionPanelRef = useRef(null);
+  const { lang } = useThemeContext();
+  const { rtl } = lang;
   const [successMessage, setSuccessMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const copyURLWithNodeID = (nodeID: number | null) => {
@@ -44,7 +46,7 @@ const Drawer: React.FC<PropsWithChildren<DrawerProps>> = ({ open, lang, onClose,
     <>
       <Offcanvas show={open} placement="end">
         <div ref={drawerRef}>
-          <StyledDrawer lang={lang} className={open ? 'show' : ''}>
+          <StyledDrawer rtl={rtl} className={open ? 'show' : ''}>
             <div className='header'>
               <div className='title'>
                 <h1 >{module?.title}</h1>
