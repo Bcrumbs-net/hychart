@@ -28,7 +28,7 @@ const StyledAddNewModule = styled.div<{ rtl?: boolean }>`
   border: none;
   border-radius: 100%;
   cursor: pointer;
-  z-index: 999;
+  z-index: 600000;
   span {
     font-size: 24px;
   }
@@ -41,7 +41,7 @@ const BackgroundStyle = styled.div`
   top: 0;
   left: 0;
   background: rgba(0, 0, 0, 0.5); 
-  z-index: 9999;
+  z-index: 600000;
 `;
 
 const CreateFormStyle = styled.div<{ rtl: boolean }>`
