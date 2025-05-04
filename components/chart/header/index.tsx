@@ -67,6 +67,7 @@ const LeftSide = styled.div<{ rtl: boolean }>`
   justify-content: space-between;
   .tagsInput-container {
     flex-grow: 1;
+    margin-right:3px;
     ${({ rtl }) => (rtl ? 'left:10px;' : 'right:10px;')};
   }
 
