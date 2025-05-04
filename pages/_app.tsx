@@ -2,7 +2,7 @@ import React from 'react';
 import { AppProps } from 'next/app';
 import { ApolloClient } from '@apollo/client';
 import { ApolloProvider } from '@apollo/client';
-import { withShowcaseClient } from '@bcrumbs.net/bc-api';
+import { withShowcaseClient } from '../bootstrapers/hychart/clients/showcase';
 import '../public/assets/css/flaticon.css';
 // import 'bootstrap-4-grid/css/grid.min.css';
 import '../public/assets/css/styles.scss';

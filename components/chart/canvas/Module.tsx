@@ -1,9 +1,9 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-import ModuleInfo from '../moduleBlocks/ModuleInfo';
-import { NodeInformationType, NodeType, SelectModuleFunc } from '../types';
+import React, { useCallback } from 'react';
 import styled, { css } from 'styled-components';
 import { FaPlusCircle } from 'react-icons/fa';
-import { auth } from '@bcrumbs.net/bc-api';
+import { auth } from '@bcrumbs.net/bc-shared';
+import ModuleInfo from '../moduleBlocks/ModuleInfo';
+import { NodeInformationType, NodeType, SelectModuleFunc } from '../types';
 import { useThemeContext } from '../../common/context/themeContext';
 import { DEFAULT_X_PADDING, DEFAULT_Y_PADDING } from '../Constants';
 

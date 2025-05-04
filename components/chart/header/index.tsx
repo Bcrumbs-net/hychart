@@ -1,9 +1,10 @@
 import 'react-tagsinput/react-tagsinput.css';
-import React, { useContext, useEffect, useState } from 'react';
+import React from 'react';
+import Switch from "react-switch";
+import { auth } from '@bcrumbs.net/bc-shared';
 import styled from 'styled-components';
 import TagsInput from './tagsInput';
-import Switch from "react-switch";
-import { auth } from '@bcrumbs.net/bc-api';
+
 import { useTokenChecker } from '../../../bootstrapers/hychart/utils';
 import { useThemeContext } from '../../common/context/themeContext';
 
