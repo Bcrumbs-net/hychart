@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { HotKeys } from 'react-hotkeys';
-import { Config, GraphContent, auth } from '@bcrumbs.net/bc-api';
+import { Config, GraphContent } from '@bcrumbs.net/bc-api';
+import { auth } from '@bcrumbs.net/bc-shared';
 import { SHORTCUT_KEYS } from './Constants';
 import Canvas from './canvas';
 import Header from './header';
@@ -13,7 +14,6 @@ import AddNewModule from './editMode/AddNewModule';
 import EditDrawer from './editModule';
 import { useTokenChecker } from '../../bootstrapers/hychart/utils';
 import { useRouter } from 'next/router';
-import { ThemeProvider } from '../common/context/themeContext';
 
 function Chart({ data, token, contextId, config }: { config: Config; contextId: string; data: GraphContent[]; token?: string }) {
   const rootContent = data[0];

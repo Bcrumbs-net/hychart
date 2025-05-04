@@ -1,4 +1,4 @@
-import { auth } from "@bcrumbs.net/bc-api";
+import { auth } from "@bcrumbs.net/bc-shared";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 

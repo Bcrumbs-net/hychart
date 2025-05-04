@@ -1,5 +1,5 @@
-import { auth, useCreateContentInstanceMutation, useCreateContentMutation } from '@bcrumbs.net/bc-api';
-import React, { useEffect, useState } from 'react';
+import { useCreateContentInstanceMutation, useCreateContentMutation } from '@bcrumbs.net/bc-api';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { BsX } from 'react-icons/bs';
 import styled from 'styled-components';
