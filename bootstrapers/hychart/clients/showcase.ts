@@ -5,6 +5,6 @@ import { showcaseClient } from "@bcrumbs.net/bc-api";
 // Docs: https://www.npmjs.com/package/next-with-apollo
 export const withShowcaseClient = withApollo(
   ({ initialState }) =>
-    // @ts-expect-error will be fixed later
+    // @ts-ignore will be fixed later
     showcaseClient
 );
