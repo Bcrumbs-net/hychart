@@ -1,6 +1,6 @@
 {
   "replicas": 1,
-  "cpu": "25m",
+  "cpu": "15m",
   "memory": "256Mi",
   "cpu-limit": "200m",
   "memory-limit": "768Mi"

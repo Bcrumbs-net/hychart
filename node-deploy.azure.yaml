@@ -28,6 +28,7 @@ spec:
         app: hychart
         version: v1
     spec:
+      priorityClassName: low-priority
       containers:
         - name: hychart
           image: breadcrumbs.azurecr.io/hychart:#{Build.BuildId}#
