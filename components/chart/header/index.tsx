@@ -31,16 +31,16 @@ const HeaderWapper = styled.div<{ headerColor: string, rtl: boolean }>`
   .search-btn {
     button {
       background-color: #fff;
-      border: solid 1px var(--bc-secondary-light-hover);
+      border: solid 1px var(--bc-dark);
       border-radius: 20px;
       height: 30px;
       width: 100%;
-      color: var(--bc-secondary-light-hover);
+      color: var(--bc-dark);
       padding-left: 30px;
       cursor: pointer;
 
       i {
-        color: var(--bc-secondary-light-hover);
+        color: var(--bc-dark);
         position: absolute;
         left: 10px;
         top: 17px;
@@ -78,7 +78,7 @@ const LeftSide = styled.div<{ rtl: boolean }>`
 
   .AuthButton {
     background-color: #699041;
-    border: solid 1px var(--bc-secondary-light-hover);
+    border: solid 1px var(--bc-dark);
     border-radius: 20px;
     height: 32px;
     width: 100px;
@@ -95,7 +95,7 @@ const LeftSide = styled.div<{ rtl: boolean }>`
   .switch {
     margin-left: 6px;
     margin-right: 6px;
-    border: solid 1px var(--bc-secondary-light-hover);
+    border: solid 1px var(--bc-dark);
   }
 
 }

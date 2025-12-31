@@ -39,6 +39,10 @@ export default class CustomDocument extends NextDocument<{
             rel="stylesheet"
             href="https://cdn.bcrumbs.net/bc-assets/styles/constants.css"
           />
+                    <link
+            rel="stylesheet"
+            href="https://cdn.bcrumbs.net/bc-assets/styles/themes/light.css"
+          />
           <link
             href="https://fonts.googleapis.com/css?family=Montserrat:100,300,500,700&display=swap"
             rel="stylesheet"

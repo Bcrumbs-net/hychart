@@ -64,9 +64,9 @@ const AutoComplete = styled.div`
 const InputStyle = styled.div`
 input.form-control {
   width: 400px;
-  border: 1px solid var(--bc-primary-color);
+  border: 1px solid var(--bc-primary-darker);
   border-radius: var(--bc-radius);
-  color: var(--bc-secondary-color);
+  color: var(--bc-primary-paragraph);
   margin: 10px 0;
   display: block;
   padding: 9px 4px 9px 40px;

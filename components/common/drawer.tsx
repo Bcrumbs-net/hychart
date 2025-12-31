@@ -75,7 +75,7 @@ export const StyledDrawer = styled.div<{ rtl?: boolean }>`
     margin-top:-5px;
     font-size: 15px;
     font-weight: bold; 
-    border: 1px solid var(--bc-primary-color);
+    border: 1px solid var(--bc-primary-darker);
     box-shadow: 0px 0px 2px 0px rgb(100, 57, 0);
     border-radius: 20px;
   }
