@@ -20,11 +20,42 @@ stages:
       vmImage: "ubuntu-latest"
     steps:
     - task: Docker@2
+      displayName: 'Build Docker image'
       inputs:
-        containerRegistry: 'ACR'
+        command: 'build'
         repository: 'hychart'
-        command: 'buildAndPush'
         Dockerfile: '**/Dockerfile'
+        buildContext: '.'
+        tags: |
+          latest
+          $(Build.BuildId)
+      condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/develop')))
+    - task: ECRPushImage@1
+      displayName: 'Push to ECR (latest)'
+      inputs:
+        awsCredentials: 'AWS-ECR-Connection'
+        regionName: 'eu-west-1'
+        imageSource: 'imagename'
+        sourceImageName: 'hychart'
+        sourceImageTag: 'latest'
+        repositoryName: 'hychart'
+        autoCreateRepository: true
+        forceDockerNamingConventions: true
+      condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/develop')))
+    - task: ECRPushImage@1
+      displayName: 'Push to ECR ($(Build.BuildId))'
+      inputs:
+        awsCredentials: 'AWS-ECR-Connection'
+        regionName: 'eu-west-1'
+        imageSource: 'imagename'
+        sourceImageName: 'hychart'
+        sourceImageTag: '$(Build.BuildId)'
+        repositoryName: 'hychart'
+        pushTag: '$(Build.BuildId)'
+        autoCreateRepository: true
+        forceDockerNamingConventions: true
+        removeDockerImage: true
+      condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/develop')))
     - task: CopyFiles@2
       displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
       inputs:
