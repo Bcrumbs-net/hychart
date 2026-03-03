@@ -28,14 +28,14 @@ const BCTagsInputWrapper = styled.div<{ rtl: boolean }>`
   }
   .searchWrapper {
     background-color: #fff;
-    border: solid 1px var(--bc-secondary-light-hover);
+    border: solid 1px var(--bc-dark);
     border-radius: 20px;
     min-height: auto;
     max-height:30px;
     padding: 4px;
     width: auto; 
     max-width:300px;
-    color: var(--bc-secondary-light-hover);
+    color: var(--bc-dark);
     .chip {
       margin-bottom: 0;
       padding: 2px 8px;

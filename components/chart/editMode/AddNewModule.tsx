@@ -54,7 +54,7 @@ const CreateFormStyle = styled.div<{ rtl: boolean }>`
   margin-top: -200px; /* Center vertically */
   z-index: 10000;
   background-color: #eee6dbf7;
-  border: 1px solid var(--bc-primary-color);
+  border: 1px solid var(--bc-primary-darker);
   border-radius: var(--bc-radius);
   box-shadow: 2px 2px 2px 2px rgb(100, 57, 0);
   padding: 20px; /* Added padding for better spacing */
@@ -87,7 +87,7 @@ const InputStyle = styled.input`
   width: 80%;
   max-width: 100%;
   background-color: white;
-  border: 1px solid var(--bc-primary-color);
+  border: 1px solid var(--bc-primary-darker);
   border-radius: var(--bc-radius);
   margin: 10px 10px;
   display: block;
@@ -104,7 +104,7 @@ const Button = styled.button`
   font-size: 16px;
   margin: 30px auto; /* Center the button */
   background-color: #699041;
-  border: solid 1px var(--bc-secondary-light-hover);
+  border: solid 1px var(--bc-dark);
   border-radius: 20px;
   color: #fff;
   cursor: pointer;

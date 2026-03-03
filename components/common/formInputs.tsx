@@ -13,9 +13,9 @@ export const Input = styled.input`
   height:30px;
   padding: 10px;
   font-size: 16px;
-  border: 1px solid var(--bc-primary-color);
+  border: 1px solid var(--bc-primary-darker);
   border-radius: var(--bc-radius);
-  color: var(--bc-secondary-color);
+  color: var(--bc-primary-paragraph);
   margin: 10px 0;
   display: block;
 `;
@@ -44,14 +44,14 @@ export const CheckboxInput = styled.input`
   appearance: none;
   width: 10px;
   height: 10px;
-  border: 1px solid var(--bc-primary-color);
+  border: 1px solid var(--bc-primary-darker);
   border-radius: 8px;
   display: inline-block;
   vertical-align: middle;
   cursor: pointer;
 
   &:checked {
-    background-color: var(--bc-primary-color);
+    background-color: var(--bc-primary-darker);
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z' fill='%23fff'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: center;
@@ -63,9 +63,9 @@ export const Select = styled.select`
   height: 45px;
   padding: 10px;
   font-size: 15px;
-  border: 1px solid var(--bc-primary-color);
+  border: 1px solid var(--bc-primary-darker);
   border-radius: var(--bc-radius);
-  color: var(--bc-secondary-color);
+  color: var(--bc-primary-paragraph);
   margin: 10px 0;
 `;
 export const TextArea = styled.textarea`
@@ -74,9 +74,9 @@ export const TextArea = styled.textarea`
   height: 150px;
   padding: 10px;
   font-size: 16px;
-  border: 1px solid var(--bc-primary-color);
+  border: 1px solid var(--bc-primary-darker);
   border-radius: var(--bc-radius);
-  color: var(--bc-secondary-color);
+  color: var(--bc-primary-paragraph);
   margin: 10px 0;
   resize: vertical;
 `;
