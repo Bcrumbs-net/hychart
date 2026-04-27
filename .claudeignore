@@ -1,2 +1,13 @@
 **/.env
 **/.env.*
+
+node_modules/
+dist/
+build/
+*.log
+*.lock
+coverage/
+.env
+__pycache__/
+*.min.js
+*.map
