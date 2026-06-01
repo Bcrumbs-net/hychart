@@ -84,20 +84,16 @@ export const TemplateRouter = ({
   invalid?: boolean;
   translations: Record<string, string | Record<string, string>> | null;
 }) => {
+  useTokenChecker();
+
   if (invalid) {
     return <Error statusCode={400} />;
   }
-  
-  if (data[0] == null) {
+
+  if (!data?.[0]) {
     return <Error statusCode={404} />;
   }
 
-  if (data[0] == null) {
-    return <Error statusCode={404} />;
-  }
-
-  // Call the useTokenChecker hook here
-  useTokenChecker();
   return (
     <ThemeProvider rootContent={data[0]} lang={config.lang} translations={translations}>
       <Chart config={config} contextId={contextId} data={data} />

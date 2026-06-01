@@ -6,9 +6,9 @@
     "dev": "next",
     "build": "next build",
     "start": "next start -p 80",
-    "export": "next build && next export",
-    "now-build": "next build && next export -o dist",
-    "netlify-build": "next build && next export"
+    "export": "next build",
+    "now-build": "next build",
+    "netlify-build": "next build"
   },
   "repository": {
     "type": "git",
@@ -25,7 +25,7 @@
     "@bcrumbs.net/bc-api": "^0.0.36",
     "@bcrumbs.net/bc-shared": "^0.0.4",
     "@bcrumbs.net/bc-ui": "^0.0.1",
-    "@sentry/nextjs": "^8.27.0",
+    "@sentry/nextjs": "^9.47.1",
     "apollo": "^2.33.9",
     "apollo-link-rest": "^0.9.0-rc.1",
     "bootstrap": "^5.3.2",
@@ -36,8 +36,7 @@
     "jodit-react": "^4.1.2",
     "multiselect-react-dropdown": "^2.0.25",
     "net": "^1.0.2",
-    "next": "^14.2.5",
-    "next-with-apollo": "^5.3.0",
+    "next": "15.5.18",
     "prop-types": "^15.7.2",
     "react": "^18.3.1",
     "react-bootstrap": "^2.8.0",
@@ -64,7 +63,8 @@
     "@types/styled-components": "^5.1.26",
     "babel-plugin-styled-components": "1.10.7",
     "eslint": "^8.50.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "eslint-config-next": "15.5.18"
   },
   "browser": {
     "fs": false,
