@@ -4,11 +4,22 @@ const { withSentryConfig } = require("@sentry/nextjs");
 //const withNx = require('@nx/next/plugins/with-nx');
 
 /**
+ * HyChart pages are embeddable chart widgets, not search landing pages.
+ * Keep them out of search results, but let embedded charts count toward the
+ * page that embeds them (`indexifembedded`).
+ */
+const ROBOTS_TAG = "noindex, indexifembedded";
+
+/**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
   async headers() {
     return [
+      {
+        source: "/:path*",
+        headers: [{ key: "X-Robots-Tag", value: ROBOTS_TAG }],
+      },
       {
         // matching all API routes
         source: "/api/:path*",
