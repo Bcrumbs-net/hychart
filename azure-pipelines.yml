@@ -1,38 +1,13 @@
-# Docker
-# Build and push an image to Azure Container Registry
-# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+# Disabled. HyChart is built and deployed by GitHub Actions (.github/workflows/ci.yml).
+# This pipeline used to push to the retired Azure Container Registry. The file is kept
+# only so the Azure DevOps "Hychart CI" definition doesn't fail on a missing file:
+# once that pipeline is deleted in Azure DevOps, this file can be removed too.
+trigger: none
+pr: none
 
-trigger:
-- master
-- develop
+pool:
+  vmImage: ubuntu-latest
 
-variables:
-- name: SENTRY_AUTH_TOKEN
-  value: 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 
-
-stages:
-- stage: Build
-  displayName: Build and push stage
-  jobs:
-  - job: Build
-    displayName: Build
-    pool:
-      vmImage: "ubuntu-latest"
-    steps:
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'ACR'
-        repository: 'hychart'
-        command: 'buildAndPush'
-        Dockerfile: '**/Dockerfile'
-    - task: CopyFiles@2
-      displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
-      inputs:
-        Contents: |
-          node-deploy.azure.yaml
-          node-deploy.dev.azure.yaml
-          node-deploy.vars.dev.json
-          node-deploy.vars.prod.json
-        TargetFolder: '$(Build.ArtifactStagingDirectory)'
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: drop'
+steps:
+  - script: echo "HyChart CI moved to GitHub Actions (.github/workflows/ci.yml)."
+    displayName: Moved to GitHub Actions
