@@ -1,0 +1,126 @@
+name: CI
+
+# Pull requests: install and run `next build` (type-check + compile).
+# Pushes to main: the same build, then build the image, push it to the `hychart`
+# ECR repository, and restart the `hychart` EKS deployment so the pod pulls the
+# new `latest`.
+# Same pipeline as core and bc-channels: GitHub OIDC assumes the roles from bc-infra
+# (GithubEcrPushRoles.ts, GithubDeployAccess.ts), so no AWS keys are stored in this repo.
+# azure-pipelines.yml still pushes to the old Azure Container Registry and doesn't run
+# on `main`; this workflow replaces it for production.
+#
+# Secrets: AWS_ECR_PUSH_ROLE_ARN (repo secret; the role trusts pushes to main)
+#          AWS_DEPLOY_ROLE_ARN (secret of the `production` environment; the role trusts
+#          only jobs in that environment)
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '20'
+  AWS_REGION: eu-west-1
+  ECR_REPOSITORY: hychart
+  NEXT_TELEMETRY_DISABLED: '1'
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build
+        run: npm run build
+
+  image:
+    name: Build and push image
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      id-token: write # OIDC: lets the job assume the AWS role without stored keys
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ secrets.AWS_ECR_PUSH_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          # A plain single-platform image: buildx otherwise adds provenance/SBOM attestation
+          # manifests that ECR keeps as untagged images and counts toward the lifecycle rule.
+          provenance: false
+          sbom: false
+          tags: |
+            ${{ steps.ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+            ${{ steps.ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.run_number }}
+            ${{ steps.ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+
+  deploy:
+    name: Deploy to production
+    needs: image
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # The deploy role trusts only jobs in this environment (bc-infra GithubDeployAccess.ts).
+    environment: production
+    # One rollout at a time; a newer deploy waits instead of cancelling one in flight.
+    concurrency:
+      group: deploy-hychart-production
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      EKS_CLUSTER: blue
+      K8S_NAMESPACE: default
+      K8S_DEPLOYMENT: hychart
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure kubectl
+        run: aws eks update-kubeconfig --name "$EKS_CLUSTER" --region "$AWS_REGION"
+
+      # The deployment runs :latest with imagePullPolicy Always, so the new pod pulls the
+      # image the previous job just pushed.
+      - name: Restart deployment
+        run: kubectl rollout restart "deployment/$K8S_DEPLOYMENT" -n "$K8S_NAMESPACE"
+
+      - name: Wait for rollout
+        run: kubectl rollout status "deployment/$K8S_DEPLOYMENT" -n "$K8S_NAMESPACE" --timeout=10m
