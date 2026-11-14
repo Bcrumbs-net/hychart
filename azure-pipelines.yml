@@ -1,38 +1,39 @@
-# Docker
-# Build and push an image to Azure Container Registry
-# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+# Pull requests only: merges are built and deployed by GitHub Actions
+# (.github/workflows/ci.yml). Same split as core and bot.
+# This pipeline validates PRs: install, Next.js build, and a Docker build (not pushed).
+trigger: none
 
-trigger:
-- master
-- develop
+pr:
+  branches:
+    include:
+      - master
+      - develop
+      - main
 
-variables:
-- name: SENTRY_AUTH_TOKEN
-  value: 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 
-
-stages:
-- stage: Build
-  displayName: Build and push stage
-  jobs:
-  - job: Build
+jobs:
+  - job: ci
     displayName: Build
+    timeoutInMinutes: 30
     pool:
-      vmImage: "ubuntu-latest"
+      vmImage: ubuntu-latest
     steps:
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'ACR'
-        repository: 'hychart'
-        command: 'buildAndPush'
-        Dockerfile: '**/Dockerfile'
-    - task: CopyFiles@2
-      displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
-      inputs:
-        Contents: |
-          node-deploy.azure.yaml
-          node-deploy.dev.azure.yaml
-          node-deploy.vars.dev.json
-          node-deploy.vars.prod.json
-        TargetFolder: '$(Build.ArtifactStagingDirectory)'
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: drop'
+      - task: NodeTool@0
+        displayName: Use Node 20
+        inputs:
+          versionSpec: '20.x'
+
+      - script: npm ci --legacy-peer-deps
+        displayName: Install dependencies
+
+      - script: npm run build
+        displayName: Build (next build)
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
+
+      - task: Docker@2
+        displayName: Build Docker image (not pushed)
+        inputs:
+          command: build
+          repository: hychart
+          Dockerfile: ./Dockerfile
+          buildContext: .
